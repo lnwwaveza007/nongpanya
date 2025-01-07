@@ -4,6 +4,9 @@ import LoginPage from './pages/login-page';
 import ResultPage from './pages/result-page';
 import LoadingPage from './pages/loading-page';
 import ScreenWelcomePage from "./pages/screen/welcome";
+import ScreenQRCodePage from "./pages/screen/qrcode-page";
+import GivingScreen from "./pages/screen/giving-page";
+import CompletionScreen from "./pages/screen/complete-page";
 import './App.css';
 import './index.css';
 
@@ -17,6 +20,9 @@ function App() {
         <Route path='/loading' element={<LoadingPage />} />
         {/* For Screen Only */}
         <Route path='/screen/welcome' element={<ScreenWelcomePage />} />
+        <Route path='/screen/qrcode' element={<ScreenQRCodePage />} />
+        <Route path='/screen/giving' element={<GivingScreen />} />
+        <Route path='/screen/complete' element={<CompletionScreen />} />
       </Routes>
     </Router>
   );

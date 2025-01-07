@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Pill, AlertCircle,
     Weight,
@@ -9,6 +9,8 @@ import {
 import { User, Mail, Phone } from 'lucide-react';
 import CustomCheckbox from '@/components/form/CustomCheckbox';
 import { CustomInput, CustomTextArea } from '@/components/form/CustomInput';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 interface Symptom {
     id: string;
@@ -17,24 +19,46 @@ interface Symptom {
 }
 
 const NongpanyaVending = () => {
+    const navigate = useNavigate();
     const [symptoms, setSymptoms] = useState<string[]>([]);
+    const [name, setName] = useState<string>('');
+    const [email, setEmail] = useState<string>('');
+    const [phone, setPhone] = useState<string>('');
+    const [age, setAge] = useState<number | null>(null);
+    const [weight, setWeight] = useState<number | null>(null);
+    const [allergies, setAllergies] = useState<string>('');
+    const [description, setDescription] = useState<string>('');
+    const getSearchParams = new URLSearchParams(window.location.search);
+    const code = getSearchParams.get('code');
 
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        description: '',
-        age: '',
-        weight: '',
-        allergies: ''
-    });
+    useEffect(() => {
+        setName('Nongpanya Nim');
+        setEmail('nongpanya@nim.com');
+        setPhone('012-3456789');
+    })
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value
-        });
+        if (e.target.name === 'name') {
+            setName(e.target.value);
+        }
+        if (e.target.name === 'email') {
+            setEmail(e.target.value);
+        }
+        if (e.target.name === 'phone') {
+            setPhone(e.target.value);
+        }
+        if (e.target.name === 'age') {
+            setAge(parseInt(e.target.value));
+        }
+        if (e.target.name === 'weight') {
+            setWeight(parseInt(e.target.value));
+        }
+        if (e.target.name === 'allergies') {
+            setAllergies(e.target.value);
+        }
+        if (e.target.name === 'description') {
+            setDescription(e.target.value);
+        }
     };
 
     const symptomsList: Symptom[] = [
@@ -56,12 +80,46 @@ const NongpanyaVending = () => {
     ];
 
     const handleSymptomToggle = (id: string) => {
-        setSymptoms(prev =>
-            prev.includes(id)
-                ? prev.filter(s => s !== id)
-                : [...prev, id]
-        );
+        if (symptoms.includes(id)) {
+            setSymptoms((prevSymptoms) => {
+                const newSymptoms = prevSymptoms.filter((symptom) => symptom !== id);
+                return newSymptoms;
+            });
+        } else {
+            setSymptoms((prevSymptoms) => {
+                const newSymptoms = [...prevSymptoms, id];
+                return newSymptoms;
+            });
+        }
     };
+
+    const postAPI = async () => {
+        try {
+            const formData = {
+                code: code,
+                name: name,
+                email: email,
+                phone: phone,
+                age: age,
+                weight: weight,
+                allergies: allergies,
+                symptoms: symptoms,
+                description: description
+            };
+
+            const response = await axios.post('http://localhost:3000/api/submit-symptoms', formData);
+            
+            if(response.status === 200) {
+                if (response.data.message == "susccess") {
+                    navigate('/loading');
+                }else if (response.data.error == "TimeoutQRCODE") {
+                    alert("QR Code Timeout. Please try again.");
+                }
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     return (
         <div className="min-h-screen bg-gray-50 p-8">
@@ -124,7 +182,7 @@ const NongpanyaVending = () => {
                     type="number"
                     name="age"
                     placeholder="Your Age (years)"
-                    value={formData.age}
+                    value={age}
                     onChange={handleInputChange}
                 />
                 <CustomInput
@@ -132,7 +190,7 @@ const NongpanyaVending = () => {
                     type="number"
                     name="weight"
                     placeholder="Your Weight (kg)"
-                    value={formData.weight}
+                    value={weight}
                     onChange={handleInputChange}
                 />
                 <CustomInput
@@ -140,7 +198,7 @@ const NongpanyaVending = () => {
                     type="text"
                     name="allergies"
                     placeholder="Any Allergies"
-                    value={formData.allergies || ''}
+                    value={allergies}
                     onChange={handleInputChange}
                 />
             </div>
@@ -155,19 +213,19 @@ const NongpanyaVending = () => {
 
             {/* Description Textarea */}
             <div className="md:col-span-2 mt-5">
-                    <CustomTextArea
-                        name="others"
-                        placeholder="Other symptoms or notes"
-                        value={formData.description}
-                        onChange={handleInputChange}
-                    />
-                </div>
+                <CustomTextArea
+                    name="description"
+                    placeholder="Other symptoms or notes"
+                    value={description}
+                    onChange={handleInputChange}
+                />
+            </div>
 
             {/* Submit Button */}
             <div className="text-center mt-8">
                 <button
                     className="bg-primary text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-600 transition-all duration-300"
-                    onClick={() => alert('Symptoms submitted!')}
+                    onClick={() => postAPI()}
                 >
                     Submit
                 </button>

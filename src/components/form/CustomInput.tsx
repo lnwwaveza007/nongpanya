@@ -6,7 +6,7 @@ interface InputProps {
   type: string;
   name: string;
   placeholder: string;
-  value: string;
+  value: any;
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   className?: string;
   readOnly?: boolean;
@@ -21,7 +21,7 @@ const CustomInput = (InputProps: InputProps) => (
       type={InputProps.type}
       name={InputProps.name}
       placeholder={InputProps.placeholder}
-      value={InputProps.value}
+      value={InputProps.value || ''}
       onChange={InputProps.onChange}
       readOnly={InputProps.readOnly}
       className={`w-full ${InputProps.readOnly ? 'bg-gray-100' : 'bg-white'} p-3 rounded-lg border border-gray-400 focus:ring-2 focus:ring-blue-500 transition-all placeholder-gray-400`}
@@ -32,6 +32,7 @@ const CustomInput = (InputProps: InputProps) => (
 const CustomTextArea = ({ name, placeholder, value, onChange }: Omit<InputProps, 'type' | 'icon'>) => (
   <Card className="p-4 rounded-lg bg-white hover:bg-gray-50 transition-all" style={{ borderColor: '#FF4B28' }}>
     <textarea
+      id={name}
       name={name}
       placeholder={placeholder}
       value={value}

@@ -1,9 +1,10 @@
 import { Card } from '@/components/ui/card';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Sparkles } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const ScreenWelcomePage = () => {
+  const navigate = useNavigate();
   const [face, setFace] = useState('(´｡• ᵕ •｡`)');
   const [isAnimating, setIsAnimating] = useState(false);
   
@@ -14,6 +15,10 @@ const ScreenWelcomePage = () => {
     '(●ˊωˋ●)',
     '(｡♥‿♥｡)'
   ];
+
+  const handleStart = () => {
+      navigate('/screen/qrcode');
+  }
 
   const handleHover = () => {
     if (!isAnimating) {
@@ -62,6 +67,7 @@ const ScreenWelcomePage = () => {
         <div className="pt-20">
           <Button 
             className="w-full py-10 text-lg transition-all duration-300 hover:scale-105 animate-bounce-slow flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+            onClick={handleStart}
           >
             <span className=' text-3xl'>Press to Start</span>
           </Button>

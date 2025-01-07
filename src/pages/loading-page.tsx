@@ -13,7 +13,7 @@ const LoadingScreen = () => {
     });
     client.on("connect", () => {
       console.log("connected");
-      client.subscribe("home/sensor/temp-sensor");
+      client.subscribe("nongpanya/complete");
     });
 
     client.on("message", (_, message) => {
