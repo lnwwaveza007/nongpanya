@@ -69,7 +69,7 @@ const NongpanyaVending = () => {
             <div className="text-center mb-8 animate-fade-in">
                 <div className="text-6xl font-bold transition-all duration-300 hover:scale-110 cursor-pointer"
                     style={{ color: '#FF4B28' }}>
-                    {symptoms.length > 0 ? '^o^' : '^.^'}
+                    {symptoms.length > 0 ? '( ^o^ )' : '( ^.^ )'}
                 </div>
                 <h1 className="text-4xl font-bold mt-4 animate-bounce"
                     style={{ color: '#FF4B28' }}>

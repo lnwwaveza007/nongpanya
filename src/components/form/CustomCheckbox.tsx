@@ -1,6 +1,5 @@
 import React from 'react';
 import { Card } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
 
 interface CheckboxProps {
   label: string;
@@ -10,9 +9,6 @@ interface Symptom {
   id: string;
   icon: React.ReactNode;
   name: string;
-  medicine: string;
-  warning: string;
-  advice: string[];
 }
 
 interface CheckboxComponentProps {
