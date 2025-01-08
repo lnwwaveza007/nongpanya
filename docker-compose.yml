@@ -13,7 +13,7 @@ services:
   backend:
     image: backend
     build:
-      context: .
+      context: ./server
       dockerfile: ./server/Dockerfile
     environment:
       NODE_ENV: production
