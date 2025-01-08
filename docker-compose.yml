@@ -18,4 +18,4 @@ services:
     environment:
       NODE_ENV: production
     ports:
-      - 3000:4000
+      - 4000:4000

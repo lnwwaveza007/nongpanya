@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const port = 3000;
+const port = 4000;
 const MqttHandler = require('./utils/mqtt_handler.js');
 
 const mqttClient = new MqttHandler();
@@ -11,7 +11,7 @@ const bodyParser = require('body-parser');
 
 const cors = require('cors');
 const corsOptions = {
-    origin: 'http://localhost:5173',
+    origin: 'http://http://nongpanya-main.scnd.space',
     optionsSuccessStatus: 200
 };
 
