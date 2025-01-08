@@ -11,7 +11,7 @@ const bodyParser = require('body-parser');
 
 const cors = require('cors');
 const corsOptions = {
-    origin: 'http://http://nongpanya-main.scnd.space',
+    origin: 'http://nongpanya-main.scnd.space',
     optionsSuccessStatus: 200
 };
 
