@@ -36,7 +36,7 @@ const QRCodeScreen = () => {
   const getCode = async () => {
     if (code !== '') return;
     try {
-        const res = await axios.get('http://localhost:3000/api/getcode');
+        const res = await axios.get('http://nongpanya-main.scnd.space:3000/api/getcode');
         setCode(res.data.code);
         console.log(res.data.code);
     } catch (error) {
@@ -73,7 +73,7 @@ const QRCodeScreen = () => {
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
           >
-            <QRCodeSVG value={`http://localhost:5173/form?code=${code}`} size={200} fgColor='#ff9e1f' />
+            <QRCodeSVG value={`http://nongpanya-main.scnd.space:5173/form?code=${code}`} size={200} fgColor='#ff9e1f' />
           </div>
           
           <div className="flex flex-col items-center gap-4">
