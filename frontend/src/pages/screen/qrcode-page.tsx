@@ -36,7 +36,7 @@ const QRCodeScreen = () => {
   const getCode = async () => {
     if (code !== '') return;
     try {
-        const res = await axios.get('http://nongpanya-main.scnd.space:3000/api/getcode');
+        const res = await axios.get('http://nongpanya-main.scnd.space:4000/api/getcode');
         setCode(res.data.code);
         console.log(res.data.code);
     } catch (error) {
