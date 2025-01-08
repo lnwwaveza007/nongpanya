@@ -48,7 +48,7 @@ const GivingScreen = () => {
       client.subscribe("nongpanya/complete");
     });
 
-    client.on("message", (_, message) => {
+    client.on("message", (_) => {
       navigate('/screen/complete');
     });
 

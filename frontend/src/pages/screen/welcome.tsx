@@ -96,25 +96,3 @@ const ScreenWelcomePage = () => {
 };
 
 export default ScreenWelcomePage;
-
-// Add these animations to your global CSS or Tailwind config
-const styles = `
-@keyframes float {
-  0% {
-    transform: translateY(0) rotate(0deg);
-    opacity: 0.4;
-  }
-  50% {
-    transform: translateY(-20px) rotate(180deg);
-    opacity: 0.6;
-  }
-  100% {
-    transform: translateY(0) rotate(360deg);
-    opacity: 0.4;
-  }
-}
-
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-`;
