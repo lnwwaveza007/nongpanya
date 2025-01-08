@@ -5,7 +5,7 @@ services:
     image: frontend
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: ./dockerfile
     environment:
       NODE_ENV: production
     ports:
@@ -14,7 +14,7 @@ services:
     image: backend
     build:
       context: ./server
-      dockerfile: ./server/Dockerfile
+      dockerfile: ./dockerfile
     environment:
       NODE_ENV: production
     ports:
