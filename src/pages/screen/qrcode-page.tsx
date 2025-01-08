@@ -23,7 +23,7 @@ const QRCodeScreen = () => {
       client.subscribe("nongpanya/order");
     });
 
-    client.on("message", (_, message) => {
+    client.on("message", (_) => {
       navigate('/screen/giving');
     });
 
