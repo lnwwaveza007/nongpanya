@@ -7,13 +7,13 @@ import * as code from "./utils/codeStore.js";
 import bodyParser from "body-parser";
 
 const app = express();
-const port = 4000;
-const MqttHandler = require('./utils/mqtt_handler.js');
+const port = 3000;
 
 const mqttClient = new MqttHandler();
 const corsOptions = {
-    origin: 'http://nongpanya-main.scnd.space:80',
-    optionsSuccessStatus: 200
+    origin: ['http://nongpanya-main.scnd.space','http://localhost:5173','http://localhost'],
+    optionsSuccessStatus: 200,
+    credentials: true,
 };
 
 app.use(express.json());
@@ -66,5 +66,5 @@ connection.connect((err) => {
 
 
 app.listen(port, () => {
-  console.log(`Server listening at http://localhost:${port}`);
+  console.log(`Server listening at ${port}`);
 });
