@@ -1,11 +1,12 @@
-// import passport from "passport";
 import jwt from "jsonwebtoken";
 import { getCode } from "../utils/codeStore.js";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export const signin = async (req, res) => {
   try {
     const user = req.user;
-
     if (!user) {
       return res.status(404);
     }
@@ -19,9 +20,8 @@ export const signin = async (req, res) => {
       httpOnly: true,
       maxAge: 3 * 60 * 60 * 1000,
     });
-
     
-    res.redirect(`http://localhost:5173/form?code=${getCode()}`);
+    res.redirect(`${process.env.FRONTEND_URL}/form?code=${getCode()}`);
   } catch (error) {
     console.error("Error :", error);
     res.status(500).send("Error authenticating user");
