@@ -21,6 +21,8 @@ interface Symptom {
 const NongpanyaVending = () => {
     const navigate = useNavigate();
     const [symptoms, setSymptoms] = useState<string[]>([]);
+    const [user, setUser] = useState<string[]>();;
+    const [symptomsList, setSymptomsList] = useState<Symptom[]>([]);
     const [name, setName] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [phone, setPhone] = useState<string>('');
@@ -31,11 +33,21 @@ const NongpanyaVending = () => {
     const getSearchParams = new URLSearchParams(window.location.search);
     const code = getSearchParams.get('code');
 
+    const fetchFrom = async () => {
+        try {
+            const resUser = await axiosInstance.get('/user');
+            const resSymp = await axiosInstance.get('/med/symptoms');
+
+            setUser(resUser.data.data);
+            setPhone('012-3456789');
+            setSymptomsList(resSymp.data.data);
+        } catch (error) {
+            return error;
+        }
+    }
     useEffect(() => {
-        setName('Nongpanya Nim');
-        setEmail('nongpanya@nim.com');
-        setPhone('012-3456789');
-    })
+        fetchFrom();
+    },[])
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         if (e.target.name === 'name') {
@@ -61,23 +73,23 @@ const NongpanyaVending = () => {
         }
     };
 
-    const symptomsList: Symptom[] = [
-        {
-            id: 'headache',
-            name: 'Headache',
-            icon: <Pill className="animate-bounce-custom" />,
-        },
-        {
-            id: 'diarrhea',
-            name: 'Diarrhea',
-            icon: <Toilet className="animate-wobble" />,
-        },
-        {
-            id: 'muscle-pain',
-            name: 'Muscle Pain',
-            icon: <BicepsFlexed className="animate-float" />,
-        }
-    ];
+    // const symptomsList: Symptom[] = [
+    //     {
+    //         id: 'headache',
+    //         name: 'Headache',
+    //         icon: <Pill className="animate-bounce-custom" />,
+    //     },
+    //     {
+    //         id: 'diarrhea',
+    //         name: 'Diarrhea',
+    //         icon: <Toilet className="animate-wobble" />,
+    //     },
+    //     {
+    //         id: 'muscle-pain',
+    //         name: 'Muscle Pain',
+    //         icon: <BicepsFlexed className="animate-float" />,
+    //     }
+    // ];
 
     const handleSymptomToggle = (id: string) => {
         if (symptoms.includes(id)) {
@@ -107,7 +119,7 @@ const NongpanyaVending = () => {
                 description: description
             };
 
-            const response = await axiosInstance.post('/submit-symptoms', formData);
+            const response = await axiosInstance.post('/med/symptoms/submit', formData);
             
             if(response.status === 200) {
                 if (response.data.message == "susccess") {
@@ -152,8 +164,8 @@ const NongpanyaVending = () => {
                     type="text"
                     name="name"
                     placeholder="Your Name"
-                    // value={formData.name}
-                    value="Nongpanya Nim"
+                    value={user?.fullname}
+                    // value="Nongpanya Nim"
                     onChange={handleInputChange}
                     readOnly={true}
                 />
@@ -162,8 +174,8 @@ const NongpanyaVending = () => {
                     type="email"
                     name="email"
                     placeholder="Email Address"
-                    // value={formData.email}
-                    value="nongpanya@nim.com"
+                    value={user?.email}
+                    // value="nongpanya@nim.com"
                     onChange={handleInputChange}
                     readOnly={true}
                 />

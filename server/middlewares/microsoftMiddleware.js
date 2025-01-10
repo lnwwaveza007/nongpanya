@@ -39,14 +39,13 @@ passport.use(
         }
         profile.studentId = onPremisesSamAccountName;
 
-        const firstname = profile.name.givenName;
-        const lastname = profile.name.familyName;
+        const fullname = profile.displayName;
         const mail = profile.emails[0].value;
         const studentId = profile.studentId
 
         const existingUser = await findUserById(studentId);
         if (existingUser.length === 0) {
-          const insertResult = await createUser(studentId, mail, firstname, lastname);
+          const insertResult = await createUser(studentId, mail, fullname);
 
           if (insertResult.affectedRows === 0) {
             console.error("Failed to create user profile in the database.");
