@@ -11,7 +11,8 @@ import CustomCheckbox from '@/components/form/CustomCheckbox';
 import { CustomInput, CustomTextArea } from '@/components/form/CustomInput';
 import { useNavigate } from 'react-router-dom';
 import ModalBox from '@/components/form/ModalBox';
-import axios from 'axios';
+
+import { axiosInstance } from '@/utils/axiosInstance';
 
 interface Symptom {
     id: string;
@@ -110,8 +111,8 @@ const NongpanyaVending = () => {
                 symptoms: symptoms,
                 description: description
             };
-
-            const response = await axios.post(import.meta.env.VITE_BACKEND_ENDPOINT+'/api/submit-symptoms', formData);
+          
+            const response = await axiosInstance.post('/submit-symptoms', formData);
             
             if(response.status === 200) {
                 if (response.data.message == "susccess") {
