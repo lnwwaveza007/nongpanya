@@ -7,24 +7,38 @@ dotenv.config();
 export const signin = async (req, res) => {
   try {
     const user = req.user;
+
     if (!user) {
       return res.status(404);
     }
+    
     const token = jwt.sign(
       { id: user.studentId },
       process.env.JWT_SECRET,
       { expiresIn: "3h" }
     );
 
-    res.cookie("userToken", token, {
+    res.cookie("token", token, {
       httpOnly: true,
+      secure: true,
       maxAge: 3 * 60 * 60 * 1000,
     });
-    
-    res.redirect(`${process.env.FRONTEND_URL}/form?code=${getCode()}`);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        id: user.studentId,
+        code: getCode()
+      },
+      message: "Signed in successfully",
+    });
   } catch (error) {
     console.error("Error :", error);
-    res.status(500).send("Error authenticating user");
+    res.status(500).json({
+      success: false,
+      data: null,
+      message: "Error authenticating user",
+    });
   }
 };
 

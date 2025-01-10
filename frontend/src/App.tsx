@@ -9,6 +9,7 @@ import GivingScreen from "./pages/screen/giving-page";
 import CompletionScreen from "./pages/screen/complete-page";
 import './App.css';
 import './index.css';
+import Redirect from './pages/auth-redirect';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/form" element={<NongpanyaVending />} />
         <Route path="/result" element={<ResultPage />} />
         <Route path='/loading' element={<LoadingPage />} />
+        <Route path='/auth' element={<Redirect />} />
         {/* For Screen Only */}
         <Route path='/screen/welcome' element={<ScreenWelcomePage />} />
         <Route path='/screen/qrcode' element={<ScreenQRCodePage />} />

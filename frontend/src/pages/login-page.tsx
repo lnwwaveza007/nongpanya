@@ -11,7 +11,7 @@ const LoginPage = () => {
   const handleLogin = () => {
     window.location.href = `${
       import.meta.env.VITE_API_URL
-    }/auth/microsoft/callback`;
+    }/auth/microsoft`;
   };
 
   return (

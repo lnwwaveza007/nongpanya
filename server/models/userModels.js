@@ -1,18 +1,18 @@
 import connection from "../config/database.js";
 
-export const findUserById = async (studentId) => {
-  const [rows] = await connection
+export const findUserById = async (id) => {
+  const [response] = await connection
     .promise()
-    .query(`SELECT * FROM users WHERE id = ?`, [studentId]);
-  return rows;
+    .query(`SELECT * FROM users WHERE id = ?`, [id]);
+  return response;
 };
 
-export const createUser = async (studentId, email, firstname, lastname) => {
-  const [result] = await connection
+export const createUser = async (id, email, fullname) => {
+  const [response] = await connection
     .promise()
     .query(
-      `INSERT INTO users (id, email, firstname, lastname) VALUES (?, ?, ?, ?)`,
-      [studentId, email, firstname, lastname]
+      `INSERT INTO users (id, email, fullname) VALUES (?, ?, ?)`,
+      [id, email, fullname]
     );
-  return result;
+  return response;
 };
