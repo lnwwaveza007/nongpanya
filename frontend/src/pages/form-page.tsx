@@ -10,6 +10,8 @@ import { User, Mail, Phone } from 'lucide-react';
 import CustomCheckbox from '@/components/form/CustomCheckbox';
 import { CustomInput, CustomTextArea } from '@/components/form/CustomInput';
 import { useNavigate } from 'react-router-dom';
+import ModalBox from '@/components/form/ModalBox';
+
 import { axiosInstance } from '@/utils/axiosInstance';
 
 interface Symptom {
@@ -28,6 +30,7 @@ const NongpanyaVending = () => {
     const [weight, setWeight] = useState<number | null>(null);
     const [allergies, setAllergies] = useState<string>('');
     const [description, setDescription] = useState<string>('');
+    const [showModal, setShowModal] = useState<boolean>(false);
     const getSearchParams = new URLSearchParams(window.location.search);
     const code = getSearchParams.get('code');
 
@@ -94,6 +97,8 @@ const NongpanyaVending = () => {
     };
 
     const postAPI = async () => {
+        if (showModal) return;
+        setShowModal(true);
         try {
             const formData = {
                 code: code,
@@ -106,7 +111,7 @@ const NongpanyaVending = () => {
                 symptoms: symptoms,
                 description: description
             };
-
+          
             const response = await axiosInstance.post('/submit-symptoms', formData);
             
             if(response.status === 200) {
@@ -230,6 +235,8 @@ const NongpanyaVending = () => {
                     Submit
                 </button>
             </div>
+            {/* Add this before the closing div */}
+            <ModalBox isOpen={showModal} />
         </div>
     );
 };
