@@ -13,8 +13,12 @@ const Redirect = () => {
       params: { code: code },
     });
     const resCode = response.data.data.code;
-    if (response.data.success) {
-      navigate(`/form?code=${resCode}`);
+    if (response.status === 200) {
+      if (response.data.success) {
+        navigate(`/form?code=${resCode}`);
+      } else {
+        navigate(`/`);
+      }
     }
   };
   useEffect(() => {

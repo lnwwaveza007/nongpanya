@@ -8,6 +8,7 @@ import authenticateToken from "./middlewares/authenticateToken.js";
 import cookieParser from "cookie-parser";
 import userRoute from "./routes/userRoutes.js";
 import medRoute from "./routes/medRoutes.js";
+import codeRoute from "./routes/codeRoutes.js";
 
 const app = express();
 const port = 3000;
@@ -26,9 +27,12 @@ app.use(bodyParser.json());
 app.use('/api/user', authenticateToken, userRoute);
 app.use('/api/med', authenticateToken, medRoute);
 app.use('/api/auth', authRoute);
-app.get("/api/getcode", (req, res) => {
-  res.status(200).json({
-    code: code.generateCode(),
+app.use("/api/code", codeRoute);
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({
+    success: false,
+    message: "Internal server error",
   });
 });
 

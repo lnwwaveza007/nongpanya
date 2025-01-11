@@ -2,7 +2,6 @@ import jwt from "jsonwebtoken";
 
 export default (req, res, next) => {
   const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
-  // console.log(req.cookies);
   if (!token) {
     return res.status(401).send("Unauthorized access");
   }

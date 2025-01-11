@@ -20,10 +20,16 @@ interface Symptom {
     name: string;
 }
 
+interface UserInt {
+    id: string;
+    fullname: string;
+    email: string;
+}
+
 const NongpanyaVending = () => {
     const navigate = useNavigate();
     const [symptoms, setSymptoms] = useState<string[]>([]);
-    const [user, setUser] = useState<string[]>();;
+    const [user, setUser] = useState<UserInt>();;
     const [symptomsList, setSymptomsList] = useState<Symptom[]>([]);
     const [name, setName] = useState<string>('');
     const [email, setEmail] = useState<string>('');

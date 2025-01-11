@@ -8,6 +8,7 @@ function generateCode() {
     temp += characters.charAt(Math.floor(Math.random() * characters.length));
   }
   code = temp;
+  console.log(code);
   return code;
 }
 

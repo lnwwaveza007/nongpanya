@@ -2,9 +2,9 @@ import { Card } from '@/components/ui/card';
 import { Smartphone } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import axios from 'axios';
 import mqtt from 'mqtt';
 import { useNavigate } from 'react-router-dom';
+import { axiosInstance } from '@/utils/axiosInstance';
 
 const QRCodeScreen = () => {
   const navigate = useNavigate();
@@ -36,7 +36,7 @@ const QRCodeScreen = () => {
   const getCode = async () => {
     if (code !== '') return;
     try {
-        const res = await axios.get(import.meta.env.VITE_BACKEND_ENDPOINT+'/api/getcode');
+        const res = await axiosInstance.get('/getcode');
         setCode(res.data.code);
         console.log(res.data.code);
     } catch (error) {

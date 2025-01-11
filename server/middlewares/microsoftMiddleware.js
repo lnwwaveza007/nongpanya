@@ -62,17 +62,17 @@ passport.use(
   )
 );
 
-passport.serializeUser((user, done) => {
-  done(null, user.studentId);
-});
+// passport.serializeUser((user, done) => {
+//   done(null, user.studentId);
+// });
 
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await findUserById(id);
-    done(null, user);
-  } catch (err) {
-    done(err);
-  }
-});
+// passport.deserializeUser(async (id, done) => {
+//   try {
+//     const user = await findUserById(id);
+//     done(null, user);
+//   } catch (err) {
+//     done(err);
+//   }
+// });
 
 export default passport;
