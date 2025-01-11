@@ -21,3 +21,28 @@ export const createRequest = async (userId, weight, note) => {
     ]);
   return response;
 };
+
+// Get Perfect Dose from weight
+export const doseCheck = async (medicineId,weight) => {
+  const [response] = await connection
+    .promise()
+    .query(
+      `select medicine_doses.dose_amount from medicine_doses
+where medicine_id = ?
+  and (min_weight < ? or min_weight is null)
+  and (max_weight > ? or max_weight is null);`,
+      [medicineId, weight, weight]
+    );
+  return response[0].dose_amount;
+}
+
+// Get Pills Amount from Perfect Dose
+export const doseToAmount = async (medicineId, okDose) => {
+  const [response] = await connection
+    .promise()
+    .query(
+      `select sum(?/medicines.strength) as "ans" from medicines where medicines.id = ?;`,
+      [okDose, medicineId]
+    );
+  return response[0].ans;
+}
