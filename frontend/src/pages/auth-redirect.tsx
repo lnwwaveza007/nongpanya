@@ -8,27 +8,29 @@ const Redirect = () => {
   const [searchParams] = useSearchParams();
   const code = searchParams.get("code");
 
-  const redirectAuth = async () => {
-    const response = await axiosInstance.get("/auth/microsoft/callback", {
-      params: { code: code },
-    });
-    const resCode = response.data.data.code;
-    if (response.status === 200) {
-      if (response.data.success) {
-        navigate(`/form?code=${resCode}`);
-      } else {
+  const redirectAuth = () => {
+    axiosInstance
+      .get("/auth/microsoft/callback", {
+        params: { code: code },
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          const resCode = response.data?.data?.code; // Use optional chaining to avoid errors
+          if (response.data.success) {
+            navigate(`/form?code=${resCode}`);
+          } else {
+            navigate(`/`);
+          }
+        }
+      })
+      .catch((error) => {
+        console.error(error);
         navigate(`/`);
-      }
-    }
+      });
   };
   useEffect(() => {
     redirectAuth();
   }, []);
-
-  // Primary: PANTONE 172 C (orange)
-  const primaryColor = "hsl(34, 100%, 56%)";
-  // Secondary: PANTONE 123 C (yellow)
-  const secondaryColor = "hsl(48, 100%, 57%)";
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">

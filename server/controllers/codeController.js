@@ -1,8 +1,8 @@
-import * as code from "../utils/codeStore";
+import { generateCode, getCode } from "../utils/codeStore.js";
 
 export const getCurrentCode = (req, res, next) => {
   try {
-    const currentCode = code.generateCode();
+    const currentCode = generateCode();
 
     res.status(200).json({
       success: true,
@@ -15,10 +15,9 @@ export const getCurrentCode = (req, res, next) => {
 
 export const validateCode = (req, res, next) => {
   try {
-    const { reqCode } = req.params;
-
-    if (reqCode !== code.getCode()) {
-      return res.status(403).json({
+    const code = req.query.code;
+    if (code !== getCode() || code === "") {
+      return res.status(200).json({
         success: false,
         message: "QR code invalid",
       });

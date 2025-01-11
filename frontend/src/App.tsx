@@ -10,15 +10,16 @@ import CompletionScreen from "./pages/screen/complete-page";
 import './App.css';
 import './index.css';
 import Redirect from './pages/auth-redirect';
+import authUser from './hooks/authUser';
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<LoginPage />} />
-        <Route path="/form" element={<NongpanyaVending />} />
-        <Route path="/result" element={<ResultPage />} />
-        <Route path='/loading' element={<LoadingPage />} />
+        <Route path="/form" element={authUser(<NongpanyaVending />)} />
+        <Route path="/result" element={authUser(<ResultPage />)} />
+        <Route path='/loading' element={authUser(<LoadingPage />)} />
         <Route path='/auth' element={<Redirect />} />
         {/* For Screen Only */}
         <Route path='/screen/welcome' element={<ScreenWelcomePage />} />
