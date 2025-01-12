@@ -5,6 +5,7 @@ import { useLocation } from 'react-router-dom';
 const ResultsPage = () => {
 
   const prescribedMedications = useLocation().state?.data;
+  console.log(prescribedMedications);
 
   const studentQuota = {
     maxPerMonth: 5,
@@ -45,7 +46,7 @@ const ResultsPage = () => {
       </div>
 
       <div className="max-w-4xl mx-auto space-y-6">
-        {prescribedMedications.map((med, index) => (
+        {prescribedMedications?.map((med, index) => (
           <div 
             key={index} 
             className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-[#FF4B28]"
@@ -55,9 +56,11 @@ const ResultsPage = () => {
               <div className="md:col-span-1">
                 <div className="bg-[#F5F7F9] rounded-lg p-4 flex flex-col items-center">
                   <img 
-                    src={`https://pixelbuddha.net/storage/55217/conversions/pills-mockup-free-download-by-pixelbuddha-main-x2-medium.jpg`}
+                    src={med.imageUrl}
                     alt={med.name}
                     className="rounded-lg shadow-md"
+                    // width={med.imageSize.width}
+                    // height={med.imageSize.height}
                   />
                   <div className="mt-3 text-center">
                     <p className="text-sm text-gray-600">{med.type}</p>
@@ -73,8 +76,8 @@ const ResultsPage = () => {
               <div className="md:col-span-2">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="text-xl font-bold text-[#FF4B28]">{med.name}</h3>
-                    <p className="text-gray-600">Quantity: {med.quantity}</p>
+                    <h3 className="text-xl text-left font-bold text-[#FF4B28]">{med.name}</h3>
+                    <p className="text-gray-600 text-left">Quantity: {med.quantity}</p>
                   </div>
                   <div className="bg-[#F5F7F9] px-4 py-2 rounded-lg">
                     <Clock className="inline-block mr-2" size={16} />
@@ -85,8 +88,8 @@ const ResultsPage = () => {
                 <div className="mt-4 space-y-4">
                   <div>
                     <h4 className="font-semibold mb-2">Instructions:</h4>
-                    <ul className="space-y-2">
-                      {med.instructions.map((instruction, i) => (
+                    <ul className="space-y-2 text-left">
+                      {med.instructions?.map((instruction, i) => (
                         <li key={i} className="flex items-center text-gray-600">
                           <span className="w-2 h-2 bg-[#FFC926] rounded-full mr-2"></span>
                           {instruction}
@@ -96,13 +99,13 @@ const ResultsPage = () => {
                   </div>
 
                   <div className="bg-red-50 p-4 rounded-lg">
-                    <div className="flex items-center mb-2">
+                    <div className="flex items-start mb-2">
                       <AlertCircle className="text-red-500 mr-2" size={16} />
                       <h4 className="font-semibold text-red-500">Warnings:</h4>
                     </div>
-                    <ul className="space-y-2">
-                      {med.warnings.map((warning, i) => (
-                        <li key={i} className="flex items-center text-red-600">
+                    <ul className="space-y-2 text-left">
+                      {med.warnings?.map((warning, i) => (
+                        <li key={i} className="flex items-start text-red-600">
                           <span className="w-1 h-1 bg-red-400 rounded-full mr-2"></span>
                           {warning}
                         </li>

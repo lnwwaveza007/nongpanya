@@ -42,33 +42,35 @@ export const submitSymptoms = async (req, res, next) => {
     if (!response || !response.success) {
       throw new Error("Failed to create request.");
     }
-
     code.resetCode();
-
-    //Send Data To Vending Machine
-    mqttClient.connect();
-    mqttClient.sendMessage(
-      "nongpanya/order",
-      JSON.stringify({
-        message: "order",
-      })
-    );
-
-    //send Medicine
-    const medRes = await giveMedicine(formData.symptoms, formData.weight);
-
-    //Send Complete To Vending Machine
-    mqttClient.connect();
-    mqttClient.sendMessage(
-      "nongpanya/complete",
-      JSON.stringify(medRes)
-    );
-
-    //Send Response
     res.status(201).json({
       success: true,
       data: formData,
       message: "Submit form successfully",
+    });
+
+    setImmediate(() => {
+      setTimeout(async () => {
+        try {
+          //Send Data To Vending Machine
+          mqttClient.connect();
+          mqttClient.sendMessage(
+            "nongpanya/order",
+            JSON.stringify({ message: "order" })
+          );
+
+          // Medicine dispensing
+          const medRes = await giveMedicine(formData.symptoms, formData.weight);
+
+          //Send Complete To Vending Machine
+          mqttClient.sendMessage(
+            "nongpanya/complete",
+            JSON.stringify(medRes)
+          );
+        } catch (asyncError) {
+          console.error("Error during async processing:", asyncError);
+        }
+      }, 3000); 
     });
   } catch (error) {
     next(error);
