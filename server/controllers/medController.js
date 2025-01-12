@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import { MqttHandler } from "../utils/mqtt_handler.js";
-import { getSymptoms } from "../models/medModels.js";
+import { getSymptoms, giveMedicine } from "../models/medModels.js";
 import * as code from "../utils/codeStore.js";
 
 dotenv.config();
@@ -19,6 +19,10 @@ export const getAllSymptoms = async (req, res, next) => {
     next(error);
   }
 };
+
+export const giveMedicineController = async (req, res, next) => {
+  return res.status(200).json(await giveMedicine([1,4,8], 52));
+}
 
 export const submitSymptoms = async (req, res, next) => {
   const formData = req.body;
@@ -40,8 +44,18 @@ export const submitSymptoms = async (req, res, next) => {
     mqttClient.sendMessage(
       "nongpanya/order",
       JSON.stringify({
-        mockup: "data",
+        message: "order",
       })
+    );
+
+    //send Medicine
+    const medRes = await giveMedicine(formData.symptoms, formData.weight);
+
+    //Send Complete To Vending Machine
+    mqttClient.connect();
+    mqttClient.sendMessage(
+      "nongpanya/complete",
+      JSON.stringify(medRes)
     );
 
     //Send Response
