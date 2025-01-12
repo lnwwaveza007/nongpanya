@@ -1,9 +1,24 @@
-import { HeartPulse, AlertCircle, Clock, Calendar, Info } from 'lucide-react';
-import { useLocation } from 'react-router-dom';
+import { HeartPulse, AlertCircle, Clock, Calendar, Info } from "lucide-react";
+import {
+  ReactElement,
+  JSXElementConstructor,
+  ReactNode,
+  ReactPortal,
+  Key,
+} from "react";
+import { useLocation } from "react-router-dom";
 
+interface Medical {
+  imageUrl: string;
+  name: string;
+  type: string;
+  quantity: number;
+  frequency: number;
+  instructions: any[];
+  warnings: any[];
+}
 
 const ResultsPage = () => {
-
   const prescribedMedications = useLocation().state?.data;
   console.log(prescribedMedications);
 
@@ -11,16 +26,22 @@ const ResultsPage = () => {
     maxPerMonth: 5,
     used: 2,
     remaining: 3,
-    resetDate: '1 Feb 2025'
+    resetDate: "1 Feb 2025",
   };
 
   return (
     <div className="min-h-screen p-8">
       {/* Header with Robot */}
       <div className="text-center mb-8">
-        <div className="text-6xl font-bold text-[#FF4B28] animate-bounce-slow">(｡^‿^｡)</div>
-        <h1 className="text-4xl font-bold mt-4 text-[#FF4B28]">Your Medications</h1>
-        <p className="text-gray-600 mt-2">Please read all instructions carefully</p>
+        <div className="text-6xl font-bold text-[#FF4B28] animate-bounce-slow">
+          (｡^‿^｡)
+        </div>
+        <h1 className="text-4xl font-bold mt-4 text-[#FF4B28]">
+          Your Medications
+        </h1>
+        <p className="text-gray-600 mt-2">
+          Please read all instructions carefully
+        </p>
       </div>
 
       {/* Quota Card */}
@@ -32,11 +53,15 @@ const ResultsPage = () => {
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center p-3 bg-[#F5F7F9] rounded-lg">
             <p className="text-sm text-gray-600">Used</p>
-            <p className="text-2xl font-bold text-[#FF4B28]">{studentQuota.used}/{studentQuota.maxPerMonth}</p>
+            <p className="text-2xl font-bold text-[#FF4B28]">
+              {studentQuota.used}/{studentQuota.maxPerMonth}
+            </p>
           </div>
           <div className="text-center p-3 bg-[#F5F7F9] rounded-lg">
             <p className="text-sm text-gray-600">Remaining</p>
-            <p className="text-2xl font-bold text-[#FFC926]">{studentQuota.remaining}</p>
+            <p className="text-2xl font-bold text-[#FFC926]">
+              {studentQuota.remaining}
+            </p>
           </div>
         </div>
         <div className="mt-4 flex items-center text-sm text-gray-600">
@@ -46,16 +71,16 @@ const ResultsPage = () => {
       </div>
 
       <div className="max-w-4xl mx-auto space-y-6">
-        {prescribedMedications?.map((med, index) => (
-          <div 
-            key={index} 
+        {prescribedMedications?.map((med : Medical, index: Key | null | undefined) => (
+          <div
+            key={index}
             className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-[#FF4B28]"
           >
             <div className="grid md:grid-cols-3 gap-6">
               {/* Image Section */}
               <div className="md:col-span-1">
                 <div className="bg-[#F5F7F9] rounded-lg p-4 flex flex-col items-center">
-                  <img 
+                  <img
                     src={med.imageUrl}
                     alt={med.name}
                     className="rounded-lg shadow-md"
@@ -76,8 +101,12 @@ const ResultsPage = () => {
               <div className="md:col-span-2">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="text-xl text-left font-bold text-[#FF4B28]">{med.name}</h3>
-                    <p className="text-gray-600 text-left">Quantity: {med.quantity}</p>
+                    <h3 className="text-xl text-left font-bold text-[#FF4B28]">
+                      {med.name}
+                    </h3>
+                    <p className="text-gray-600 text-left">
+                      Quantity: {med.quantity}
+                    </p>
                   </div>
                   <div className="bg-[#F5F7F9] px-4 py-2 rounded-lg">
                     <Clock className="inline-block mr-2" size={16} />
@@ -123,8 +152,12 @@ const ResultsPage = () => {
       <div className="max-w-4xl mx-auto mt-8 p-4 bg-red-50 rounded-lg border border-red-200 flex items-center">
         <AlertCircle className="text-red-500 mr-3" />
         <div>
-          <p className="text-left font-semibold text-red-500">In case of emergency:</p>
-          <p className="text-red-600">Contact HCU: 1234 or Visit nearest hospital</p>
+          <p className="text-left font-semibold text-red-500">
+            In case of emergency:
+          </p>
+          <p className="text-red-600">
+            Contact HCU: 1234 or Visit nearest hospital
+          </p>
         </div>
       </div>
     </div>
