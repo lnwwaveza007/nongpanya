@@ -16,8 +16,9 @@ const LoadingScreen = () => {
       client.subscribe("nongpanya/complete");
     });
 
-    client.on("message", (_, msg) => {
-      navigate('/result', {state: {data: msg}});
+    client.on("message", (_, payload) => {
+      const message = JSON.parse(payload.toString());
+      navigate('/result', {state: {data: message}});
     });
 
     return () => {

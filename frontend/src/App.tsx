@@ -19,7 +19,7 @@ function App() {
         <Route path="/" element={<LoginPage />} />
         <Route path="/form" element={authUser(<NongpanyaVending />)} />
         <Route path="/result" element={authUser(<ResultPage />)} />
-        <Route path='/loading' element={authUser(<LoadingPage />)} />
+        <Route path='/loading' element={<LoadingPage />} />
         <Route path='/auth' element={<Redirect />} />
         {/* For Screen Only */}
         <Route path='/screen/welcome' element={<ScreenWelcomePage />} />

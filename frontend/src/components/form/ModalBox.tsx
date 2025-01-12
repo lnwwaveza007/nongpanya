@@ -22,7 +22,7 @@ const ModalBox = (props: ModalBoxProps) => {
 
     return (
         <Dialog open={props.isOpen}>
-            (props.state === 'success') ? (
+            {props.state !== 'success' && (
             <DialogContent className="w-[80%] flex flex-col items-center justify-center py-12 rounded-md border-[#FF4B28] [&>button]:hidden">
                 <div className="text-6xl mb-4 text-[#FF4B28] transition-all duration-300 ease-in-out">
                     {emojis[emojiIndex]}
@@ -39,7 +39,7 @@ const ModalBox = (props: ModalBoxProps) => {
                 </div>
                 <p className="text-2xl font-medium text-[#FF4B28]">Sending form</p>
                 <p className="text-md text-gray-500">Loading . . .</p>
-            </DialogContent>)
+            </DialogContent>)}
         </Dialog>
     );
 };

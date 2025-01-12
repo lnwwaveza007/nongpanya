@@ -138,16 +138,25 @@ const NongpanyaVending = () => {
         "/med/symptoms/submit",
         formData
       );
-
-      if (response.status === 200) {
-        if (response.data.message == "susccess") {
-          navigate("/loading");
-        } else if (response.data.error == "TimeoutQRCODE") {
-          alert("QR Code Timeout. Please try again.");
-        }
+      
+      if (response.status === 201 && response.data.success) {
+        navigate("/loading");
       }
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      if (error.response) {
+        if (error.response.status === 403) {
+          alert("QR Code Timeout. Please try again.");
+        } else {
+          alert(
+            "An error occurred while submitting your data. Please try again."
+          );
+        }
+      } else {
+        alert(
+          "Unable to connect. Please check your internet connection and try again."
+        );
+      }
+      setShowModal(false);
     }
   };
 
@@ -246,10 +255,10 @@ const NongpanyaVending = () => {
         handleSymptomToggle={handleSymptomToggle}
       />
 
-      {/* Description Textarea */}
+      {/* Note Textarea */}
       <div className="md:col-span-2 mt-5">
         <CustomTextArea
-          name="description"
+          name="note"
           placeholder="Other symptoms or notes"
           value={note}
           onChange={handleInputChange}
