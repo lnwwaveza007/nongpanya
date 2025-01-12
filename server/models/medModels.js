@@ -22,6 +22,17 @@ export const createRequest = async (userId, weight, note) => {
   return response;
 };
 
+//Match Symptoms with Medicine
+export const matchSymptoms = async (symptomId) => {
+  const [response] = await connection
+    .promise()
+    .query(
+      `select medicine_symptoms.medicine_id from medicine_symptoms where symptom_id = ? order by effectiveness;`,
+      [symptomId]
+    );
+  return response;
+};
+
 // Get Perfect Dose from weight
 export const doseCheck = async (medicineId,weight) => {
   const [response] = await connection
