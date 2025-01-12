@@ -39,7 +39,7 @@ const NongpanyaVending = () => {
   const [age, setAge] = useState<number | null>(null);
   const [weight, setWeight] = useState<number | null>(null);
   const [allergies, setAllergies] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
+  const [note, setNote] = useState<string>("");
   const [showModal, setShowModal] = useState<boolean>(false);
   const getSearchParams = new URLSearchParams(window.location.search);
   const code = getSearchParams.get("code");
@@ -82,8 +82,8 @@ const NongpanyaVending = () => {
     if (e.target.name === "allergies") {
       setAllergies(e.target.value);
     }
-    if (e.target.name === "description") {
-      setDescription(e.target.value);
+    if (e.target.name === "note") {
+      setNote(e.target.value);
     }
   };
 
@@ -132,7 +132,7 @@ const NongpanyaVending = () => {
         weight: weight,
         allergies: allergies,
         symptoms: symptoms,
-        description: description,
+        additional_notes: note,
       };
       const response = await axiosInstance.post(
         "/med/symptoms/submit",
@@ -251,7 +251,7 @@ const NongpanyaVending = () => {
         <CustomTextArea
           name="description"
           placeholder="Other symptoms or notes"
-          value={description}
+          value={note}
           onChange={handleInputChange}
         />
       </div>
