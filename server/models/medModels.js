@@ -27,21 +27,30 @@ export const getSymptoms = async () => {
   return response;
 };
 
-export const createRequest = async (userId, weight, note) => {
-  const [response] = await connection
-    .promise()
-    .query(
-      `INSERT INTO request (user_id, weight, additional_notes) VALUES (?, ?, ?, ?)`,
-      [userId, weight, note]
+export const createRequest = async (formData, userId) => {
+  try {
+    await connection
+      .promise()
+      .query(
+        `INSERT INTO requests (code, user_id, weight, additional_notes, allergies) VALUES (?, ?, ?, ?, ?)`,
+        [formData.code, userId, formData.weight, formData.additional_notes, formData.allergies]
+      );
+
+    const symptomPromises = formData.symptoms.map((symptomId) =>
+      connection
+        .promise()
+        .query(
+          `INSERT INTO request_symptoms (request_code, symptom_id) VALUES (?, ?)`,
+          [formData.code, symptomId]
+        )
     );
-  const [response3] = await connection
-    .promise()
-    .query(`INSERT INTO request (request_id, symptom_id) VALUES (?, ?, ?, ?)`, [
-      userId,
-      weight,
-      note,
-    ]);
-  return response;
+    await Promise.all(symptomPromises);
+
+    return { success: true };
+  } catch (error) {
+    console.error(error.message);
+    throw new Error("Failed to create request.");
+  }
 };
 
 export const giveMedicine = async (symptoms, weight) => {
@@ -102,4 +111,4 @@ export const doseToAmount = async (medicineId, okDose) => {
       [okDose, medicineId]
     );
   return response[0].ans;
-}
+};

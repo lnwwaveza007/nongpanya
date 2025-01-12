@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import { MqttHandler } from "../utils/mqtt_handler.js";
-import { getSymptoms, giveMedicine } from "../models/medModels.js";
+import { createRequest, getSymptoms, giveMedicine } from "../models/medModels.js";
 import * as code from "../utils/codeStore.js";
 
 dotenv.config();
@@ -26,6 +26,7 @@ export const giveMedicineController = async (req, res, next) => {
 
 export const submitSymptoms = async (req, res, next) => {
   const formData = req.body;
+  const userId = req.user.id;
 
   try {
     //Check code of the form that send is current working code?
@@ -36,7 +37,12 @@ export const submitSymptoms = async (req, res, next) => {
       });
       return;
     }
-    //Reset Code
+
+    const response = await createRequest(formData, userId);
+    if (!response || !response.success) {
+      throw new Error("Failed to create request.");
+    }
+
     code.resetCode();
 
     //Send Data To Vending Machine
