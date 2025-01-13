@@ -8,7 +8,7 @@ const CompletionScreen = () => {
   // Auto navigate after 10 seconds
   useEffect(() => {
     const navigationTimer = setTimeout(() => {
-      navigate('/screen/welcome');
+      navigate('/screen/qrcode');
     }, 10000);
 
     return () => clearTimeout(navigationTimer);
