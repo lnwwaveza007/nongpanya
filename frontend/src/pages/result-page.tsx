@@ -1,10 +1,6 @@
 import { axiosInstance } from "@/utils/axiosInstance";
 import { HeartPulse, AlertCircle, Clock, Calendar, Info } from "lucide-react";
 import {
-  ReactElement,
-  JSXElementConstructor,
-  ReactNode,
-  ReactPortal,
   Key,
   useState,
   useEffect,
