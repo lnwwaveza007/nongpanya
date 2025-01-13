@@ -69,9 +69,12 @@ export const submitSymptoms = async (req, res, next) => {
             JSON.stringify(medRes)
           );
         } catch (asyncError) {
-          console.error("Error during async processing:", asyncError);
+          mqttClient.sendMessage(
+            "nongpanya/complete",
+            "error"
+          );
         }
-      }, 3000); 
+      }, 1000); 
     });
   } catch (error) {
     next(error);

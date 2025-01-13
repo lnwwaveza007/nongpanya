@@ -38,25 +38,32 @@ const GivingScreen = () => {
     return () => clearInterval(starInterval);
   }, []);
 
-  useEffect(() => {
-    const client = mqtt.connect(import.meta.env.VITE_MQTT_ENDPOINT, {
-      username: import.meta.env.VITE_MQTT_USERNAME,
-      password: import.meta.env.VITE_MQTT_PASSWORD,
-    });
-    client.on("connect", () => {
-      console.log("connected");
-      client.subscribe("nongpanya/complete");
-    });
+useEffect(() => {
+  const clientRef = mqtt.connect(import.meta.env.VITE_MQTT_ENDPOINT, {
+    username: import.meta.env.VITE_MQTT_USERNAME,
+    password: import.meta.env.VITE_MQTT_PASSWORD,
+  });
 
-    client.on("message", (_) => {
-      navigate('/screen/complete');
-    });
+  clientRef.on("connect", () => {
+    console.log("connected");
+    clientRef.subscribe("nongpanya/complete");
+  });
 
-    return () => {
-      console.log("disconnecting");
-      client.end();
-    };
-  }, []);
+  clientRef.on("message", (_, payload) => {
+    const message = payload.toString();
+    if (message === "error") {
+      navigate("/screen/qrcode");
+    } else {
+      navigate("/screen/complete");
+    }
+  });
+
+  return () => {
+    console.log("disconnecting");
+    clientRef.end();
+  };
+}, [navigate]);
+
 
   const primaryColor = 'hsl(34, 100%, 56%)';
   const secondaryColor = 'hsl(48, 100%, 57%)';

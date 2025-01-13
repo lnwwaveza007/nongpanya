@@ -2,7 +2,6 @@ import express from "express";
 import cors from "cors";
 import connection from "./config/database.js";
 import authRoute from "./routes/authRoutes.js";
-import * as code from "./utils/codeStore.js";
 import bodyParser from "body-parser";
 import authenticateToken from "./middlewares/authenticateToken.js";
 import cookieParser from "cookie-parser";
