@@ -73,7 +73,7 @@ const QRCodeScreen = () => {
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
           >
-            <QRCodeSVG value={`http://nongpanya-main.scnd.space:5173/form?code=${code}`} size={200} fgColor='#ff9e1f' />
+            <QRCodeSVG value={`${import.meta.env.VITE_URL}/form?code=${code}`} size={200} fgColor='#ff9e1f' />
           </div>
           
           <div className="flex flex-col items-center gap-4">
