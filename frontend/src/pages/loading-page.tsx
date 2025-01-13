@@ -16,8 +16,8 @@ const LoadingScreen = () => {
       client.subscribe("nongpanya/complete");
     });
 
-    client.on("message", (_) => {
-      navigate('/result');
+    client.on("message", (_, msg) => {
+      navigate('/result', {state: {data: msg}});
     });
 
     return () => {

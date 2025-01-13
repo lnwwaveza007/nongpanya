@@ -1,47 +1,17 @@
 import { HeartPulse, AlertCircle, Clock, Calendar, Info } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
+
 
 const ResultsPage = () => {
+
+  const prescribedMedications = useLocation().state?.data;
+
   const studentQuota = {
     maxPerMonth: 5,
     used: 2,
     remaining: 3,
     resetDate: '1 Feb 2025'
   };
-
-  const prescribedMedications = [
-    {
-      name: 'Paracetamol 500mg',
-      quantity: '6 tablets',
-      frequency: 'Every 4-6 hours',
-      type: 'Oval white tablet',
-      imageSize: { width: 200, height: 150 },
-      instructions: [
-        'Take with or after food',
-        'Maximum 8 tablets per day',
-        'Do not exceed recommended dose'
-      ],
-      warnings: [
-        'Avoid alcohol',
-        'If symptoms persist after 3 days, consult doctor'
-      ]
-    },
-    {
-      name: 'Cold Relief Syrup',
-      quantity: '1 bottle (60ml)',
-      frequency: 'Every 6 hours',
-      type: 'Red syrup liquid',
-      imageSize: { width: 150, height: 200 },
-      instructions: [
-        'Take 10ml using provided cap',
-        'Can be taken with water',
-        'Store in cool place'
-      ],
-      warnings: [
-        'May cause drowsiness',
-        'Do not drive after taking'
-      ]
-    }
-  ];
 
   return (
     <div className="min-h-screen p-8">
