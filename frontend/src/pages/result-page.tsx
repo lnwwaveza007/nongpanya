@@ -22,6 +22,26 @@ const ResultsPage = () => {
   const prescribedMedications = useLocation().state?.data;
   console.log(prescribedMedications);
 
+  // Mockup
+  // const prescribedMedications = [
+  //   {
+  //     imageUrl:
+  //       "https://www.verywellhealth.com/thmb/1tL8z5m5BZ2y8QZ3a2j9z5vZz3c=/1500x1000/filters:fill(87E3EF,1)/how-to-take-pills-2633333-01-5c7b3b3f46e0fb0001f3b3b3.jpg",
+  //     name: "Paracetamol",
+  //     type: "Painkiller",
+  //     quantity: 20,
+  //     frequency: 6,
+  //     instructions: [
+  //       "Take 1 tablet every 6 hours",
+  //       "Do not exceed 4 tablets in 24 hours",
+  //     ],
+  //     warnings: [
+  //       "Do not take with other medications",
+  //       "Do not take with alcohol",
+  //     ],
+  //   },
+  // ]
+
   const studentQuota = {
     maxPerMonth: 5,
     used: 2,
@@ -118,6 +138,10 @@ const ResultsPage = () => {
                   <div>
                     <h4 className="font-semibold mb-2">Instructions:</h4>
                     <ul className="space-y-2 text-left">
+                      <li key="zero" className="flex items-center text-gray-600">
+                          <span className="w-2 h-2 bg-[#FFC926] rounded-full mr-2"></span>
+                          We dispense 2 doses, take half in the first round.
+                      </li>
                       {med.instructions?.map((instruction, i) => (
                         <li key={i} className="flex items-center text-gray-600">
                           <span className="w-2 h-2 bg-[#FFC926] rounded-full mr-2"></span>
