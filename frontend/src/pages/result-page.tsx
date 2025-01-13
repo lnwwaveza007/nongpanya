@@ -96,7 +96,7 @@ const ResultsPage = () => {
       </div>
 
       <div className="max-w-4xl mx-auto space-y-6">
-        {prescribedMedications?.map((med : Medical, index: Key | null | undefined) => (
+        {prescribedMedications?.map((med : Medical, index: number) => (
           <div
             key={index}
             className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-[#FF4B28]"

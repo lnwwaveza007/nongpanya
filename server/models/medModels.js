@@ -81,10 +81,13 @@ export const giveMedicine = async (symptoms, weight) => {
     }
   }
 
+  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
   for (const p of pills) {
     dropPills(p.medicine_id, p.amount);
     removeStock(p.medicine_id, p.amount);
     pillsOutcome.push(await getPillsData(p));
+    await delay(2000);
   }
 
   return pillsOutcome;
