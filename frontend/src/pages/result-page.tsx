@@ -1,4 +1,9 @@
+import { axiosInstance } from "@/utils/axiosInstance";
 import { HeartPulse, AlertCircle, Clock, Calendar, Info } from "lucide-react";
+import {
+  useState,
+  useEffect,
+} from "react";
 import { useLocation } from "react-router-dom";
 
 interface Medical {
@@ -12,8 +17,15 @@ interface Medical {
 }
 
 const ResultsPage = () => {
+  const [used, setUsed] = useState(0);
   const prescribedMedications = useLocation().state?.data;
   console.log(prescribedMedications);
+
+  useEffect(() => {
+    axiosInstance.get("/user/qouta").then((res) => {
+      setUsed(res.data);
+    });
+  }, []);
 
   // Mockup
   // const prescribedMedications = [
@@ -37,8 +49,7 @@ const ResultsPage = () => {
 
   const studentQuota = {
     maxPerMonth: 5,
-    used: 2,
-    remaining: 3,
+    used: used,
     resetDate: "1 Feb 2025",
   };
 
@@ -73,7 +84,7 @@ const ResultsPage = () => {
           <div className="text-center p-3 bg-[#F5F7F9] rounded-lg">
             <p className="text-sm text-gray-600">Remaining</p>
             <p className="text-2xl font-bold text-[#FFC926]">
-              {studentQuota.remaining}
+              {studentQuota.maxPerMonth - studentQuota.used}
             </p>
           </div>
         </div>

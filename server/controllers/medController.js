@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import { MqttHandler } from "../utils/mqtt_handler.js";
 import { createRequest, getSymptoms, giveMedicine } from "../models/medModels.js";
 import * as code from "../utils/codeStore.js";
+import { getQouta } from "../models/userModels.js";
 
 dotenv.config();
 const mqttClient = new MqttHandler();
@@ -34,6 +35,15 @@ export const submitSymptoms = async (req, res, next) => {
       res.status(403).json({
         success: false,
         message: "QR code timeout",
+      });
+      return;
+    }
+
+    //Check qouta
+    if (getQouta(userId) >= 5) {
+      res.status(403).json({
+        success: false,
+        message: "Limit Reach",
       });
       return;
     }

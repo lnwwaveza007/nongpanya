@@ -137,7 +137,11 @@ const NongpanyaVending = () => {
     } catch (error: any) {
       if (error.response) {
         if (error.response.status === 403) {
-          alert("QR Code Timeout. Please try again.");
+          if (error.response.data.message === "QR code timeout") {
+            alert("Invalid QR Code. Please try again.");
+          } else if (error.response.data.message === "Limit Reach") {
+            alert("You have reached the limit of submission.");
+          }
           navigate('/');
         } else {
           alert(
