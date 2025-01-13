@@ -92,24 +92,6 @@ const NongpanyaVending = () => {
     }
   };
 
-  // const symptomsList: Symptom[] = [
-  //     {
-  //         id: 'headache',
-  //         name: 'Headache',
-  //         icon: <Pill className="animate-bounce-custom" />,
-  //     },
-  //     {
-  //         id: 'diarrhea',
-  //         name: 'Diarrhea',
-  //         icon: <Toilet className="animate-wobble" />,
-  //     },
-  //     {
-  //         id: 'muscle-pain',
-  //         name: 'Muscle Pain',
-  //         icon: <BicepsFlexed className="animate-float" />,
-  //     }
-  // ];
-
   const handleSymptomToggle = (id: string) => {
     if (symptoms.includes(id)) {
       setSymptoms((prevSymptoms) => {
@@ -160,6 +142,7 @@ const NongpanyaVending = () => {
           } else if (error.response.data.message === "Limit Reach") {
             alert("You have reached the limit of submission.");
           }
+          navigate('/');
         } else {
           alert(
             "An error occurred while submitting your data. Please try again."
@@ -230,8 +213,7 @@ const NongpanyaVending = () => {
           type="tel"
           name="phone"
           placeholder="Phone Number"
-          // value={formData.phone}
-          value="012-3456789"
+          value={phone}
           onChange={handleInputChange}
           readOnly={true}
         />

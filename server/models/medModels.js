@@ -73,7 +73,6 @@ export const giveMedicine = async (symptoms, weight) => {
     const matchs = await matchSymptoms(e);
     for (const m of matchs) {
       const dose = await doseCheck(m.medicine_id, weight);
-      console.log(dose);
       const amount = await doseToAmount(m.medicine_id, dose.dose_amount);
       if (pills.every((e) => e.medicine_id !== m.medicine_id)) {
         pills.push({ medicine_id: m.medicine_id, amount: amount, dose: dose });
@@ -81,13 +80,10 @@ export const giveMedicine = async (symptoms, weight) => {
     }
   }
 
-  const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
   for (const p of pills) {
-    dropPills(p.medicine_id, p.amount);
+    await dropPills(p.medicine_id, p.amount);
     removeStock(p.medicine_id, p.amount);
     pillsOutcome.push(await getPillsData(p));
-    await delay(2000);
   }
 
   return pillsOutcome;
@@ -106,14 +102,26 @@ export const matchSymptoms = async (symptomId) => {
 
 // Get Perfect Dose from weight
 export const doseCheck = async (medicineId, weight) => {
-  const [response] = await connection.promise().query(
+  const [doseResponse] = await connection.promise().query(
     `select dose_frequency,dose_amount from medicine_doses
-where medicine_id = ?
-  and (min_weight < ? or min_weight is null)
-  and (max_weight > ? or max_weight is null);`,
+  where medicine_id = ?
+  and (min_weight <= ? or min_weight is null)
+  and (max_weight >= ? or max_weight is null)
+  LIMIT 1;`,
     [medicineId, weight, weight]
   );
-  return response[0];
+  if (!doseResponse.length) {
+    const [fallbackDose] = await connection.promise().query(
+      `SELECT dose_frequency, dose_amount FROM medicine_doses
+        WHERE medicine_id = ? AND dose_amount < (SELECT MAX(dose_amount)
+        FROM medicine_doses
+        WHERE medicine_id = ?)
+        LIMIT 1;`,
+      [medicineId, medicineId]
+    );
+    return fallbackDose[0];
+  }
+  return doseResponse[0];
 };
 
 // Get Pills Amount from Perfect Dose
@@ -124,5 +132,5 @@ export const doseToAmount = async (medicineId, okDose) => {
       `select sum(?/medicines.strength) as "ans" from medicines where medicines.id = ?;`,
       [okDose, medicineId]
     );
-  return (response[0].ans * 2);
+  return response[0].ans * 2;
 };
