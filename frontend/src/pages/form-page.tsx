@@ -15,6 +15,7 @@ import ModalBox from "@/components/form/ModalBox";
 
 import { axiosInstance } from "@/utils/axiosInstance";
 import { useValidateCode } from "@/hooks/validateCode";
+import TermsCheckbox from "@/components/form/TermCheckBox";
 
 interface Symptom {
   id: string;
@@ -41,6 +42,7 @@ const NongpanyaVending = () => {
   const [allergies, setAllergies] = useState<string>("");
   const [note, setNote] = useState<string>("");
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [showTerms, setShowTerms] = useState<boolean>(false);
   const getSearchParams = new URLSearchParams(window.location.search);
   const code = getSearchParams.get("code");
 
@@ -85,6 +87,9 @@ const NongpanyaVending = () => {
     if (e.target.name === "note") {
       setNote(e.target.value);
     }
+    if (e.target.name === "terms") {
+      setShowTerms((e.target as HTMLInputElement).checked);
+    }
   };
 
   // const symptomsList: Symptom[] = [
@@ -120,6 +125,11 @@ const NongpanyaVending = () => {
   };
 
   const postAPI = async () => {
+    if (!showTerms) {
+      alert("Please accept the terms and conditions.");
+      return;
+    }
+
     if (showModal) return;
     setShowModal(true);
     try {
@@ -264,6 +274,8 @@ const NongpanyaVending = () => {
           onChange={handleInputChange}
         />
       </div>
+
+      <TermsCheckbox checked={showTerms} onChange={handleInputChange} />
 
       {/* Submit Button */}
       <div className="text-center mt-8">

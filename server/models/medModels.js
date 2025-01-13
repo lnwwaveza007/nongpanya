@@ -124,5 +124,5 @@ export const doseToAmount = async (medicineId, okDose) => {
       `select sum(?/medicines.strength) as "ans" from medicines where medicines.id = ?;`,
       [okDose, medicineId]
     );
-  return response[0].ans;
+  return (response[0].ans * 2);
 };
