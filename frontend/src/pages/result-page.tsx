@@ -1,11 +1,4 @@
 import { HeartPulse, AlertCircle, Clock, Calendar, Info } from "lucide-react";
-import {
-  ReactElement,
-  JSXElementConstructor,
-  ReactNode,
-  ReactPortal,
-  Key,
-} from "react";
 import { useLocation } from "react-router-dom";
 
 interface Medical {
@@ -71,7 +64,7 @@ const ResultsPage = () => {
       </div>
 
       <div className="max-w-4xl mx-auto space-y-6">
-        {prescribedMedications?.map((med : Medical, index: Key | null | undefined) => (
+        {prescribedMedications?.map((med : Medical, index: number) => (
           <div
             key={index}
             className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-[#FF4B28]"

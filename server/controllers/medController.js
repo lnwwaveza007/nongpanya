@@ -49,16 +49,17 @@ export const submitSymptoms = async (req, res, next) => {
       message: "Submit form successfully",
     });
 
+    //Send Data To Vending Machine
+    mqttClient.connect();
+    mqttClient.sendMessage(
+      "nongpanya/order",
+      JSON.stringify({ message: "order" })
+    );
+
+
     setImmediate(() => {
       setTimeout(async () => {
         try {
-          //Send Data To Vending Machine
-          mqttClient.connect();
-          mqttClient.sendMessage(
-            "nongpanya/order",
-            JSON.stringify({ message: "order" })
-          );
-
           // Medicine dispensing
           const medRes = await giveMedicine(formData.symptoms, formData.weight);
 
