@@ -24,6 +24,6 @@ export const getQouta = async (id) => {
 FROM requests
 WHERE requests.user_id = ?
   AND requests.status = 'completed'
-  AND EXTRACT(MONTH FROM requests.created_at) = ?;`, [id, new Date().getMonth()]);
+  AND EXTRACT(MONTH FROM requests.created_at) = ?;`, [id, new Date().getMonth()+1]);
   return response[0].total_requests;
 }

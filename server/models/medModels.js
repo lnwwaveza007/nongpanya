@@ -34,6 +34,13 @@ export const getSymptoms = async () => {
   return response;
 };
 
+export const setReqStatus = async (code) => {
+  const [response] = await connection
+    .promise()
+    .query(`UPDATE requests SET status = 'completed' WHERE code = ?;`, [code]);
+  return response[0];
+};
+
 export const createRequest = async (formData, userId) => {
   try {
     await connection
@@ -66,12 +73,37 @@ export const createRequest = async (formData, userId) => {
   }
 };
 
-export const giveMedicine = async (symptoms, weight) => {
+export const deleteRequest = async (code) => {
+  try {
+    await connection
+      .promise()
+      .query(`DELETE FROM requests WHERE code = ?`, [code]);
+    return { success: true };
+  } catch (error) {
+    console.error(error.message);
+    throw new Error("Failed to delete request.");
+  }
+};
+
+export const giveMedicine = async (symptoms, weight, allergies) => {
   const pills = [];
   const pillsOutcome = [];
+  const allergyList = allergies
+    ? allergies.split(",").map((a) => a.trim().toLowerCase())
+    : [];
   for (const e of symptoms) {
     const matchs = await matchSymptoms(e);
     for (const m of matchs) {
+      const [medicineInfo] = await connection
+        .promise()
+        .query(`SELECT name FROM medicines WHERE id = ?`, [m.medicine_id]);
+      const medicineName = medicineInfo[0]?.name?.toLowerCase();
+      console.log(medicineName, allergyList);
+      if (allergyList.includes(medicineName)) {
+        console.log(`Skipping ${medicineName} due to allergy.`);
+        continue;
+      }
+
       const dose = await doseCheck(m.medicine_id, weight);
       const amount = await doseToAmount(m.medicine_id, dose.dose_amount);
       if (pills.every((e) => e.medicine_id !== m.medicine_id)) {
@@ -81,8 +113,8 @@ export const giveMedicine = async (symptoms, weight) => {
   }
 
   for (const p of pills) {
-    await dropPills(p.medicine_id, p.amount);
-    removeStock(p.medicine_id, p.amount);
+    // await dropPills(p.medicine_id, p.amount);
+    // removeStock(p.medicine_id, p.amount);
     pillsOutcome.push(await getPillsData(p));
   }
 
