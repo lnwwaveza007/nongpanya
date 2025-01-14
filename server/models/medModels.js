@@ -113,8 +113,8 @@ export const giveMedicine = async (symptoms, weight, allergies) => {
   }
 
   for (const p of pills) {
-    // await dropPills(p.medicine_id, p.amount);
-    // removeStock(p.medicine_id, p.amount);
+    await dropPills(p.medicine_id, p.amount);
+    removeStock(p.medicine_id, p.amount);
     pillsOutcome.push(await getPillsData(p));
   }
 
