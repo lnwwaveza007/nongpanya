@@ -85,6 +85,10 @@ export const deleteRequest = async (code) => {
   }
 };
 
+const cleanMedicineName = (name) => {
+  return name.replace(/\s\d+\s*(mg|ml|g|mcg|kg|l|mg\/ml|IU|units)$/i, '');
+};
+
 export const giveMedicine = async (symptoms, weight, allergies) => {
   const pills = [];
   const pillsOutcome = [];
@@ -97,7 +101,7 @@ export const giveMedicine = async (symptoms, weight, allergies) => {
       const [medicineInfo] = await connection
         .promise()
         .query(`SELECT name FROM medicines WHERE id = ?`, [m.medicine_id]);
-      const medicineName = medicineInfo[0]?.name?.toLowerCase();
+      const medicineName = cleanMedicineName(medicineInfo[0]?.name?.toLowerCase());
       console.log(medicineName, allergyList);
       if (allergyList.includes(medicineName)) {
         console.log(`Skipping ${medicineName} due to allergy.`);
