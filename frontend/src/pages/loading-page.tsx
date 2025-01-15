@@ -17,8 +17,13 @@ const LoadingScreen = () => {
     });
 
     client.on("message", (_, payload) => {
-      const message = JSON.parse(payload.toString());
-      navigate('/result', {state: {data: message}});
+      const message = payload.toString();
+      if(message === "error"){
+        alert('Error while sending data')
+        navigate('/');
+      }    
+      const messageJson = JSON.parse(message);  
+      navigate('/result', {state: {data: messageJson}});
     });
 
     return () => {

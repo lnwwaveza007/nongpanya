@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import { MqttHandler } from "../utils/mqtt_handler.js";
-import { createRequest, getSymptoms, giveMedicine } from "../models/medModels.js";
+import { createRequest, deleteRequest, getSymptoms, giveMedicine, setReqStatus } from "../models/medModels.js";
 import * as code from "../utils/codeStore.js";
 import { getQouta } from "../models/userModels.js";
 
@@ -40,7 +40,7 @@ export const submitSymptoms = async (req, res, next) => {
     }
 
     //Check qouta
-    if (getQouta(userId) >= 5) {
+    if (await getQouta(userId) >= 5) {
       res.status(403).json({
         success: false,
         message: "Limit Reach",
@@ -52,7 +52,7 @@ export const submitSymptoms = async (req, res, next) => {
     if (!response || !response.success) {
       throw new Error("Failed to create request.");
     }
-    code.resetCode();
+    code.generateCode();
     res.status(201).json({
       success: true,
       data: formData,
@@ -66,19 +66,20 @@ export const submitSymptoms = async (req, res, next) => {
       JSON.stringify({ message: "order" })
     );
 
-
     setImmediate(() => {
       setTimeout(async () => {
         try {
           // Medicine dispensing
-          const medRes = await giveMedicine(formData.symptoms, formData.weight);
-
+          const medRes = await giveMedicine(formData.symptoms, formData.weight, formData.allergies);
           //Send Complete To Vending Machine
           mqttClient.sendMessage(
             "nongpanya/complete",
             JSON.stringify(medRes)
           );
+          await setReqStatus(formData.code)
+          console.log('completed');
         } catch (asyncError) {
+          await deleteRequest(formData.code);
           mqttClient.sendMessage(
             "nongpanya/complete",
             "error"
