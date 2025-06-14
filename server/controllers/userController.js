@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import { findUserById, getQouta } from "../models/userModels.js";
+import { findUserById, getQouta } from "../services/userServices.js";
 
 dotenv.config();
 

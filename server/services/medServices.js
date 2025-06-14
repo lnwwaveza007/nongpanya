@@ -1,6 +1,6 @@
 import connection from "../config/database.js";
-import { dropPills } from "./boardModels.js";
-import { removeStock } from "./medstockModels.js";
+import { dropPills } from "./boardServices.js";
+import { removeStock } from "./medstockServices.js";
 
 export const getPillsData = async (pills) => {
   const [response1] = await connection
