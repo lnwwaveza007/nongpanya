@@ -15,8 +15,8 @@
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/nongpanya-server.git
-cd nongpanya-server
+git clone https://github.com/lnwwaveza007/nongpanya.git
+cd server
 ```
 ### 2. Install dependencies
 ```bash
