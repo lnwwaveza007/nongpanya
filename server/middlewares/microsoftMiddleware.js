@@ -1,7 +1,7 @@
 import passport from "passport";
 import { Strategy as MicrosoftStrategy } from "passport-microsoft";
 import dotenv from "dotenv";
-import { createUser, findUserById } from "../models/userModels.js";
+import { createUser, findUserById } from "../services/userServices.js";
 import axios from "axios";
 
 dotenv.config();
