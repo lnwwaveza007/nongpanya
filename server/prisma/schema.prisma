@@ -1,0 +1,137 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model medicine_instructions {
+  id          Int                        @id @default(autoincrement())
+  medicine_id Int
+  content     String                     @db.Text
+  type        medicine_instructions_type
+  medicines   medicines                  @relation(fields: [medicine_id], references: [id], onDelete: Cascade, map: "medicine_instructions_ibfk_1")
+
+  @@index([medicine_id], map: "medicine_id")
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model medicine_stocks {
+  id           Int       @id @default(autoincrement())
+  medicine_id  Int
+  stock_amount Int?
+  expire_at    DateTime? @db.Date
+  created_at   DateTime? @default(now()) @db.Timestamp(0)
+  updated_at   DateTime? @default(now()) @db.Timestamp(0)
+  medicines    medicines @relation(fields: [medicine_id], references: [id], onDelete: Cascade, map: "medicine_stocks_ibfk_1")
+
+  @@index([medicine_id], map: "medicine_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model medicine_symptoms {
+  id            Int       @id @default(autoincrement())
+  medicine_id   Int
+  symptom_id    Int
+  effectiveness Decimal?  @db.Decimal(5, 2)
+  priority      Int?
+  medicines     medicines @relation(fields: [medicine_id], references: [id], onDelete: Cascade, map: "medicine_symptoms_ibfk_1")
+  symptoms      symptoms  @relation(fields: [symptom_id], references: [id], onDelete: Cascade, map: "medicine_symptoms_ibfk_2")
+
+  @@index([medicine_id], map: "medicine_id")
+  @@index([symptom_id], map: "symptom_id")
+}
+
+model medicines {
+  id                    Int                     @id @default(autoincrement())
+  name                  String                  @db.VarChar(45)
+  image_url             String?                 @db.VarChar(255)
+  type                  medicines_type?
+  description           String?                 @db.Text
+  strength              Int?
+  medicine_instructions medicine_instructions[]
+  medicine_stocks       medicine_stocks[]
+  medicine_symptoms     medicine_symptoms[]
+  request_medicines     request_medicines[]
+}
+
+model request_medicines {
+  id          Int       @id @default(autoincrement())
+  request_id  Int
+  medicine_id Int
+  created_at  DateTime? @default(now()) @db.Timestamp(0)
+  updated_at  DateTime? @default(now()) @db.Timestamp(0)
+  requests    requests  @relation(fields: [request_id], references: [id], onDelete: Cascade, map: "request_medicines_ibfk_1")
+  medicines   medicines @relation(fields: [medicine_id], references: [id], onDelete: Cascade, map: "request_medicines_ibfk_2")
+
+  @@index([medicine_id], map: "medicine_id")
+  @@index([request_id], map: "request_id")
+}
+
+model request_symptoms {
+  id         Int       @id @default(autoincrement())
+  request_id Int
+  symptom_id Int
+  created_at DateTime? @default(now()) @db.Timestamp(0)
+  updated_at DateTime? @default(now()) @db.Timestamp(0)
+  requests   requests  @relation(fields: [request_id], references: [id], onDelete: Cascade, map: "request_symptoms_ibfk_1")
+  symptoms   symptoms  @relation(fields: [symptom_id], references: [id], onDelete: Cascade, map: "request_symptoms_ibfk_2")
+
+  @@index([request_id], map: "request_id")
+  @@index([symptom_id], map: "symptom_id")
+}
+
+model requests {
+  id                Int                 @id
+  user_id           String              @db.Char(11)
+  weight            Decimal?            @db.Decimal(5, 2)
+  additional_notes  String?             @db.Text
+  allergies         String?             @db.Text
+  status            requests_status?    @default(pending)
+  created_at        DateTime?           @default(now()) @db.Timestamp(0)
+  updated_at        DateTime?           @default(now()) @db.Timestamp(0)
+  request_medicines request_medicines[]
+  request_symptoms  request_symptoms[]
+  users             users               @relation(fields: [user_id], references: [id], onDelete: Cascade, map: "requests_ibfk_1")
+
+  @@index([user_id], map: "user_id")
+}
+
+model symptoms {
+  id                Int                 @id @default(autoincrement())
+  name              String              @unique(map: "name") @db.VarChar(255)
+  description       String?             @db.Text
+  medicine_symptoms medicine_symptoms[]
+  request_symptoms  request_symptoms[]
+}
+
+model users {
+  id         String     @id @db.Char(11)
+  email      String     @unique(map: "email") @db.VarChar(255)
+  fullname   String?    @db.VarChar(255)
+  role       String?    @db.VarChar(50)
+  created_at DateTime?  @default(now()) @db.Timestamp(0)
+  updated_at DateTime?  @default(now()) @db.Timestamp(0)
+  requests   requests[]
+}
+
+enum medicine_instructions_type {
+  Instruction
+  Warning
+  Side_Effect @map("Side Effect")
+}
+
+enum medicines_type {
+  Tablet
+  Capsule
+}
+
+enum requests_status {
+  pending
+  approved
+  completed
+  failed
+}

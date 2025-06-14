@@ -1,29 +1,36 @@
-import connection from "../config/database.js";
+import prisma from "../config/prismaClient.js";
 
 export const findUserById = async (id) => {
-  const [response] = await connection
-    .promise()
-    .query(`SELECT * FROM users WHERE id = ?`, [id]);
-  return response;
+  return await prisma.users.findUnique({
+    where: { id },
+  });
 };
 
 export const createUser = async (id, email, fullname) => {
-  const [response] = await connection
-    .promise()
-    .query(
-      `INSERT INTO users (id, email, fullname) VALUES (?, ?, ?)`,
-      [id, email, fullname]
-    );
-  return response;
+  return await prisma.users.create({
+    data: {
+      id,
+      email,
+      fullname,
+    },
+  });
 };
 
 export const getQouta = async (id) => {
-  const [response] = await connection
-    .promise()
-    .query(`SELECT COUNT(requests.user_id) AS total_requests
-FROM requests
-WHERE requests.user_id = ?
-  AND requests.status = 'completed'
-  AND EXTRACT(MONTH FROM requests.created_at) = ?;`, [id, new Date().getMonth()+1]);
-  return response[0].total_requests;
-}
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
+  const count = await prisma.requests.count({
+    where: {
+      user_id: id,
+      status: 'completed',
+      created_at: {
+        gte: startOfMonth,
+        lt: startOfNextMonth,
+      },
+    },
+  });
+
+  return count;
+};

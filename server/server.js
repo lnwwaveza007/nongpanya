@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-import connection from "./config/database.js";
 import authRoute from "./routes/authRoutes.js";
 import bodyParser from "body-parser";
 import authenticateToken from "./middlewares/authenticateToken.js";
@@ -35,15 +34,6 @@ app.use((err, req, res, next) => {
     message: "Internal server error",
   });
 });
-
-connection.connect((err) => {
-  if (err) {
-    console.error(err);
-  } else {
-    console.log("Database is connected");
-  }
-});
-
 
 app.listen(port, () => {
   console.log(`Server listening at ${port}`);

@@ -1,28 +1,27 @@
-import connection from "../config/database.js";
+import prisma from "../config/prismaClient.js";
 import { dropPills } from "./boardServices.js";
 import { removeStock } from "./medstockServices.js";
 
 export const getPillsData = async (pills) => {
-  const [response1] = await connection
-    .promise()
-    .query(`SELECT * FROM medicines where id = ?`, [pills.medicine_id]);
-  const [response2] = await connection
-    .promise()
-    .query(`SELECT * FROM medicine_instructions where medicine_id = ?`, [
-      pills.medicine_id,
-    ]);
+  const medicine = await prisma.medicines.findUnique({
+    where: { id: pills.medicine_id },
+  });
 
-  const pillsData = {
-    name: response1[0].name,
+  const instructions = await prisma.medicine_instructions.findMany({
+    where: { medicine_id: pills.medicine_id },
+  });
+
+  pillsData = {
+    name: medicine.name,
     quantity: pills.amount,
     frequency: pills.dose.dose_frequency,
-    type: response1[0].type,
+    type: medicine.type,
     imageSize: { width: 150, height: 200 },
-    imageUrl: response1[0].image_url,
-    instructions: response2
+    imageUrl: medicine.image_url,
+    instructions: instructions
       .filter((e) => e.type === "Instruction")
       .map((e) => e.content),
-    warnings: response2
+    warnings: instructions
       .filter((e) => e.type === "Warning")
       .map((e) => e.content),
   };
@@ -30,41 +29,34 @@ export const getPillsData = async (pills) => {
 };
 
 export const getSymptoms = async () => {
-  const [response] = await connection.promise().query(`SELECT * FROM symptoms`);
-  return response;
+  return await prisma.symptoms.findMany();
 };
 
 export const setReqStatus = async (code) => {
-  const [response] = await connection
-    .promise()
-    .query(`UPDATE requests SET status = 'completed' WHERE code = ?;`, [code]);
-  return response[0];
+  return await prisma.requests.updateMany({
+    where: { code },
+    data: { status: "completed" },
+  });
 };
 
 export const createRequest = async (formData, userId) => {
   try {
-    await connection
-      .promise()
-      .query(
-        `INSERT INTO requests (code, user_id, weight, additional_notes, allergies) VALUES (?, ?, ?, ?, ?)`,
-        [
-          formData.code,
-          userId,
-          formData.weight,
-          formData.additional_notes,
-          formData.allergies,
-        ]
-      );
+    await prisma.requests.create({
+      data: {
+        code: formData.code,
+        user_id: userId,
+        weight: formData.weight,
+        additional_notes: formData.additional_notes,
+        allergies: formData.allergies,
+      },
+    });
 
-    const symptomPromises = formData.symptoms.map((symptomId) =>
-      connection
-        .promise()
-        .query(
-          `INSERT INTO request_symptoms (request_code, symptom_id) VALUES (?, ?)`,
-          [formData.code, symptomId]
-        )
-    );
-    await Promise.all(symptomPromises);
+    const symptomData = formData.symptoms.map((symptomId) => ({
+      request_code: formData.code,
+      symptom_id: symptomId,
+    }));
+
+    await prisma.request_symptoms.createMany({ data: symptomData });
 
     return { success: true };
   } catch (error) {
@@ -75,15 +67,14 @@ export const createRequest = async (formData, userId) => {
 
 export const deleteRequest = async (code) => {
   try {
-    await connection
-      .promise()
-      .query(`DELETE FROM requests WHERE code = ?`, [code]);
+    await prisma.requests.delete({ where: { code } });
     return { success: true };
   } catch (error) {
     console.error(error.message);
     throw new Error("Failed to delete request.");
   }
 };
+
 
 const cleanMedicineName = (name) => {
   return name.replace(/\s\d+\s*(mg|ml|g|mcg|kg|l|mg\/ml|IU|units)$/i, '');
@@ -127,46 +118,51 @@ export const giveMedicine = async (symptoms, weight, allergies) => {
 
 //Match Symptoms with Medicine
 export const matchSymptoms = async (symptomId) => {
-  const [response] = await connection
-    .promise()
-    .query(
-      `select medicine_symptoms.medicine_id from medicine_symptoms where symptom_id = ? order by effectiveness;`,
-      [symptomId]
-    );
-  return response;
+  return await prisma.medicine_symptoms.findMany({
+    where: { symptom_id: symptomId },
+    orderBy: { effectiveness: "asc" },
+    select: { medicine_id: true },
+  });
 };
 
 // Get Perfect Dose from weight
 export const doseCheck = async (medicineId, weight) => {
-  const [doseResponse] = await connection.promise().query(
-    `select dose_frequency,dose_amount from medicine_doses
-  where medicine_id = ?
-  and (min_weight <= ? or min_weight is null)
-  and (max_weight >= ? or max_weight is null)
-  LIMIT 1;`,
-    [medicineId, weight, weight]
-  );
-  if (!doseResponse.length) {
-    const [fallbackDose] = await connection.promise().query(
-      `SELECT dose_frequency, dose_amount FROM medicine_doses
-        WHERE medicine_id = ? AND dose_amount < (SELECT MAX(dose_amount)
-        FROM medicine_doses
-        WHERE medicine_id = ?)
-        LIMIT 1;`,
-      [medicineId, medicineId]
-    );
-    return fallbackDose[0];
-  }
-  return doseResponse[0];
+  const result = await prisma.medicine_doses.findFirst({
+    where: {
+      medicine_id: medicineId,
+      AND: [
+        { OR: [{ min_weight: { lte: weight } }, { min_weight: null }] },
+        { OR: [{ max_weight: { gte: weight } }, { max_weight: null }] },
+      ],
+    },
+    select: { dose_frequency: true, dose_amount: true },
+  });
+
+  if (result) return result;
+
+  return await prisma.medicine_doses.findFirst({
+    where: {
+      medicine_id: medicineId,
+      dose_amount: {
+        lt: await prisma.medicine_doses
+          .aggregate({
+            where: { medicine_id: medicineId },
+            _max: { dose_amount: true },
+          })
+          .then((res) => res._max.dose_amount),
+      },
+    },
+    select: { dose_frequency: true, dose_amount: true },
+  });
 };
 
 // Get Pills Amount from Perfect Dose
 export const doseToAmount = async (medicineId, okDose) => {
-  const [response] = await connection
-    .promise()
-    .query(
-      `select sum(?/medicines.strength) as "ans" from medicines where medicines.id = ?;`,
-      [okDose, medicineId]
-    );
-  return response[0].ans * 2;
+  const medicine = await prisma.medicines.findUnique({
+    where: { id: medicineId },
+    select: { strength: true },
+  });
+
+  return (okDose / medicine.strength) * 2;
 };
+

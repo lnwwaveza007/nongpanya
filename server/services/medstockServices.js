@@ -1,30 +1,63 @@
-import connection from "../config/database.js";
+import prisma from "../config/prismaClient.js";
 
 export const getStock = async (medicalId) => {
-    const [response] = await connection.promise()
-    .query(`select medicine_stocks.medicine_id,medicine_stocks.stock_amount,medicine_stocks.expire_at from medicine_stocks
-where medicine_id = ?;`,[medicalId]);
-    return response;
+  return await prisma.medicine_stocks.findMany({
+    where: { medicine_id: medicalId },
+    select: {
+      medicine_id: true,
+      stock_amount: true,
+      expire_at: true,
+    },
+    orderBy: { expire_at: "asc" }, // sort by expiration date
+  });
 };
 
-export const removeStock = async (medicalId,amount) => {
-    const stock = await getStock(medicalId);
-    const n = 0;
-    while (amount > 0) {
-        if (stock[n].stock_amount > amount) {
-            const [response] = await connection.promise()
-            .query(`update medicine_stocks set stock_amount = stock_amount - ? where medicine_id = ?;`,[amount,medicalId]);
-            amount = 0;
-        } else {
-            const [response] = await connection.promise()
-            .query(`update medicine_stocks set stock_amount = 0 where medicine_id = ?;`,[medicalId]);
-            amount -= stock[n].stock_amount;
-        }
+export const removeStock = async (medicalId, amount) => {
+  const stock = await getStock(medicalId);
+  let index = 0;
+
+  while (amount > 0 && index < stock.length) {
+    const current = stock[index];
+
+    if (current.stock_amount > amount) {
+      await prisma.medicine_stocks.updateMany({
+        where: {
+          medicine_id: medicalId,
+          expire_at: current.expire_at,
+        },
+        data: {
+          stock_amount: {
+            decrement: amount,
+          },
+        },
+      });
+      amount = 0;
+    } else {
+      await prisma.medicine_stocks.updateMany({
+        where: {
+          medicine_id: medicalId,
+          expire_at: current.expire_at,
+        },
+        data: {
+          stock_amount: 0,
+        },
+      });
+      amount -= current.stock_amount;
     }
-    //Check if stock is low
-    const [response2] = await connection.promise()
-    .query(`select * from medicine_stocks where stock_amount < 10;`);
-    for (const i in response2) {
-        console.log(`Stock of ${response2[i].medicine_id} is low`);
-    }
-}
+
+    index++;
+  }
+
+  // Check if any stock is low
+  const lowStocks = await prisma.medicine_stocks.findMany({
+    where: {
+      stock_amount: {
+        lt: 10,
+      },
+    },
+  });
+
+  for (const s of lowStocks) {
+    console.log(`Stock of medicine ${s.medicine_id} is low`);
+  }
+};
