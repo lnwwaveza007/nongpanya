@@ -1,8 +1,9 @@
 import dotenv from "dotenv";
 import { MqttHandler } from "../utils/mqtt_handler.js";
-import { createRequest, deleteRequest, getSymptoms, giveMedicine, setReqStatus, getMedicines, getAllMedicineStock } from "../services/medServices.js";
+import { createRequest, deleteRequest, getSymptoms, giveMedicine, setReqStatus, getMedicines } from "../services/medServices.js";
 import * as code from "../utils/codeStore.js";
 import { getQuotaByUserId } from "../services/userServices.js";
+import { getAllMedicineStock } from "../services/medstockServices.js";
 
 dotenv.config();
 const mqttClient = new MqttHandler();

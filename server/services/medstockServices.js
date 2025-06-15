@@ -1,7 +1,40 @@
 import prisma from "../config/prismaClient.js";
 
-export const getStock = async (medicalId) => {
-  return await prisma.medicine_stocks.findMany({
+export const getAllMedicineStock = async (withExpired = false) => {
+  const now = new Date();
+
+  const medicines = await prisma.medicines.findMany({
+    include: {
+      medicine_stocks: true,
+    },
+  });
+
+  return medicines.map((medicine) => {
+    const stocksWithStatus = medicine.medicine_stocks.map((stock) => ({
+      ...stock,
+      is_expired: stock.expire_at <= now,
+    }));
+
+    // filter out expired stocks
+    const validStocks = withExpired
+      ? stocksWithStatus
+      : stocksWithStatus.filter((s) => !s.is_expired);
+
+    const totalStock = validStocks.reduce(
+      (sum, stock) => sum + stock.stock_amount,
+      0
+    );
+
+    return {
+      ...medicine,
+      medicine_stocks: stocksWithStatus,
+      total_stock: totalStock,
+    };
+  });
+};
+
+export const removeStock = async (medicalId, amount) => {
+  const stock = await prisma.medicine_stocks.findMany({
     where: { medicine_id: medicalId },
     select: {
       medicine_id: true,
@@ -10,10 +43,6 @@ export const getStock = async (medicalId) => {
     },
     orderBy: { expire_at: "asc" }, // sort by expiration date
   });
-};
-
-export const removeStock = async (medicalId, amount) => {
-  const stock = await getStock(medicalId);
   let index = 0;
 
   while (amount > 0 && index < stock.length) {
@@ -61,3 +90,27 @@ export const removeStock = async (medicalId, amount) => {
     console.log(`Stock of medicine ${s.medicine_id} is low`);
   }
 };
+
+export const addStock = async (medicineId, amount, expireAt) => {
+  const existingStock = await prisma.medicine_stocks.findFirst({
+    where: {
+      medicine_id: medicineId,
+      expire_at: expireAt,
+    },
+  });
+
+  if (existingStock) {
+    return await prisma.medicine_stocks.update({
+      where: { id: existingStock.id },
+      data: { stock_amount: { increment: amount } },
+    });
+  } else {
+    return await prisma.medicine_stocks.create({
+      data: {
+        medicine_id: medicineId,
+        stock_amount: amount,
+        expire_at: expireAt,
+      },
+    });
+  }
+}

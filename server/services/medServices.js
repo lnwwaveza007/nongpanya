@@ -13,39 +13,6 @@ export const getMedicines = async () => {
   return medicines;
 };
 
-export const getAllMedicineStock = async (withExpired = false) => {
-  const now = new Date();
-
-  const medicines = await prisma.medicines.findMany({
-    include: {
-      medicine_stocks: true,
-    },
-  });
-
-  return medicines.map((medicine) => {
-    const stocksWithStatus = medicine.medicine_stocks.map((stock) => ({
-      ...stock,
-      is_expired: stock.expire_at <= now,
-    }));
-
-    // filter out expired stocks
-    const validStocks = withExpired
-      ? stocksWithStatus
-      : stocksWithStatus.filter((s) => !s.is_expired);
-
-    const totalStock = validStocks.reduce(
-      (sum, stock) => sum + stock.stock_amount,
-      0
-    );
-
-    return {
-      ...medicine,
-      medicine_stocks: stocksWithStatus,
-      total_stock: totalStock,
-    };
-  });
-};
-
 export const setReqStatus = async (code) => {
   return await prisma.requests.updateMany({
     where: { code },
@@ -172,7 +139,7 @@ export const giveMedicine = async (weight, age, allergies, symptomIds = [], medi
   }
 
   for (const pill of pills) {
-    // await dropPills(pill.medicine_id, pill.amount);
+    await dropPills(pill.medicine_id, pill.amount);
     await removeStock(pill.medicine_id, pill.amount);
     const data = await getPillsData(pill);
     pillsOutcome.push(data);
