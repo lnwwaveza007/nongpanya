@@ -2,6 +2,7 @@ import prisma from "../config/prismaClient.js";
 
 export const getAllMedicineStock = async (withExpired = false) => {
   const now = new Date();
+  console.log(withExpired);
 
   const medicines = await prisma.medicines.findMany({
     include: {
@@ -16,19 +17,22 @@ export const getAllMedicineStock = async (withExpired = false) => {
     }));
 
     // filter out expired stocks
-    const validStocks = withExpired
-      ? stocksWithStatus
-      : stocksWithStatus.filter((s) => !s.is_expired);
+    const validStocks = stocksWithStatus.filter((s) => !s.is_expired);
+    const expiredStocks = stocksWithStatus.filter((s) => s.is_expired);
 
-    const totalStock = validStocks.reduce(
+    const totalValidStock = validStocks.reduce(
       (sum, stock) => sum + stock.stock_amount,
       0
     );
-
+    const totalExpiredStock = expiredStocks.reduce(
+      (sum, stock) => sum + stock.stock_amount,
+      0
+    );
     return {
       ...medicine,
-      medicine_stocks: stocksWithStatus,
-      total_stock: totalStock,
+      medicine_stocks: withExpired ? stocksWithStatus : validStocks,
+      valid_stock: totalValidStock,
+      expired_stock: totalExpiredStock,
     };
   });
 };
@@ -113,4 +117,4 @@ export const addStock = async (medicineId, amount, expireAt) => {
       },
     });
   }
-}
+};

@@ -7,7 +7,6 @@ import cookieParser from "cookie-parser";
 import userRoute from "./routes/userRoutes.js";
 import medRoute from "./routes/medRoutes.js";
 import codeRoute from "./routes/codeRoutes.js";
-import dashboardRoute from "./routes/dashboardRoutes.js";
 
 const app = express();
 const port = 3000;
@@ -23,10 +22,10 @@ app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 
-app.use('/api/user', authenticateToken, userRoute);
+// app.use('/api/user', authenticateToken, userRoute);
+app.use('/api/user', userRoute);
 // app.use('/api/med', authenticateToken, medRoute);
 app.use('/api/med', medRoute);
-app.use('/api/dashboard', dashboardRoute);
 app.use('/api/auth', authRoute);
 app.use("/api/code", codeRoute);
 app.use((err, req, res, next) => {

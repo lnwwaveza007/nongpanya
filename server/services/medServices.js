@@ -1,16 +1,31 @@
 import prisma from "../config/prismaClient.js";
 import { cleanMedicineName } from "../utils/formatter.js";
 import { dropPills } from "./boardServices.js";
-import { removeStock } from "./medstockServices.js";
+import { removeStock } from "./medStockServices.js";
 
 export const getSymptoms = async () => {
-  
-  return await prisma.symptoms.findMany();
+  const symptoms = await prisma.symptoms.findMany();
+  return symptoms;
 };
 
 export const getMedicines = async () => {
   const medicines = await prisma.medicines.findMany();
-  return medicines;
+
+  const result = await Promise.all(
+    medicines.map(async (med) => {
+      const stock = await prisma.medicine_stocks.aggregate({
+        where: { medicine_id: med.id },
+        _sum: { stock_amount: true },
+      });
+
+      return {
+        ...med,
+        total_stock: stock._sum.stock_amount || 0,
+      };
+    })
+  );
+
+  return result;
 };
 
 export const setReqStatus = async (code) => {

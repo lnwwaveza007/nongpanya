@@ -1,13 +1,9 @@
+import { v4 as uuidv4 } from 'uuid';
+
 let code = "";
 
 function generateCode() {
-  let temp = "";
-  let characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (let i = 0; i < 6; i++) {
-    temp += characters.charAt(Math.floor(Math.random() * characters.length));
-  }
-  code = temp;
+  code = uuidv4().split('-')[0];
   return code;
 }
 

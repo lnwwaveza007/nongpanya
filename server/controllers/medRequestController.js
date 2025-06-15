@@ -1,8 +1,9 @@
 import {
   getMedicineRequestTimeSeriesByDate,
   getAllTimeMedicineRank,
-  getRequestHistoryByDate,
-} from "../services/dashboardServices.js";
+  getMedicineRequestHistoryByDate,
+  getMedicineRequestHistoryByUserId,
+} from "../services/medRequestServices.js";
 
 export const getMedicineRequestTimeSeries = async (req, res, next) => {
   try {
@@ -47,11 +48,34 @@ export const getMedicineRank = async (req, res, next) => {
   }
 };
 
-export const getRequestHistory = async (req, res, next) => {
+export const getMedicineRequestHistory = async (req, res, next) => {
   try {
     const { date } = req.query;
 
-    const response = await getRequestHistoryByDate(date);
+    const response = await getMedicineRequestHistoryByDate(date);
+
+    if (!response || response.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No data found for the specified date",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: response,
+      message: "Data retrieved successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export const getUserMedicineRequestHistory = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+
+    const response = await getMedicineRequestHistoryByUserId(userId);
 
     if (!response || response.length === 0) {
       return res.status(404).json({

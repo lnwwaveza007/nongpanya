@@ -91,7 +91,7 @@ export const getAllTimeMedicineRank = async () => {
   return final;
 };
 
-export const getRequestHistoryByDate = async (date) => {
+export const getMedicineRequestHistoryByDate = async (date) => {
   const start = date ? new Date(`${date}T01:00:00Z`) : new Date();
   const end = new Date(start);
   end.setDate(end.getDate() + 1);
@@ -104,7 +104,7 @@ export const getRequestHistoryByDate = async (date) => {
       },
     },
     orderBy: {
-      created_at: "asc",
+      created_at: "desc",
     },
     include: {
       request_medicines: {
@@ -113,6 +113,75 @@ export const getRequestHistoryByDate = async (date) => {
             select: {
               id: true,
               name: true,
+              image_url: true,
+              description: true,
+            },
+          },
+        },
+      },
+      request_symptoms: {
+        include: {
+          symptoms: {
+            select: {
+              id: true,
+              name: true,
+              description: true,
+            },
+          },
+        },
+      },
+      users: {
+        select: {
+          id: true,
+          fullname: true,
+          email: true,
+        },
+      },
+    },
+  });
+  
+  return result.map((req) => ({
+    code: req.code,
+    user_id: req.user_id,
+    fullname: req.users.fullname,
+    email: req.users.email,
+    weight: req.weight,
+    additional_notes: req.additional_notes,
+    allergies: req.allergies,
+    status: req.status,
+    created_at: req.created_at.toISOString(),
+    updated_at: req.updated_at.toISOString(),
+    medicines: req.request_medicines.map((med) => ({
+      id: med.medicine_id,
+      name: med.medicines.name,
+      image_url: med.medicines.image_url,
+      description: med.medicines.description,
+    })),
+    symptoms: req.request_symptoms.map((sym) => ({
+      id: sym.symptom_id,
+      name: sym.symptoms.name,
+      description: sym.symptoms.description || "",
+    })),
+  }));
+};
+
+export const getMedicineRequestHistoryByUserId = async (userId) => {
+  const result = await prisma.requests.findMany({
+    where: {
+      user_id: userId,
+    },
+    orderBy: {
+      created_at: "desc",
+    },
+    include: {
+      request_medicines: {
+        include: {
+          medicines: {
+            select: {
+              id: true,
+              name: true,
+              image_url: true,
+              description: true,
             },
           },
         },
@@ -151,10 +220,13 @@ export const getRequestHistoryByDate = async (date) => {
     medicines: req.request_medicines.map((med) => ({
       id: med.medicine_id,
       name: med.medicines.name,
+      image_url: med.medicines.image_url,
+      description: med.medicines.description,
     })),
     symptoms: req.request_symptoms.map((sym) => ({
       id: sym.symptom_id,
       name: sym.symptoms.name,
+      description: sym.symptoms.description || "",
     })),
   }));
 };

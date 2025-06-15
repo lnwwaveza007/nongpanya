@@ -6,7 +6,7 @@ dotenv.config();
 export const getUser = async (req, res, next) => {
   const userId = req.user.id;
   try {
-    const [response] = await findUserById(userId);
+    const response = await findUserById(userId);
     return res.status(200).json({
       success: true,
       data: response,
