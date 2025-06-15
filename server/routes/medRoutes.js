@@ -1,10 +1,11 @@
 import { Router } from "express";
-import { getAllSymptoms, giveMedicineController, submitSymptoms } from "../controllers/medController.js";
+import { getAllSymptoms, giveMedicineController, submitSymptoms, getAllMedicines } from "../controllers/medController.js";
 
 const medRoute = Router();
 
+medRoute.get("/", getAllMedicines);
 medRoute.get("/symptoms", getAllSymptoms);
-medRoute.post("/symptoms/submit", submitSymptoms);
-medRoute.post("/symptoms/giveMedicine", giveMedicineController);
+medRoute.post("/submit", submitSymptoms);
+medRoute.post("/submit/test", giveMedicineController);
 
 export default medRoute;

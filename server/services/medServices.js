@@ -7,6 +7,10 @@ export const getSymptoms = async () => {
   return await prisma.symptoms.findMany();
 };
 
+export const getMedicines = async () => {
+  return await prisma.medicines.findMany();
+};
+
 export const setReqStatus = async (code) => {
   return await prisma.requests.updateMany({
     where: { code },
@@ -133,6 +137,7 @@ export const giveMedicine = async (weight, age, allergies, symptomIds = [], medi
   }
 
   for (const pill of pills) {
+    await dropPills(pill.medicine_id, pill.amount);
     await removeStock(pill.medicine_id, pill.amount);
     const data = await getPillsData(pill);
     pillsOutcome.push(data);

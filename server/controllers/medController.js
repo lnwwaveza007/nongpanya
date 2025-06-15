@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import { MqttHandler } from "../utils/mqtt_handler.js";
-import { createRequest, deleteRequest, getSymptoms, giveMedicine, setReqStatus } from "../services/medServices.js";
+import { createRequest, deleteRequest, getSymptoms, giveMedicine, setReqStatus, getMedicines } from "../services/medServices.js";
 import * as code from "../utils/codeStore.js";
 import { getQuotaByUserId } from "../services/userServices.js";
 
@@ -20,6 +20,20 @@ export const getAllSymptoms = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getAllMedicines = async (req, res, next) => {
+  try {
+    const medicines = await getMedicines();
+
+    return res.status(200).json({
+      success: true,
+      data: medicines,
+      message: "Medicines retrieved successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+}
 
 export const giveMedicineController = async (req, res, next) => {
   const formData = req.body;
