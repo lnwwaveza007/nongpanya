@@ -16,7 +16,7 @@ export const createUser = async (id, email, fullname) => {
   });
 };
 
-export const getQouta = async (id) => {
+export const getQuotaByUserId = async (id) => {
   const now = new Date();
   const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);

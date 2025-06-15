@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { getQoutaController, getUser } from "../controllers/userController.js";
+import { getQuota, getUser } from "../controllers/userController.js";
 
 const userRoute = Router();
 
 userRoute.get("/", getUser);
-userRoute.get("/qouta", getQoutaController);
+userRoute.get("/quota", getQuota);
 
 export default userRoute;

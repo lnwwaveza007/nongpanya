@@ -12,8 +12,8 @@ interface Medical {
   type: string;
   quantity: number;
   frequency: number;
-  instructions: any[];
-  warnings: any[];
+  instructions: unknown[];
+  warnings: unknown[];
 }
 
 const ResultsPage = () => {
@@ -21,7 +21,7 @@ const ResultsPage = () => {
   const prescribedMedications = useLocation().state?.data;
 
   useEffect(() => {
-    axiosInstance.get("/user/qouta").then((res) => {
+    axiosInstance.get("/user/quota").then((res) => {
       setUsed(res.data.data);
     });
   }, []);

@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import { findUserById, getQouta } from "../services/userServices.js";
+import { findUserById, getQuotaByUserId } from "../services/userServices.js";
 
 dotenv.config();
 
@@ -17,14 +17,14 @@ export const getUser = async (req, res, next) => {
   }
 };
 
-export const getQoutaController = async (req, res, next) => {
+export const getQuota = async (req, res, next) => {
   const userId = req.user.id;
   try {
-    const response = await getQouta(userId);
+    const response = await getQuotaByUserId(userId);
     return res.status(200).json({
       success: true,
       data: response,
-      message: "Qouta retrieved successfully",
+      message: "Quota retrieved successfully",
     });
   } catch (error) {
     next(error);

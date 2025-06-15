@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 import { MqttHandler } from "../utils/mqtt_handler.js";
 import { createRequest, deleteRequest, getSymptoms, giveMedicine, setReqStatus } from "../services/medServices.js";
 import * as code from "../utils/codeStore.js";
-import { getQouta } from "../services/userServices.js";
+import { getQuotaByUserId } from "../services/userServices.js";
 
 dotenv.config();
 const mqttClient = new MqttHandler();
@@ -39,8 +39,8 @@ export const submitSymptoms = async (req, res, next) => {
       return;
     }
 
-    //Check qouta
-    if (await getQouta(userId) >= 5) {
+    //Check quota
+    if (await getQuotaByUserId(userId) >= 5) {
       res.status(403).json({
         success: false,
         message: "Limit Reach",
