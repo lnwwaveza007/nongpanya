@@ -45,7 +45,7 @@ passport.use(
 
         const existingUser = await findUserById(studentId);
         if (existingUser.length === 0) {
-          const insertResult = await createUser(studentId, mail, fullname);
+          const insertResult = await createUser({id: studentId, email: mail, fullname: fullname, auth_provider: 'microsoft'});
 
           if (insertResult.affectedRows === 0) {
             console.error("Failed to create user profile in the database.");

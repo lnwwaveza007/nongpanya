@@ -6,12 +6,21 @@ export const findUserById = async (id) => {
   });
 };
 
-export const createUser = async (id, email, fullname) => {
+export const findUserByEmail = async (email) => {
+  return await prisma.users.findUnique({
+    where: { email },
+  });
+};
+
+export const createUser = async (data) => {
   return await prisma.users.create({
     data: {
-      id,
-      email,
-      fullname,
+      id: data.id,
+      emai: data.email,
+      fullname: data.fullname,
+      auth_provider: data.auth_provider,
+      password: data.password || null,
+      role: data.role || 'user',
     },
   });
 };
