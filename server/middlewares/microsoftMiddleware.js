@@ -21,7 +21,6 @@ passport.use(
     async function (accessToken, refreshToken, profile, done) {
       profile.accessToken = accessToken;
       try {
-        
         const response = await axios.get(
           `https://graph.microsoft.com/v1.0/me?$select=onPremisesSamAccountName`,
           {
@@ -32,28 +31,35 @@ passport.use(
           }
         );
 
-        const onPremisesSamAccountName = response?.data?.onPremisesSamAccountName;
+        const onPremisesSamAccountName =
+          response?.data?.onPremisesSamAccountName;
         if (!onPremisesSamAccountName) {
           console.error("onPremisesSamAccountName is null or undefined");
           return done(null, false, { message: "Invalid user account." });
         }
-        profile.studentId = onPremisesSamAccountName;
+        profile.id = onPremisesSamAccountName;
 
         const fullname = profile.displayName;
         const mail = profile.emails[0].value;
-        const studentId = profile.studentId
+        const id = profile.id;
 
-        const existingUser = await findUserById(studentId);
-        if (existingUser.length === 0) {
-          const insertResult = await createUser({id: studentId, email: mail, fullname: fullname, auth_provider: 'microsoft'});
+        const existingUser = await findUserById(id);
+
+        if (!existingUser) {
+          const insertResult = await createUser({
+            id: id,
+            email: mail,
+            fullname: fullname,
+            auth_provider: "microsoft",
+          });
 
           if (insertResult.affectedRows === 0) {
             console.error("Failed to create user profile in the database.");
             return done(null, false, { message: "Profile creation failed." });
           }
-          return done(null, profile);
+          return done(null, { id: id, email: mail, fullname: fullname });
         }
-        return done(null, profile);
+        return done(null, { id: id, email: mail, fullname: fullname });
       } catch (err) {
         console.error(err);
         return done(err);

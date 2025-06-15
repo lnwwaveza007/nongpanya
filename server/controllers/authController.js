@@ -3,21 +3,36 @@ import { getCode } from "../utils/codeStore.js";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
-import { createUser, findUserByEmail } from "../services/userServices.js";
+import {
+  createUser,
+  findUserByEmail,
+  findUserById,
+} from "../services/userServices.js";
 
 dotenv.config();
 
 export const signin = async (req, res, next) => {
   try {
-    const user = req.user;
+    const userData = req.user;
 
-    if (!user) {
+    if (!userData) {
       return res.status(404);
     }
 
-    const token = jwt.sign({ id: user.studentId }, process.env.JWT_SECRET, {
-      expiresIn: "3h",
-    });
+    const user = await findUserById(userData.id);
+    
+    const token = jwt.sign(
+      {
+        id: user.id,
+        email: user.email,
+        fullname: user.fullname,
+        role: user.role,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "3h",
+      }
+    );
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -28,7 +43,7 @@ export const signin = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       data: {
-        id: user.studentId,
+        id: user.id,
         code: getCode(),
       },
       message: "Signed in successfully",
