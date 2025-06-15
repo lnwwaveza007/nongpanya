@@ -73,14 +73,14 @@ export const getMedicineRequestHistory = async (req, res, next) => {
 
 export const getUserMedicineRequestHistory = async (req, res, next) => {
   try {
-    const { userId } = req.params;
+    const userId = req.user.id;
 
     const response = await getMedicineRequestHistoryByUserId(userId);
 
     if (!response || response.length === 0) {
       return res.status(404).json({
         success: false,
-        message: "No data found for the specified date",
+        message: "No data found for the user",
       });
     }
 
