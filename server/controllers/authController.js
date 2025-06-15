@@ -67,9 +67,18 @@ export const localSignin = async (req, res, next) => {
       });
     }
 
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-      expiresIn: "3h",
-    });
+    const token = jwt.sign(
+      {
+        id: user.id,
+        email: email,
+        fullname: user.fullname,
+        role: user.role,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "3h",
+      }
+    );
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -83,6 +92,8 @@ export const localSignin = async (req, res, next) => {
         id: user.id,
         email: user.email,
         token: token,
+        fullname: user.fullname,
+        role: user.role,
       },
       message: "Signed in successfully",
     });
@@ -113,16 +124,20 @@ export const localRegister = async (req, res, next) => {
     const newUser = createUser({
       id: uuidv4().split("-")[0],
       email: email,
-      fullcane: fullname,
+      fullname: fullname,
       role: role,
       password: hashedPassword,
       auth_provider: "local",
     });
 
     // Issue JWT
-    const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, {
-      expiresIn: "3h",
-    });
+    const token = jwt.sign(
+      { id: newUser.id, email: email, fullname: fullname, role: role },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "3h",
+      }
+    );
 
     res.cookie("token", token, {
       httpOnly: true,
@@ -135,6 +150,8 @@ export const localRegister = async (req, res, next) => {
       data: {
         id: newUser.id,
         email: newUser.email,
+        fullname: fullname,
+        role: role,
       },
       message: "Registration successful",
     });

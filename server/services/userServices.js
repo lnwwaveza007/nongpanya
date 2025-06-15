@@ -16,7 +16,7 @@ export const createUser = async (data) => {
   return await prisma.users.create({
     data: {
       id: data.id,
-      emai: data.email,
+      email: data.email,
       fullname: data.fullname,
       auth_provider: data.auth_provider,
       password: data.password || null,
