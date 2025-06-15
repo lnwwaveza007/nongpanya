@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import { MqttHandler } from "../utils/mqtt_handler.js";
-import { createRequest, deleteRequest, getSymptoms, giveMedicine, setReqStatus, getMedicines } from "../services/medServices.js";
+import { createRequest, deleteRequest, getSymptoms, giveMedicine, setReqStatus, getMedicines, getAllMedicineStock } from "../services/medServices.js";
 import * as code from "../utils/codeStore.js";
 import { getQuotaByUserId } from "../services/userServices.js";
 
@@ -35,12 +35,33 @@ export const getAllMedicines = async (req, res, next) => {
   }
 }
 
+export const getMedicineStock = async (req, res) => {
+  try {
+    const stock = await getAllMedicineStock();
+    
+    if (!stock || stock.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No medicine stock found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: stock,
+      message: "Stock retrieved successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 export const giveMedicineController = async (req, res, next) => {
   const formData = req.body;
   return res.status(200).json(await giveMedicine(formData.weight, formData.age, formData.allergies, formData.symptoms, formData.medicines));
 }
 
-export const submitSymptoms = async (req, res, next) => {
+export const submitRequestForm = async (req, res, next) => {
   const formData = req.body;
   const userId = req.user.id;
 
