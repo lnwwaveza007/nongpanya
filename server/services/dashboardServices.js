@@ -1,7 +1,7 @@
 import prisma from "../config/prismaClient.js";
 
 export const getMedicineRequestTimeSeriesByDate = async (date) => {
-  const start = new Date(`${date}T01:00:00Z`);
+  const start = date ? new Date(`${date}T01:00:00Z`) : new Date();
   const end = new Date(start);
   end.setDate(end.getDate() + 1);
 
@@ -89,4 +89,72 @@ export const getAllTimeMedicineRank = async () => {
   });
 
   return final;
+};
+
+export const getRequestHistoryByDate = async (date) => {
+  const start = date ? new Date(`${date}T01:00:00Z`) : new Date();
+  const end = new Date(start);
+  end.setDate(end.getDate() + 1);
+
+  const result = await prisma.requests.findMany({
+    where: {
+      created_at: {
+        gt: start,
+        lte: end,
+      },
+    },
+    orderBy: {
+      created_at: "asc",
+    },
+    include: {
+      request_medicines: {
+        include: {
+          medicines: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
+      request_symptoms: {
+        include: {
+          symptoms: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
+      users: {
+        select: {
+          id: true,
+          fullname: true,
+          email: true,
+        },
+      },
+    },
+  });
+  
+  return result.map((req) => ({
+    code: req.code,
+    user_id: req.user_id,
+    fullname: req.users.fullname,
+    email: req.users.email,
+    weight: req.weight,
+    additional_notes: req.additional_notes,
+    allergies: req.allergies,
+    status: req.status,
+    created_at: req.created_at.toISOString(),
+    updated_at: req.updated_at.toISOString(),
+    medicines: req.request_medicines.map((med) => ({
+      id: med.medicine_id,
+      name: med.medicines.name,
+    })),
+    symptoms: req.request_symptoms.map((sym) => ({
+      id: sym.symptom_id,
+      name: sym.symptoms.name,
+    })),
+  }));
 };
