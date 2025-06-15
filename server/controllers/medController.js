@@ -22,7 +22,8 @@ export const getAllSymptoms = async (req, res, next) => {
 };
 
 export const giveMedicineController = async (req, res, next) => {
-  return res.status(200).json(await giveMedicine([1,4,8], 52));
+  const formData = req.body;
+  return res.status(200).json(await giveMedicine(formData.weight, formData.age, formData.allergies, formData.symptoms, formData.medicines));
 }
 
 export const submitSymptoms = async (req, res, next) => {
@@ -70,7 +71,8 @@ export const submitSymptoms = async (req, res, next) => {
       setTimeout(async () => {
         try {
           // Medicine dispensing
-          const medRes = await giveMedicine(formData.symptoms, formData.weight, formData.allergies);
+          const medRes = await giveMedicine(formData.weight, formData.age, formData.allergies, formData.symptoms, formData.medicines);
+          await createRequestMedicines(formData.code, medRes.medicines);
           //Send Complete To Vending Machine
           mqttClient.sendMessage(
             "nongpanya/complete",
