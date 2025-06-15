@@ -2,7 +2,6 @@ import prisma from "../config/prismaClient.js";
 
 export const getAllMedicineStock = async (withExpired = false) => {
   const now = new Date();
-  console.log(withExpired);
 
   const medicines = await prisma.medicines.findMany({
     include: {
