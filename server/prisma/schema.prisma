@@ -105,16 +105,18 @@ model symptoms {
 }
 
 model users {
-  id         String     @id @db.Char(11)
-  email      String     @unique(map: "email") @db.VarChar(255)
-  fullname   String?    @db.VarChar(255)
-  role       String?    @db.VarChar(50)
-  age        Int?
-  weight     Int?
-  allergies  String?    @db.Text
-  created_at DateTime?  @default(now()) @db.Timestamp(0)
-  updated_at DateTime?  @default(now()) @db.Timestamp(0)
-  requests   requests[]
+  id            String               @id @db.Char(11)
+  email         String               @unique(map: "email") @db.VarChar(255)
+  fullname      String?              @db.VarChar(255)
+  role          users_role?          @default(user)
+  password      String?              @db.VarChar(255)
+  age           Int?
+  weight        Int?
+  allergies     String?              @db.Text
+  auth_provider users_auth_provider? @default(local)
+  created_at    DateTime?            @default(now()) @db.Timestamp(0)
+  updated_at    DateTime?            @default(now()) @db.Timestamp(0)
+  requests      requests[]
 }
 
 model medicine_doses {
@@ -146,6 +148,17 @@ enum medicines_type {
 enum requests_status {
   pending
   completed
+}
+
+enum users_role {
+  user
+  admin
+  superadmin
+}
+
+enum users_auth_provider {
+  local
+  microsoft
 }
 
 model medicine_request_hourly_summary {

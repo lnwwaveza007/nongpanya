@@ -22,10 +22,10 @@ app.use(cookieParser());
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
 
-// app.use('/api/user', authenticateToken, userRoute);
-app.use('/api/user', userRoute);
-// app.use('/api/med', authenticateToken, medRoute);
-app.use('/api/med', medRoute);
+app.use('/api/user', authenticateToken, userRoute);
+// app.use('/api/user', userRoute);
+app.use('/api/med', authenticateToken, medRoute);
+// app.use('/api/med', medRoute);
 app.use('/api/auth', authRoute);
 app.use("/api/code", codeRoute);
 app.use((err, req, res, next) => {

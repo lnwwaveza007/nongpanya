@@ -1,11 +1,13 @@
 import { Router } from "express";
-import { signin, signout } from "../controllers/authController.js";
+import { localRegister, localSignin, signin, signout } from "../controllers/authController.js";
 import passport from "../middlewares/microsoftMiddleware.js";
 import "../middlewares/microsoftMiddleware.js"
 import authenticateToken from "../middlewares/authenticateToken.js";
 
 const authRoute = Router();
 
+authRoute.post("/signin",localSignin);
+authRoute.post("/register",localRegister);
 authRoute.get(
   "/microsoft",
   passport.authenticate("microsoft", {
