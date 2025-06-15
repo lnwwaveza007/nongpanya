@@ -48,7 +48,6 @@ JWT_SECRET=your_super_secure_jwt_secret
 ```
 ### 4. Initialize Prisma
 ```bash
-npx prisma db pull       # If DB already exists
 npx prisma generate      # Generate client
 ```
 ### 5. Start the server

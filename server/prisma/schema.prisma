@@ -135,6 +135,16 @@ model medicine_doses {
   @@index([medicine_id], map: "medicine_id")
 }
 
+model medicine_request_hourly_summary {
+  time          DateTime
+  medicine_id   Int
+  medicine_name String
+  total         Int
+
+  @@id([time, medicine_id])
+  @@map("medicine_request_hourly_summary")
+}
+
 enum medicine_instructions_type {
   Instruction
   Warning
