@@ -4,30 +4,13 @@ import { dropPills } from "./boardServices.js";
 import { removeStock } from "./medstockServices.js";
 
 export const getSymptoms = async () => {
+  
   return await prisma.symptoms.findMany();
 };
 
 export const getMedicines = async () => {
-  const medicines = await prisma.medicines.findMany({
-    include: {
-      medicine_stocks: true,
-    },
-  });
-
-  return medicines.map((medicine) => {
-    const totalStock = medicine.medicine_stocks.reduce(
-      (sum, stock) => sum + stock.stock_amount,
-      0
-    );
-
-    // Destructure to remove medicine_stocks from the return
-    const { medicine_stocks, ...rest } = medicine;
-
-    return {
-      ...rest,
-      total_stock: totalStock,
-    };
-  });
+  const medicines = await prisma.medicines.findMany();
+  return medicines;
 };
 
 export const getAllMedicineStock = async (withExpired = false) => {
