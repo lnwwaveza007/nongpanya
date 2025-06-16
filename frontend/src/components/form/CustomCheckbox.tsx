@@ -21,7 +21,7 @@ interface CheckboxComponentProps {
 const CustomCheckbox: React.FC<CheckboxComponentProps> = ({ symptomsList, symptoms, handleSymptomToggle }) => {
   return (
     // Symptoms Checklist
-    <div className="max-w-4xl mx-auto flex flex-col space-y-6">
+    <div className="mx-auto flex flex-col space-y-6">
       {symptomsList.map((symptom) => (
         <Card
           key={symptom.id}

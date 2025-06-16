@@ -12,6 +12,7 @@ import CustomCheckbox from "@/components/form/CustomCheckbox";
 import { CustomInput, CustomTextArea } from "@/components/form/CustomInput";
 import { useNavigate } from "react-router-dom";
 import ModalBox from "@/components/form/ModalBox";
+import { AxiosError } from "axios";
 
 import { axiosInstance } from "@/utils/axiosInstance";
 import { useValidateCode } from "@/hooks/validateCode";
@@ -134,12 +135,13 @@ const NongpanyaVending = () => {
       if (response.status === 201 && response.data.success) {
         navigate("/loading");
       }
-    } catch (error: any) {
-      if (error.response) {
-        if (error.response.status === 403) {
-          if (error.response.data.message === "QR code timeout") {
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      if (axiosError.response) {
+        if (axiosError.response.status === 403) {
+          if (axiosError.response.data.message === "QR code timeout") {
             alert("Invalid QR Code. Please try again.");
-          } else if (error.response.data.message === "Limit Reach") {
+          } else if (axiosError.response.data.message === "Limit Reach") {
             alert("You have reached the limit of submission.");
           }
           navigate('/');
@@ -158,7 +160,7 @@ const NongpanyaVending = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-gray-50 p-8 md:mx-6 lg:mx-10 max-w-[1248px] xl:mx-auto">
       {/* Animated Robot Face Header */}
       <div className="text-center mb-8 animate-fade-in">
         <div
@@ -222,7 +224,7 @@ const NongpanyaVending = () => {
           type="number"
           name="age"
           placeholder="Your Age (years)"
-          value={age}
+          value={age ?? ''}
           onChange={handleInputChange}
         />
         <CustomInput
@@ -230,7 +232,7 @@ const NongpanyaVending = () => {
           type="number"
           name="weight"
           placeholder="Your Weight (kg)"
-          value={weight}
+          value={weight ?? ''}
           onChange={handleInputChange}
         />
         <CustomInput
