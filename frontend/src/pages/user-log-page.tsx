@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
-import { Search, Filter, Clock, CheckCircle2, AlertCircle, Eye } from "lucide-react";
+import { Search, Filter, Clock, CheckCircle2, AlertCircle, Eye, Calendar } from "lucide-react";
 import UserLogDetailModal from "../components/form/UserLogDetailModal";
 import Header from "../components/layout/Header";
 
@@ -76,6 +76,8 @@ const userLogs = {
 const UserLogPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [selectedLog, setSelectedLog] = useState<UserLog | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
 
@@ -97,7 +99,23 @@ const UserLogPage = () => {
     
     const matchesStatus = statusFilter === "all" || log.status === statusFilter;
     
-    return matchesSearch && matchesStatus;
+    // Date filtering
+    let matchesDate = true;
+    if (startDate || endDate) {
+      const logDate = new Date(log.created_at);
+      const start = startDate ? new Date(startDate) : null;
+      const end = endDate ? new Date(endDate) : null;
+      
+      if (start && end) {
+        matchesDate = logDate >= start && logDate <= end;
+      } else if (start) {
+        matchesDate = logDate >= start;
+      } else if (end) {
+        matchesDate = logDate <= end;
+      }
+    }
+    
+    return matchesSearch && matchesStatus && matchesDate;
   });
 
   const formatDate = (dateString: string) => {
@@ -126,44 +144,84 @@ const UserLogPage = () => {
       <div className="px-8 mb-6">
         <Card>
           <CardContent className="p-4">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                  <input
-                    type="text"
-                    placeholder="Search by name, email, or code..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
+            <div className="flex flex-col gap-4">
+              {/* Search and Status Filters */}
+              <div className="flex flex-col md:flex-row gap-4">
+                <div className="flex-1">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+                    <input
+                      type="text"
+                      placeholder="Search by name, email, or code..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant={statusFilter === "all" ? "default" : "outline"}
+                    onClick={() => setStatusFilter("all")}
+                    className="flex items-center gap-2"
+                  >
+                    <Filter size={16} />
+                    All
+                  </Button>
+                  <Button
+                    variant={statusFilter === "completed" ? "default" : "outline"}
+                    onClick={() => setStatusFilter("completed")}
+                    className="flex items-center gap-2"
+                  >
+                    <CheckCircle2 size={16} />
+                    Completed
+                  </Button>
+                  <Button
+                    variant={statusFilter === "pending" ? "default" : "outline"}
+                    onClick={() => setStatusFilter("pending")}
+                    className="flex items-center gap-2"
+                  >
+                    <AlertCircle size={16} />
+                    Pending
+                  </Button>
                 </div>
               </div>
-              <div className="flex gap-2">
-                <Button
-                  variant={statusFilter === "all" ? "default" : "outline"}
-                  onClick={() => setStatusFilter("all")}
-                  className="flex items-center gap-2"
-                >
-                  <Filter size={16} />
-                  All
-                </Button>
-                <Button
-                  variant={statusFilter === "completed" ? "default" : "outline"}
-                  onClick={() => setStatusFilter("completed")}
-                  className="flex items-center gap-2"
-                >
-                  <CheckCircle2 size={16} />
-                  Completed
-                </Button>
-                <Button
-                  variant={statusFilter === "pending" ? "default" : "outline"}
-                  onClick={() => setStatusFilter("pending")}
-                  className="flex items-center gap-2"
-                >
-                  <AlertCircle size={16} />
-                  Pending
-                </Button>
+              
+              {/* Date Range Filters */}
+              <div className="flex flex-col md:flex-row gap-4 items-center">
+                <div className="flex items-center gap-2">
+                  <Calendar size={16} className="text-gray-500" />
+                  <span className="text-sm font-medium text-gray-700">Date Range:</span>
+                </div>
+                <div className="flex gap-2">
+                  <input
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="border rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Start Date"
+                  />
+                  <span className="text-gray-500 self-center">to</span>
+                  <input
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="border rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="End Date"
+                  />
+                </div>
+                {(startDate || endDate) && (
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setStartDate("");
+                      setEndDate("");
+                    }}
+                    className="text-red-600 hover:text-red-700"
+                  >
+                    Clear Dates
+                  </Button>
+                )}
               </div>
             </div>
           </CardContent>

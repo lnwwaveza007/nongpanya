@@ -10,7 +10,7 @@ const Header: React.FC<HeaderProps> = ({ activePage = "medicine" }) => {
   const navigate = useNavigate();
 
   return (
-    <div className="bg-gray-900 text-white px-6 py-2 flex items-center justify-between w-full">
+    <div className="bg-gray-900 text-white px-6 py-4 flex items-center justify-between w-full">
       <div className="flex items-center gap-2">
         <span className="font-bold text-xl text-orange-500">NongPanya</span>
         <Button 
@@ -28,7 +28,6 @@ const Header: React.FC<HeaderProps> = ({ activePage = "medicine" }) => {
           User log
         </Button>
       </div>
-      <div className="w-6 h-6 rounded-full bg-gray-300" />
     </div>
   );
 };

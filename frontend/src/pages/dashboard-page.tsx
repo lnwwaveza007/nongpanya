@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
 import EditStockModal from "../components/form/EditStockModal";
 import AddStockModal from "../components/form/AddStockModal";
-import { Plus } from "lucide-react";
+import { Plus, Calendar } from "lucide-react";
 import Header from "../components/layout/Header";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, Cell
@@ -267,6 +267,7 @@ export default function DashboardPage() {
   const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState("2024-08-15");
 
   const handleEditClick = (medicine: Medicine) => {
     setSelectedMedicine(medicine);
@@ -341,13 +342,23 @@ export default function DashboardPage() {
         {/* Right: Top 5 Dispensed Medicines */}
         <Card className="col-span-1">
           <CardHeader>
-            <CardTitle>Top 5 Dispensed Medicines</CardTitle>
+            <CardTitle>Top 5 All Time Dispensed Medicines</CardTitle>
           </CardHeader>
           <CardContent className="h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={topDispensed}>
+              <BarChart 
+                data={topDispensed}
+                margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+              >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="medicine_name" />
+                <XAxis 
+                  dataKey="medicine_name" 
+                  angle={-45}
+                  textAnchor="end"
+                  height={80}
+                  interval={0}
+                  tick={{ fontSize: 10 }}
+                />
                 <YAxis />
                 <Tooltip />
                 <Bar dataKey="total" isAnimationActive fill="#8884d8">
@@ -365,7 +376,14 @@ export default function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Daily Medicine Requests</CardTitle>
-            <span className="bg-orange-100 text-orange-600 rounded px-2 py-1 text-xs font-semibold">2024-08-15</span>
+            <div className="flex items-center gap-2">
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="border rounded px-2 py-1 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+              />
+            </div>
           </CardHeader>
           <CardContent className="h-80">
             <ResponsiveContainer width="100%" height="100%">
