@@ -24,7 +24,7 @@ const authUser = (Component: JSX.Element) => {
     }, []);
 
     if (loading) {
-      return <div>Loading...</div>;
+      return <div className="text-center text-2xl font-bold">.·´¯`(&gt;▂&lt;)´¯`·. </div>;
     }
 
     if (!authenticated) {
