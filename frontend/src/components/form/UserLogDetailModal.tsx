@@ -59,7 +59,7 @@ const UserLogDetailModal: React.FC<UserLogDetailModalProps> = ({ isOpen, onClose
           </div>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
+            className="text-gray-500 hover:text-gray-700 bg-white border border-gray-200 rounded-md px-2 py-1"
           >
             <X size={24} />
           </button>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card } from '../ui/card';
 import { X, Plus, Trash2 } from 'lucide-react';
-import { Medicine } from '@/types';
+import { MedicineStock } from '@/types/medicine';
 
 interface StockEntry {
   id: number;
@@ -12,7 +12,7 @@ interface StockEntry {
 interface EditStockModalProps {
   isOpen: boolean;
   onClose: () => void;
-  medicine: Medicine;
+  medicine: MedicineStock;
 }
 
 const EditStockModal: React.FC<EditStockModalProps> = ({ isOpen, onClose, medicine }) => {
@@ -40,7 +40,7 @@ const EditStockModal: React.FC<EditStockModalProps> = ({ isOpen, onClose, medici
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-white bg-opacity-50 flex items-center justify-center z-50">
       <Card className="w-full max-w-4xl bg-white rounded-lg shadow-xl">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
@@ -59,7 +59,7 @@ const EditStockModal: React.FC<EditStockModalProps> = ({ isOpen, onClose, medici
           </div>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
+            className="text-gray-500 hover:text-gray-700 bg-white border border-gray-200 rounded-md px-2 py-1"
           >
             <X size={24} />
           </button>
@@ -95,7 +95,7 @@ const EditStockModal: React.FC<EditStockModalProps> = ({ isOpen, onClose, medici
                         type="number"
                         value={entry.stock_amount}
                         onChange={(e) => updateStockEntry(entry.id, 'stock_amount', parseInt(e.target.value) || 0)}
-                        className="w-24 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-24 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                         min="0"
                       />
                     </td>
@@ -104,13 +104,13 @@ const EditStockModal: React.FC<EditStockModalProps> = ({ isOpen, onClose, medici
                         type="date"
                         value={entry.expire_at.split('T')[0]}
                         onChange={(e) => updateStockEntry(entry.id, 'expire_at', e.target.value)}
-                        className="p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                       />
                     </td>
                     <td className="px-4 py-2">
                       <button
                         onClick={() => removeStock(entry.id)}
-                        className="text-red-500 hover:text-red-700 transition-colors"
+                        className="text-red-500 hover:text-red-700 bg-white border border-red-200 rounded-md px-2 py-1"
                       >
                         <Trash2 size={20} />
                       </button>

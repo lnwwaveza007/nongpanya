@@ -114,49 +114,50 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gray-100 max-w-none">
+    <div className="min-h-screen w-full bg-white max-w-none">
       <Header activePage="medicine" />
 
       {/* Title */}
       <div className="px-8 py-4 flex items-center gap-2">
-        <span className="text-2xl font-semibold text-gray-700"><i className="fa-solid fa-pills mr-2 text-orange-500" />Medicine</span>
+        <span className="text-2xl font-semibold text-gray-800"><i className="fa-solid fa-pills mr-2" style={{ color: 'rgb(249 115 22)' }} />Medicine</span>
       </div>
       {/* Main Content */}
       <div className="px-8 grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Left: Medicine Stock */}
-        <Card className="col-span-1">
-          <CardHeader>
-            <CardTitle>Current Medicine Stock</CardTitle>
+        <Card className="col-span-1 border-orange-200 shadow-sm">
+          <CardHeader className="bg-orange-50 border-b border-orange-200">
+            <CardTitle className="text-gray-800">Current Medicine Stock</CardTitle>
           </CardHeader>
           <CardContent className="overflow-x-auto p-0">
             <table className="min-w-full text-sm">
               <thead>
-                <tr className="border-b">
-                  <th className="px-4 py-2 text-left">Medicine ID</th>
-                  <th className="px-4 py-2 text-left">Image</th>
-                  <th className="px-4 py-2 text-left">Name</th>
-                  <th className="px-4 py-2 text-left">In Stock</th>
-                  <th className="px-4 py-2 text-left">Actions</th>
+                <tr className="border-b border-orange-200 bg-orange-50">
+                  <th className="px-4 py-2 text-left text-gray-700">Medicine ID</th>
+                  <th className="px-4 py-2 text-left text-gray-700">Image</th>
+                  <th className="px-4 py-2 text-left text-gray-700">Name</th>
+                  <th className="px-4 py-2 text-left text-gray-700">In Stock</th>
+                  <th className="px-4 py-2 text-left text-gray-700">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {medicineStock.map((med, idx) => (
-                  <tr key={idx} className="border-b last:border-0">
+                  <tr key={idx} className="border-b border-orange-100 last:border-0 hover:bg-orange-50">
                     <td className="px-4 py-2">{med.id}</td>
                     <td className="px-4 py-2"><img src={med.image_url} alt="med" className="w-12 h-12 object-contain" /></td>
                     <td className="px-4 py-2">{med.name}</td>
-                    <td className={`px-4 py-2 font-semibold ${med.valid_stock === 0 ? "text-red-500" : "text-green-500"}`}>{med.valid_stock}/30</td>
-                    <td className="px-4 py-2 space-x-2">
+                    <td className={`px-4 py-2 font-semibold ${med.valid_stock === 0 ? "text-red-500" : "text-green-600"}`}>{med.valid_stock}/30</td>
+                    <td className="flex items-center gap-2 px-4 py-2">
                       <button 
                         onClick={() => handleAddClick(med)}
-                        className="text-green-500 hover:text-green-700 hover:underline inline-flex items-center gap-1"
+                        className="text-orange-600 hover:text-orange-700 hover:underline inline-flex items-center gap-1 bg-white border border-orange-200 rounded-md px-2 py-1"
+                        style={{ color: 'rgb(249 115 22)' }}
                       >
                         <Plus size={16} />
                         Add
                       </button>
                       <button 
                         onClick={() => handleEditClick(med)}
-                        className="text-blue-500 hover:text-blue-700 hover:underline"
+                        className="text-blue-600 hover:text-blue-700 hover:underline bg-white border border-blue-200 rounded-md px-2 py-1"
                       >
                         Edit
                       </button>
@@ -168,9 +169,9 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
         {/* Right: Top 5 Dispensed Medicines */}
-        <Card className="col-span-1">
-          <CardHeader>
-            <CardTitle>Top 5 All Time Dispensed Medicines</CardTitle>
+        <Card className="col-span-1 border-orange-200 shadow-sm">
+          <CardHeader className="bg-orange-50 border-b border-orange-200">
+            <CardTitle className="text-gray-800">Top 5 All Time Dispensed Medicines</CardTitle>
           </CardHeader>
           <CardContent className="h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -178,7 +179,7 @@ export default function DashboardPage() {
                 data={topDispensed}
                 margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
               >
-                <CartesianGrid strokeDasharray="3 3" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#fef3c7" />
                 <XAxis 
                   dataKey="medicine_name" 
                   angle={-45}
@@ -186,12 +187,19 @@ export default function DashboardPage() {
                   height={80}
                   interval={0}
                   tick={{ fontSize: 10 }}
+                  stroke="#6b7280"
                 />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="total" isAnimationActive fill="#8884d8">
+                <YAxis stroke="#6b7280" />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'white', 
+                    border: '1px solid rgb(249 115 22)',
+                    borderRadius: '8px'
+                  }}
+                />
+                <Bar dataKey="total" isAnimationActive fill="rgb(249 115 22)">
                   {topDispensed.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} />
+                    <Cell key={`cell-${index}`} fill={`hsl(${index * 60}, 70%, 50%)`} />
                   ))}
                 </Bar>
               </BarChart>
@@ -201,32 +209,38 @@ export default function DashboardPage() {
       </div>
       {/* Bottom: Daily Medicine Requests */}
       <div className="px-8 mt-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle>Daily Medicine Requests</CardTitle>
-            <div className="flex items-center gap-2">
+        <Card className="border-orange-200 shadow-sm mb-6">
+          <CardHeader className="flex flex-row items-center justify-between bg-orange-50 border-b border-orange-200">
+            <CardTitle className="text-gray-800">Daily Medicine Requests</CardTitle>
+            <div className="flex items-center gap-4">
               <input
                 type="date"
                 value={selectedDate}
                 onChange={(e) => changeDate(e.target.value)}
-                className="border rounded px-2 py-1 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                className="border border-orange-300 rounded px-2 py-1 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-orange-500 text-white"
               />
             </div>
           </CardHeader>
-          <CardContent className="h-80">
+          <CardContent className="h-80 pt-10">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={transformDataForChart(medRequest)} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="time" />
-                <YAxis />
-                <Tooltip />
+                <CartesianGrid strokeDasharray="3 3" stroke="#fef3c7" />
+                <XAxis dataKey="time" stroke="#6b7280" />
+                <YAxis stroke="#6b7280" />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: 'white', 
+                    border: '1px solid rgb(249 115 22)',
+                    borderRadius: '8px'
+                  }}
+                />
                 <Legend />
                 {transformDataForChart(medRequest).length > 0 && getIdenticalMed(medRequest[0]).map((medName, idx) => (
                   <Line 
                     key={idx} 
                     type="monotone" 
                     dataKey={medName} 
-                    stroke={`hsl(${idx * 120}, 70%, 50%)`} 
+                    stroke={idx === 0 ? "rgb(249 115 22)" : `hsl(${idx * 120}, 70%, 50%)`}
                     activeDot={{ r: 6 }} 
                   />
                 ))}

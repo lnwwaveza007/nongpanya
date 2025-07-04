@@ -22,6 +22,25 @@ export interface Medical {
   warnings: unknown[];
 }
 
+export interface MedicineStock {
+  id: number;
+  name: string;
+  image_url: string;
+  type: string;
+  strength: number;
+  valid_stock: number;
+  description: string;
+  medicine_stocks: Array<{
+    id: number;
+    medicine_id: number;
+    stock_amount: number;
+    expire_at: string;
+    created_at: string;
+    updated_at: string;
+    is_expired: boolean;
+  }>;
+}
+
 export interface StockEntry {
   id: number;
   name: string;

@@ -38,7 +38,7 @@ const AddStockModal: React.FC<AddStockModalProps> = ({ isOpen, onClose, medicine
           </div>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 transition-colors"
+            className="text-gray-500 hover:text-gray-700 bg-white border border-gray-200 rounded-md px-2 py-1"
           >
             <X size={24} />
           </button>
@@ -54,7 +54,7 @@ const AddStockModal: React.FC<AddStockModalProps> = ({ isOpen, onClose, medicine
               type="number"
               value={stockAmount}
               onChange={(e) => setStockAmount(parseInt(e.target.value) || 0)}
-              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
               min="0"
               placeholder="Enter amount"
             />
@@ -68,7 +68,7 @@ const AddStockModal: React.FC<AddStockModalProps> = ({ isOpen, onClose, medicine
               type="date"
               value={expiryDate}
               onChange={(e) => setExpiryDate(e.target.value)}
-              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
             />
           </div>
         </div>

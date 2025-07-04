@@ -87,20 +87,20 @@ const UserLogPage = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gray-100 max-w-none">
+    <div className="min-h-screen w-full bg-white max-w-none">
       <Header activePage="user-log" />
 
       {/* Title */}
       <div className="px-8 py-4 flex items-center gap-2">
-        <span className="text-2xl font-semibold text-gray-700">
-          <i className="fa-solid fa-users mr-2 text-orange-500" />
+        <span className="text-2xl font-semibold text-gray-800">
+          <i className="fa-solid fa-users mr-2" style={{ color: 'rgb(249 115 22)' }} />
           User Logs
         </span>
       </div>
 
       {/* Filters */}
       <div className="px-8 mb-6">
-        <Card>
+        <Card className="border-orange-200 shadow-sm">
           <CardContent className="p-4">
             <div className="flex flex-col gap-4">
               {/* Search and Status Filters */}
@@ -113,7 +113,7 @@ const UserLogPage = () => {
                       placeholder="Search by name, email, or code..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full pl-10 pr-4 py-2 border border-orange-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white"
                     />
                   </div>
                 </div>
@@ -122,6 +122,7 @@ const UserLogPage = () => {
                     variant={statusFilter === "all" ? "default" : "outline"}
                     onClick={() => setStatusFilter("all")}
                     className="flex items-center gap-2"
+                    style={statusFilter === "all" ? { backgroundColor: 'rgb(249 115 22)', borderColor: 'rgb(249 115 22)' } : {}}
                   >
                     <Filter size={16} />
                     All
@@ -130,6 +131,7 @@ const UserLogPage = () => {
                     variant={statusFilter === "completed" ? "default" : "outline"}
                     onClick={() => setStatusFilter("completed")}
                     className="flex items-center gap-2"
+                    style={statusFilter === "completed" ? { backgroundColor: 'rgb(249 115 22)', borderColor: 'rgb(249 115 22)' } : {}}
                   >
                     <CheckCircle2 size={16} />
                     Completed
@@ -138,6 +140,7 @@ const UserLogPage = () => {
                     variant={statusFilter === "pending" ? "default" : "outline"}
                     onClick={() => setStatusFilter("pending")}
                     className="flex items-center gap-2"
+                    style={statusFilter === "pending" ? { backgroundColor: 'rgb(249 115 22)', borderColor: 'rgb(249 115 22)' } : {}}
                   >
                     <AlertCircle size={16} />
                     Pending
@@ -156,7 +159,7 @@ const UserLogPage = () => {
                     type="date"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
-                    className="border rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="border border-orange-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-orange-500 text-white"
                     placeholder="Start Date"
                   />
                   <span className="text-gray-500 self-center">to</span>
@@ -164,7 +167,7 @@ const UserLogPage = () => {
                     type="date"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
-                    className="border rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="border border-orange-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-orange-500 text-white"
                     placeholder="End Date"
                   />
                 </div>
@@ -175,7 +178,7 @@ const UserLogPage = () => {
                       setStartDate("");
                       setEndDate("");
                     }}
-                    className="text-red-600 hover:text-red-700"
+                    className="text-red-600 hover:text-red-700 border-red-300"
                   >
                     Clear Dates
                   </Button>
@@ -188,25 +191,25 @@ const UserLogPage = () => {
 
       {/* Logs Table */}
       <div className="px-8">
-        <Card>
+        <Card className="border-orange-200 shadow-sm">
           <CardContent className="p-0">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b bg-gray-50">
-                    <th className="px-4 py-3 text-left">Code</th>
-                    <th className="px-4 py-3 text-left">User</th>
-                    <th className="px-4 py-3 text-left">Symptoms</th>
-                    <th className="px-4 py-3 text-left">Medicines</th>
-                    <th className="px-4 py-3 text-left">Notes</th>
-                    <th className="px-4 py-3 text-left">Status</th>
-                    <th className="px-4 py-3 text-left">Date</th>
-                    <th className="px-4 py-3 text-left">Actions</th>
+                  <tr className="border-b border-orange-200 bg-orange-50">
+                    <th className="px-4 py-3 text-left text-gray-700">Code</th>
+                    <th className="px-4 py-3 text-left text-gray-700">User</th>
+                    <th className="px-4 py-3 text-left text-gray-700">Symptoms</th>
+                    <th className="px-4 py-3 text-left text-gray-700">Medicines</th>
+                    <th className="px-4 py-3 text-left text-gray-700">Notes</th>
+                    <th className="px-4 py-3 text-left text-gray-700">Status</th>
+                    <th className="px-4 py-3 text-left text-gray-700">Date</th>
+                    <th className="px-4 py-3 text-left text-gray-700">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredLogs.map((log) => (
-                    <tr key={log.code} className="border-b hover:bg-gray-50">
+                    <tr key={log.code} className="border-b border-orange-100 hover:bg-orange-50">
                       <td className="px-4 py-3 font-medium">{log.code}</td>
                       <td className="px-4 py-3">
                         <div>
@@ -220,6 +223,7 @@ const UserLogPage = () => {
                             <span
                               key={symptom.id}
                               className="px-2 py-1 bg-orange-100 text-orange-700 rounded-full text-xs"
+                              style={{ backgroundColor: 'rgba(249, 115, 22, 0.1)', color: 'rgb(249 115 22)' }}
                             >
                               {symptom.name}
                             </span>
@@ -266,7 +270,8 @@ const UserLogPage = () => {
                       <td className="px-4 py-3">
                         <button
                           onClick={() => handleViewDetail(log)}
-                          className="text-blue-500 hover:text-blue-700 transition-colors flex items-center gap-1"
+                          className="text-orange-600 hover:text-orange-700 flex items-center gap-1 bg-white border border-orange-200 rounded-md px-2 py-1"
+                          style={{ color: 'rgb(249 115 22)' }}
                         >
                           <Eye size={16} />
                           View
