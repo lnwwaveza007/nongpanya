@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Card } from '../ui/card';
 import { X, Plus, Trash2 } from 'lucide-react';
+import { Medicine } from '@/types';
 
 interface StockEntry {
   id: number;
@@ -11,15 +12,7 @@ interface StockEntry {
 interface EditStockModalProps {
   isOpen: boolean;
   onClose: () => void;
-  medicine: {
-    id: number;
-    name: string;
-    image_url: string;
-    type: string;
-    strength: number;
-    valid_stock: number;
-    medicine_stocks: StockEntry[];
-  };
+  medicine: Medicine;
 }
 
 const EditStockModal: React.FC<EditStockModalProps> = ({ isOpen, onClose, medicine }) => {

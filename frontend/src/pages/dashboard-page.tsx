@@ -1,12 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
 import EditStockModal from "../components/form/EditStockModal";
 import AddStockModal from "../components/form/AddStockModal";
-import { Plus, Calendar } from "lucide-react";
+import { Plus } from "lucide-react";
 import Header from "../components/layout/Header";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, Cell
 } from "recharts";
+import { getMedRanking, getMedRequest, getMedStock } from "@/api/med";
+import { MedRanking, MedRequest } from "@/types";
 
 interface Medicine {
   id: number;
@@ -15,6 +17,7 @@ interface Medicine {
   type: string;
   strength: number;
   valid_stock: number;
+  description: string;
   medicine_stocks: Array<{
     id: number;
     medicine_id: number;
@@ -26,248 +29,68 @@ interface Medicine {
   }>;
 }
 
-const medicineStock = [
-  {
-    id: 1,
-    name: "Activated Charcoal 260 mg",
-    image_url: "https://i.ibb.co/CB2zvF7/carbon.jpg",
-    type: "Capsule",
-    description: "Activated Charcoal 260 mg is used to treat diarrhea, bloating, and to absorb toxins in the digestive system. It is suitable for both children and adults.",
-    strength: 260,
-    medicine_stocks: [
-      {
-        id: 1,
-        medicine_id: 1,
-        stock_amount: 20,
-        expire_at: "2025-12-31T00:00:00.000Z",
-        created_at: "2025-06-16T19:38:50.000Z",
-        updated_at: "2025-06-16T19:38:50.000Z",
-        is_expired: false
-      },
-      {
-        id: 2,
-        medicine_id: 1,
-        stock_amount: 10,
-        expire_at: "2026-06-30T00:00:00.000Z",
-        created_at: "2025-06-16T19:38:50.000Z",
-        updated_at: "2025-06-16T19:38:50.000Z",
-        is_expired: false
-      }
-    ],
-    valid_stock: 30,
-    expired_stock: 0
-  },
-  {
-    id: 2,
-    name: "Paracetamol 500 mg (Acetaminophen)",
-    image_url: "https://i.ibb.co/nsgyrQX/para.jpg",
-    type: "Tablet",
-    description: "Paracetamol 500 mg tablet is used to reduce fever and relieve mild to moderate pain, such as headaches, toothaches, and muscle pain. Suitable for adults and children above 12 years. Store in a cool, dry place below 30°C.",
-    strength: 500,
-    medicine_stocks: [
-      {
-        id: 3,
-        medicine_id: 2,
-        stock_amount: 15,
-        expire_at: "2025-11-15T00:00:00.000Z",
-        created_at: "2025-06-16T19:38:50.000Z",
-        updated_at: "2025-06-16T19:38:50.000Z",
-        is_expired: false
-      }
-    ],
-    valid_stock: 15,
-    expired_stock: 0
-  },
-  {
-    id: 3,
-    name: "Tolperisone 50 mg",
-    image_url: "https://i.ibb.co/L13F3t8/tero.jpg",
-    type: "Tablet",
-    description: "Tolperisone 50 mg is a muscle relaxant used to relieve pain caused by muscle tension or spasms and to treat tremors in conditions like Parkinson's disease.",
-    strength: 50,
-    medicine_stocks: [
-      {
-        id: 4,
-        medicine_id: 3,
-        stock_amount: 30,
-        expire_at: "2025-09-01T00:00:00.000Z",
-        created_at: "2025-06-16T19:38:50.000Z",
-        updated_at: "2025-06-16T19:38:50.000Z",
-        is_expired: false
-      },
-      {
-        id: 5,
-        medicine_id: 3,
-        stock_amount: 10,
-        expire_at: "2026-01-01T00:00:00.000Z",
-        created_at: "2025-06-16T19:38:50.000Z",
-        updated_at: "2025-06-16T19:38:50.000Z",
-        is_expired: false
-      }
-    ],
-    valid_stock: 40,
-    expired_stock: 0
-  }
-];
-
-const topDispensed = [
-  { medicine_id: 1, medicine_name: "Activated Charcoal 260 mg", total: 2, fill: "#0000FF" },
-  { medicine_id: 2, medicine_name: "Paracetamol 500 mg (Acetaminophen)", total: 2, fill: "#3CB371" },
-  { medicine_id: 3, medicine_name: "Tolperisone 50 mg", total: 2, fill: "#FFA500" }
-];
-
-const dailyRequests = [
-  {
-    time: "2025-06-14T01:00:00.000Z",
-    "Activated Charcoal 260 mg": 0,
-    "Paracetamol 500 mg (Acetaminophen)": 0,
-    "Tolperisone 50 mg": 0
-  },
-  {
-    time: "2025-06-14T02:00:00.000Z",
-    "Activated Charcoal 260 mg": 0,
-    "Paracetamol 500 mg (Acetaminophen)": 0,
-    "Tolperisone 50 mg": 18
-  },
-  {
-    time: "2025-06-14T03:00:00.000Z",
-    "Activated Charcoal 260 mg": 0,
-    "Paracetamol 500 mg (Acetaminophen)": 0,
-    "Tolperisone 50 mg": 0
-  },
-  {
-    time: "2025-06-14T04:00:00.000Z",
-    "Activated Charcoal 260 mg": 0,
-    "Paracetamol 500 mg (Acetaminophen)": 0,
-    "Tolperisone 50 mg": 0
-  },
-  {
-    time: "2025-06-14T05:00:00.000Z",
-    "Activated Charcoal 260 mg": 0,
-    "Paracetamol 500 mg (Acetaminophen)": 0,
-    "Tolperisone 50 mg": 0
-  },
-  {
-    time: "2025-06-14T06:00:00.000Z",
-    "Activated Charcoal 260 mg": 0,
-    "Paracetamol 500 mg (Acetaminophen)": 0,
-    "Tolperisone 50 mg": 0
-  },
-  {
-    time: "2025-06-14T07:00:00.000Z",
-    "Activated Charcoal 260 mg": 0,
-    "Paracetamol 500 mg (Acetaminophen)": 0,
-    "Tolperisone 50 mg": 0
-  },
-  {
-    time: "2025-06-14T08:00:00.000Z",
-    "Activated Charcoal 260 mg": 0,
-    "Paracetamol 500 mg (Acetaminophen)": 0,
-    "Tolperisone 50 mg": 0
-  },
-  {
-    time: "2025-06-14T09:00:00.000Z",
-    "Activated Charcoal 260 mg": 0,
-    "Paracetamol 500 mg (Acetaminophen)": 0,
-    "Tolperisone 50 mg": 0
-  },
-  {
-    time: "2025-06-14T10:00:00.000Z",
-    "Activated Charcoal 260 mg": 0,
-    "Paracetamol 500 mg (Acetaminophen)": 0,
-    "Tolperisone 50 mg": 0
-  },
-  {
-    time: "2025-06-14T11:00:00.000Z",
-    "Activated Charcoal 260 mg": 0,
-    "Paracetamol 500 mg (Acetaminophen)": 0,
-    "Tolperisone 50 mg": 0
-  },
-  {
-    time: "2025-06-14T12:00:00.000Z",
-    "Activated Charcoal 260 mg": 0,
-    "Paracetamol 500 mg (Acetaminophen)": 0,
-    "Tolperisone 50 mg": 0
-  },
-  {
-    time: "2025-06-14T13:00:00.000Z",
-    "Activated Charcoal 260 mg": 0,
-    "Paracetamol 500 mg (Acetaminophen)": 0,
-    "Tolperisone 50 mg": 0
-  },
-  {
-    time: "2025-06-14T14:00:00.000Z",
-    "Activated Charcoal 260 mg": 0,
-    "Paracetamol 500 mg (Acetaminophen)": 0,
-    "Tolperisone 50 mg": 0
-  },
-  {
-    time: "2025-06-14T15:00:00.000Z",
-    "Activated Charcoal 260 mg": 0,
-    "Paracetamol 500 mg (Acetaminophen)": 0,
-    "Tolperisone 50 mg": 0
-  },
-  {
-    time: "2025-06-14T16:00:00.000Z",
-    "Activated Charcoal 260 mg": 0,
-    "Paracetamol 500 mg (Acetaminophen)": 0,
-    "Tolperisone 50 mg": 0
-  },
-  {
-    time: "2025-06-14T17:00:00.000Z",
-    "Activated Charcoal 260 mg": 0,
-    "Paracetamol 500 mg (Acetaminophen)": 0,
-    "Tolperisone 50 mg": 0
-  },
-  {
-    time: "2025-06-14T18:00:00.000Z",
-    "Activated Charcoal 260 mg": 0,
-    "Paracetamol 500 mg (Acetaminophen)": 0,
-    "Tolperisone 50 mg": 0
-  },
-  {
-    time: "2025-06-14T19:00:00.000Z",
-    "Activated Charcoal 260 mg": 0,
-    "Paracetamol 500 mg (Acetaminophen)": 0,
-    "Tolperisone 50 mg": 0
-  },
-  {
-    time: "2025-06-14T20:00:00.000Z",
-    "Activated Charcoal 260 mg": 0,
-    "Paracetamol 500 mg (Acetaminophen)": 0,
-    "Tolperisone 50 mg": 0
-  },
-  {
-    time: "2025-06-14T21:00:00.000Z",
-    "Activated Charcoal 260 mg": 0,
-    "Paracetamol 500 mg (Acetaminophen)": 0,
-    "Tolperisone 50 mg": 0
-  },
-  {
-    time: "2025-06-14T22:00:00.000Z",
-    "Activated Charcoal 260 mg": 0,
-    "Paracetamol 500 mg (Acetaminophen)": 0,
-    "Tolperisone 50 mg": 0
-  },
-  {
-    time: "2025-06-14T23:00:00.000Z",
-    "Activated Charcoal 260 mg": 0,
-    "Paracetamol 500 mg (Acetaminophen)": 0,
-    "Tolperisone 50 mg": 0
-  },
-  {
-    time: "2025-06-15T00:00:00.000Z",
-    "Activated Charcoal 260 mg": 0,
-    "Paracetamol 500 mg (Acetaminophen)": 0,
-    "Tolperisone 50 mg": 0
-  }
-];
-
 export default function DashboardPage() {
   const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState("2024-08-15");
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [medicineStock, setMedicineStock] = useState<Medicine[]>([]);
+  const [topDispensed, setTopDispensed] = useState<MedRanking[]>([]);
+  const [medRequest, setMedRequest] = useState<MedRequest[]>([]);
+
+  const getMedicineStock = async () => {
+    const response = await getMedStock();
+    const data = response.data.data;
+    setMedicineStock(data);
+  }
+
+  const getTopDispensedMedicines = async () => {
+    const response = await getMedRanking();
+    const data = response.data.data;
+    setTopDispensed(data);
+  }
+
+  const getMedRequestTimeseries = async () => {
+    const response = await getMedRequest(selectedDate);
+    const data = response.data.data;
+    setMedRequest(data);
+  }
+
+  const getIdenticalMed = (med: MedRequest) => {
+    const medNames = med.medicine.map((med) => med.medicine_name);
+    const uniqueMedNames = [...new Set(medNames)];
+    console.log(uniqueMedNames);
+    return uniqueMedNames;
+  }
+
+  // Transform data for LineChart
+  const transformDataForChart = (data: MedRequest[]) => {
+    if (data.length === 0) return [];
+    
+    // Transform data to have time and individual medicine totals
+    return data.map(item => {
+      const transformed: Record<string, string | number> = {
+        time: new Date(item.time).toLocaleTimeString('en-US', { 
+          hour: '2-digit', 
+          minute: '2-digit',
+          hour12: false 
+        })
+      };
+      
+      // Add each medicine's total to the object
+      item.medicine.forEach(med => {
+        transformed[med.medicine_name] = med.total;
+      });
+      
+      return transformed;
+    });
+  };
+
+  useEffect(() => {
+    getMedicineStock();
+    getTopDispensedMedicines();
+    getMedRequestTimeseries();
+  }, []);
 
   const handleEditClick = (medicine: Medicine) => {
     setSelectedMedicine(medicine);
@@ -278,6 +101,11 @@ export default function DashboardPage() {
     setSelectedMedicine(medicine);
     setIsAddModalOpen(true);
   };
+
+  const changeDate = (date: string) => {
+    setSelectedDate(date);
+    getMedRequestTimeseries();
+  }
 
   const handleCloseModal = () => {
     setIsEditModalOpen(false);
@@ -380,22 +208,28 @@ export default function DashboardPage() {
               <input
                 type="date"
                 value={selectedDate}
-                onChange={(e) => setSelectedDate(e.target.value)}
+                onChange={(e) => changeDate(e.target.value)}
                 className="border rounded px-2 py-1 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               />
             </div>
           </CardHeader>
           <CardContent className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={dailyRequests} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+              <LineChart data={transformDataForChart(medRequest)} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="time" />
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="Activated Charcoal 260 mg" stroke="#FDBA74" activeDot={{ r: 6 }} />
-                <Line type="monotone" dataKey="Paracetamol 500 mg (Acetaminophen)" stroke="#60A5FA" activeDot={{ r: 6 }} />
-                <Line type="monotone" dataKey="Tolperisone 50 mg" stroke="#22C55E" activeDot={{ r: 6 }} />
+                {transformDataForChart(medRequest).length > 0 && getIdenticalMed(medRequest[0]).map((medName, idx) => (
+                  <Line 
+                    key={idx} 
+                    type="monotone" 
+                    dataKey={medName} 
+                    stroke={`hsl(${idx * 120}, 70%, 50%)`} 
+                    activeDot={{ r: 6 }} 
+                  />
+                ))}
               </LineChart>
             </ResponsiveContainer>
           </CardContent>

@@ -7,3 +7,12 @@ export const getUser = async () => {
 export const getUserQuota = async () => {
     return await axiosInstance.get("/user/quota");
 }
+
+export const getUserLogs = async (startDate: string, endDate?: string) => {
+    const params = new URLSearchParams();
+    params.append('startDate', startDate);
+    if (endDate) {
+        params.append('endDate', endDate);
+    }
+    return await axiosInstance.get(`/med/req/history?${params.toString()}`);
+}

@@ -1,77 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "../components/ui/card";
 import { Button } from "../components/ui/button";
 import { Search, Filter, Clock, CheckCircle2, AlertCircle, Eye, Calendar } from "lucide-react";
 import UserLogDetailModal from "../components/form/UserLogDetailModal";
 import Header from "../components/layout/Header";
-
-interface Medicine {
-  id: number;
-  name: string;
-  image_url: string;
-  description: string;
-}
-
-interface Symptom {
-  id: number;
-  name: string;
-  description: string;
-}
-
-interface UserLog {
-  code: string;
-  user_id: string;
-  fullname: string;
-  email: string;
-  weight: string;
-  additional_notes: string;
-  allergies: string;
-  status: string;
-  created_at: string;
-  updated_at: string;
-  medicines: Medicine[];
-  symptoms: Symptom[];
-}
-
-// Mock data
-const userLogs = {
-  success: true,
-  data: [
-    {
-      code: "1",
-      user_id: "USR00000001",
-      fullname: "Alice Smith",
-      email: "alice@example.com",
-      weight: "54.5",
-      additional_notes: "Fever and headache after travel",
-      allergies: "",
-      status: "completed",
-      created_at: "2025-06-16T19:38:50.000Z",
-      updated_at: "2025-06-16T19:38:50.000Z",
-      medicines: [
-        {
-          id: 2,
-          name: "Paracetamol 500 mg (Acetaminophen)",
-          image_url: "https://i.ibb.co/nsgyrQX/para.jpg",
-          description: "Paracetamol 500 mg tablet is used to reduce fever and relieve mild to moderate pain, such as headaches, toothaches, and muscle pain. Suitable for adults and children above 12 years. Store in a cool, dry place below 30°C."
-        }
-      ],
-      symptoms: [
-        {
-          id: 3,
-          name: "Headache",
-          description: "Pain or discomfort in the head or upper neck, often described as throbbing, sharp, or dull."
-        },
-        {
-          id: 4,
-          name: "Fever",
-          description: "An increase in body temperature above the normal range, often a sign of infection or inflammation."
-        }
-      ]
-    },
-  ],
-  message: "Data retrieved successfully"
-};
+import { UserLog } from "@/types";
+import { getUserLogs } from "@/api";
 
 const UserLogPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -80,6 +14,46 @@ const UserLogPage = () => {
   const [endDate, setEndDate] = useState("");
   const [selectedLog, setSelectedLog] = useState<UserLog | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [userLogs, setUserLogs] = useState<UserLog[]>([]);
+
+  // Function to get current week's start and end dates
+  const getCurrentWeekRange = () => {
+    const today = new Date();
+    const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    
+    // Calculate start of week (Monday)
+    const startOfWeek = new Date(today);
+    const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // If Sunday, go back 6 days to Monday
+    startOfWeek.setDate(today.getDate() - daysToSubtract);
+    
+    // Calculate end of week (Sunday)
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
+    
+    return {
+      start: startOfWeek.toISOString().split('T')[0],
+      end: endOfWeek.toISOString().split('T')[0]
+    };
+  };
+
+  useEffect(() => {
+    // Set current week as default date range
+    const weekRange = getCurrentWeekRange();
+    setStartDate(weekRange.start);
+    setEndDate(weekRange.end);
+  }, []);
+
+  useEffect(() => {
+    if (startDate || endDate) {
+      getUserLogsAPI();
+    }
+  }, [startDate, endDate]);
+
+  const getUserLogsAPI = async () => {
+    const response = await getUserLogs(startDate, endDate);
+    const data = response.data.data;
+    setUserLogs(data);
+  }
 
   const handleViewDetail = (log: UserLog) => {
     setSelectedLog(log);
@@ -91,7 +65,7 @@ const UserLogPage = () => {
     setSelectedLog(null);
   };
 
-  const filteredLogs = userLogs.data.filter(log => {
+  const filteredLogs = userLogs.filter(log => {
     const matchesSearch = 
       log.fullname.toLowerCase().includes(searchTerm.toLowerCase()) ||
       log.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -99,23 +73,7 @@ const UserLogPage = () => {
     
     const matchesStatus = statusFilter === "all" || log.status === statusFilter;
     
-    // Date filtering
-    let matchesDate = true;
-    if (startDate || endDate) {
-      const logDate = new Date(log.created_at);
-      const start = startDate ? new Date(startDate) : null;
-      const end = endDate ? new Date(endDate) : null;
-      
-      if (start && end) {
-        matchesDate = logDate >= start && logDate <= end;
-      } else if (start) {
-        matchesDate = logDate >= start;
-      } else if (end) {
-        matchesDate = logDate <= end;
-      }
-    }
-    
-    return matchesSearch && matchesStatus && matchesDate;
+    return matchesSearch && matchesStatus;
   });
 
   const formatDate = (dateString: string) => {
