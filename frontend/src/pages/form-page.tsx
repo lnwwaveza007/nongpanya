@@ -14,9 +14,9 @@ import { useNavigate } from "react-router-dom";
 import ModalBox from "@/components/form/ModalBox";
 import { AxiosError } from "axios";
 
-import { axiosInstance } from "@/utils/axiosInstance";
 import { useValidateCode } from "@/hooks/validateCode";
 import TermsCheckbox from "@/components/form/TermCheckBox";
+import { getSymptoms, getUser, submitSymptoms } from "@/api";
 
 interface Symptom {
   id: string;
@@ -51,8 +51,8 @@ const NongpanyaVending = () => {
 
   const fetchFrom = async () => {
     try {
-      const resUser = await axiosInstance.get("/user");
-      const resSymp = await axiosInstance.get("/med/symptoms");
+      const resUser = await getUser();
+      const resSymp = await getSymptoms();
 
       setUser(resUser.data.data);
       setSymptomsList(resSymp.data.data);
@@ -116,22 +116,17 @@ const NongpanyaVending = () => {
     if (showModal) return;
     setShowModal(true);
     try {
-      const formData = {
-        code: code,
-        name: name,
-        email: email,
-        phone: phone,
-        age: age,
-        weight: weight,
-        allergies: allergies,
-        symptoms: symptoms,
-        additional_notes: note,
-      };
-      const response = await axiosInstance.post(
-        "/med/symptoms/submit",
-        formData
-      );
-      
+      const formData = new FormData();
+      formData.append('code', code || '');
+      formData.append('name', name);
+      formData.append('email', email);
+      formData.append('phone', phone);
+      formData.append('age', age?.toString() || '');
+      formData.append('weight', weight?.toString() || '');
+      formData.append('allergies', allergies);
+      formData.append('symptoms', JSON.stringify(symptoms));
+      formData.append('additional_notes', note);
+      const response = await submitSymptoms(formData);
       if (response.status === 201 && response.data.success) {
         navigate("/loading");
       }

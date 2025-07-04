@@ -1,19 +1,16 @@
 import { Card } from "@/components/ui/card";
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { axiosInstance } from "@/utils/axiosInstance";
+import { redirectAuth } from "@/api";
 
 const Redirect = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const code = searchParams.get("code");
 
-  const redirectAuth = () => {
-    axiosInstance
-      .get("/auth/microsoft/callback", {
-        params: { code: code },
-      })
-      .then((response) => {
+  const redirectAuthAPI = async () => {
+      const response = await redirectAuth(code || '');
+      try {
         if (response.status === 200) {
           const resCode = response.data?.data?.code; // Use optional chaining to avoid errors
           if (response.data.success) {
@@ -22,14 +19,14 @@ const Redirect = () => {
             navigate(`/`);
           }
         }
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error(error);
         navigate(`/`);
-      });
+      }
   };
+
   useEffect(() => {
-    redirectAuth();
+    redirectAuthAPI();
   }, []);
 
   return (

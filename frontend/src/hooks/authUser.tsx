@@ -1,6 +1,6 @@
-import { axiosInstance } from "@/utils/axiosInstance";
 import { Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { auth } from "@/api/auth";
 
 const authUser = (Component: JSX.Element) => {
   const AuthenticatedComponent = () => {
@@ -10,9 +10,10 @@ const authUser = (Component: JSX.Element) => {
     useEffect(() => {
       const verifyAuth = async () => {
         try {
-          const response = await axiosInstance.get("/auth");
+          const response = await auth(); 
           setAuthenticated(response.data.success);
         } catch (error) {
+          console.log(error);
           setAuthenticated(false);
         } finally {
           setLoading(false);

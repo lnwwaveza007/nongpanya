@@ -1,4 +1,4 @@
-import { axiosInstance } from "@/utils/axiosInstance";
+import { getUserQuota } from "@/api";
 import { HeartPulse, AlertCircle, Clock, Calendar, Info } from "lucide-react";
 import {
   useState,
@@ -21,9 +21,11 @@ const ResultsPage = () => {
   const prescribedMedications = useLocation().state?.data;
 
   useEffect(() => {
-    axiosInstance.get("/user/quota").then((res) => {
+    const getUserQuotaAPI = async () => {
+      const res = await getUserQuota();
       setUsed(res.data.data);
-    });
+    }
+    getUserQuotaAPI();
   }, []);
 
   const studentQuota = {
