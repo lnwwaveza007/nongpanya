@@ -10,7 +10,7 @@ import {
 } from "../services/medServices.js";
 import * as code from "../utils/codeStore.js";
 import { getQuotaByUserId } from "../services/userServices.js";
-import { getAllMedicineStock } from "../services/mediStockServices.js";
+import { getAllMedicineStock } from "../services/medStockServices.js";
 
 dotenv.config();
 const mqttClient = new MqttHandler();
