@@ -1,7 +1,7 @@
 import prisma from "../config/prismaClient.js";
 import { cleanMedicineName } from "../utils/formatter.js";
 import { dropPills } from "./boardServices.js";
-import { removeStock } from "./medStockServices.js";
+import { removeStock } from "./mediStockServices.js";
 
 export const getSymptoms = async () => {
   const symptoms = await prisma.symptoms.findMany();
