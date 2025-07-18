@@ -9,6 +9,8 @@ import {
 } from "recharts";
 import { getMedRanking, getMedRequest, getMedStock } from "@/api/med";
 import { MedRanking, MedRequest } from "@/types";
+import { useTranslation } from "react-i18next";
+import LanguageToggle from "@/components/ui/language-toggle";
 
 interface Medicine {
   id: number;
@@ -30,6 +32,7 @@ interface Medicine {
 }
 
 export default function DashboardPage() {
+  const { t } = useTranslation();
   const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -116,27 +119,28 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen w-full bg-white max-w-none">
       <Header activePage="medicine" />
+      <LanguageToggle variant="floating" />
 
       {/* Title */}
       <div className="px-8 py-4 flex items-center gap-2">
-        <span className="text-2xl font-semibold text-gray-800"><i className="fa-solid fa-pills mr-2" style={{ color: 'rgb(249 115 22)' }} />Medicine</span>
+        <span className="text-2xl font-semibold text-gray-800"><i className="fa-solid fa-pills mr-2" style={{ color: 'rgb(249 115 22)' }} />{t("dashboard.title")}</span>
       </div>
       {/* Main Content */}
       <div className="px-8 grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Left: Medicine Stock */}
         <Card className="col-span-1 border-orange-200 shadow-sm">
           <CardHeader className="bg-orange-50 border-b border-orange-200">
-            <CardTitle className="text-gray-800">Current Medicine Stock</CardTitle>
+            <CardTitle className="text-gray-800">{t("dashboard.currentStock")}</CardTitle>
           </CardHeader>
           <CardContent className="overflow-x-auto p-0">
             <table className="min-w-full text-sm">
               <thead>
                 <tr className="border-b border-orange-200 bg-orange-50">
-                  <th className="px-4 py-2 text-left text-gray-700">Medicine ID</th>
-                  <th className="px-4 py-2 text-left text-gray-700">Image</th>
-                  <th className="px-4 py-2 text-left text-gray-700">Name</th>
-                  <th className="px-4 py-2 text-left text-gray-700">In Stock</th>
-                  <th className="px-4 py-2 text-left text-gray-700">Actions</th>
+                  <th className="px-4 py-2 text-left text-gray-700">{t("dashboard.medicineId")}</th>
+                  <th className="px-4 py-2 text-left text-gray-700">{t("dashboard.image")}</th>
+                  <th className="px-4 py-2 text-left text-gray-700">{t("dashboard.name")}</th>
+                  <th className="px-4 py-2 text-left text-gray-700">{t("dashboard.inStock")}</th>
+                  <th className="px-4 py-2 text-left text-gray-700">{t("dashboard.actions")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -153,13 +157,13 @@ export default function DashboardPage() {
                         style={{ color: 'rgb(249 115 22)' }}
                       >
                         <Plus size={16} />
-                        Add
+                        {t("dashboard.add")}
                       </button>
                       <button 
                         onClick={() => handleEditClick(med)}
                         className="text-blue-600 hover:text-blue-700 hover:underline bg-white border border-blue-200 rounded-md px-2 py-1"
                       >
-                        Edit
+                        {t("dashboard.edit")}
                       </button>
                     </td>
                   </tr>
@@ -171,7 +175,7 @@ export default function DashboardPage() {
         {/* Right: Top 5 Dispensed Medicines */}
         <Card className="col-span-1 border-orange-200 shadow-sm">
           <CardHeader className="bg-orange-50 border-b border-orange-200">
-            <CardTitle className="text-gray-800">Top 5 All Time Dispensed Medicines</CardTitle>
+            <CardTitle className="text-gray-800">{t("dashboard.topDispensed")}</CardTitle>
           </CardHeader>
           <CardContent className="h-64">
             <ResponsiveContainer width="100%" height="100%">

@@ -5,8 +5,10 @@ import { QRCodeSVG } from 'qrcode.react';
 import mqtt from 'mqtt';
 import { useNavigate } from 'react-router-dom';
 import { getCode } from '@/api';
+import { useTranslation } from 'react-i18next';
 
 const QRCodeScreen = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [code, setCode] = useState<string>('');
   const genQrCode = useRef(false);
@@ -58,10 +60,10 @@ const QRCodeScreen = () => {
         {/* Header */}
         <div className="text-center mb-2 animate-fade-in">
           <h1 className="text-4xl font-bold mt-4" style={{ color: '#FF4B28' }}>
-            Scan QR Code
+            {t("screen.qrcode.title")}
           </h1>
           <p className="text-xl mt-2" style={{ color: '#919191' }}>
-            To continue on your mobile device
+            {t("screen.qrcode.subtitle")}
           </p>
         </div>
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card } from '@/components/ui/card';
+import { useSymptomTranslation } from '@/hooks/useSymptomTranslation';
 
 interface CheckboxProps {
   label: string;
@@ -19,6 +20,8 @@ interface CheckboxComponentProps {
 }
 
 const CustomCheckbox: React.FC<CheckboxComponentProps> = ({ symptomsList, symptoms, handleSymptomToggle }) => {
+  const { translateSymptom } = useSymptomTranslation();
+
   return (
     // Symptoms Checklist
     <div className="mx-auto flex flex-col space-y-6">
@@ -40,7 +43,7 @@ const CustomCheckbox: React.FC<CheckboxComponentProps> = ({ symptomsList, sympto
                 {symptom.icon}
               </div>
               <label htmlFor={symptom.id} className="text-xl font-semibold cursor-pointer">
-                {symptom.name}
+                {translateSymptom(symptom.name)}
               </label>
             </div>
 

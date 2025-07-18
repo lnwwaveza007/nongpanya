@@ -1,8 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Sparkles } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import LanguageToggle from "@/components/ui/language-toggle";
 
 const LoginPage = () => {
+  const { t } = useTranslation();
+
   // Primary: PANTONE 172 C (orange)
   const primaryColor = "hsl(34, 100%, 56%)";
   // Secondary: PANTONE 123 C (yellow)
@@ -16,6 +20,9 @@ const LoginPage = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
+      {/* Language Toggle */}
+      <LanguageToggle variant="floating" />
+      
       {/* Main Card Container */}
       <Card className="w-full max-w-md p-8 text-center space-y-8 transition-all duration-300 hover:shadow-xl animate-fade-in border-[#FF4B28]">
         {/* Animated Face */}
@@ -30,10 +37,10 @@ const LoginPage = () => {
             className="text-3xl font-bold animate-bounce"
             style={{ color: "#FF4B28" }}
           >
-            Welcome!
+            {t("welcome.title")}
           </h1>
           <p className="text-muted-foreground mt-2">
-            Nongpanya want to help you!
+            {t("login.subtitle")}
           </p>
         </div>
 
@@ -44,7 +51,7 @@ const LoginPage = () => {
             className="w-full py-6 text-lg transition-all duration-300 hover:scale-105 animate-bounce-slow flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
           >
             <Sparkles className="animate-pulse" />
-            <span>Login</span>
+            <span>{t("login.loginButton")}</span>
           </Button>
         </div>
 

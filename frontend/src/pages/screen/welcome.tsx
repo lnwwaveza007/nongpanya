@@ -2,8 +2,10 @@ import { Card } from '@/components/ui/card';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const ScreenWelcomePage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [face, setFace] = useState('(´｡• ᵕ •｡`)');
   const [isAnimating, setIsAnimating] = useState(false);
@@ -44,10 +46,10 @@ const ScreenWelcomePage = () => {
         <div className="text-center mb-8 animate-fade-in">
             <h1 className="text-4xl font-bold mt-4 animate-bounce"
                 style={{ color: '#FF4B28' }}>
-                Nongpanya
+                {t("screen.welcome.title")}
             </h1>
             <p className="text-xl mt-2" style={{ color: '#919191' }}>
-                Your Friendly Medical Assistant
+                {t("screen.welcome.subtitle")}
             </p>
         </div>
 
@@ -69,7 +71,7 @@ const ScreenWelcomePage = () => {
             className="w-full py-10 text-lg transition-all duration-300 hover:scale-105 animate-bounce-slow flex items-center justify-center gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
             onClick={handleStart}
           >
-            <span className=' text-3xl'>Press to Start</span>
+            <span className=' text-3xl'>{t("screen.welcome.pressToStart")}</span>
           </Button>
         </div>
 

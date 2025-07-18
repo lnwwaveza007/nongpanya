@@ -1,8 +1,10 @@
 import { Card } from '@/components/ui/card';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const CompletionScreen = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   // Auto navigate after 10 seconds
@@ -30,13 +32,13 @@ const CompletionScreen = () => {
           {/* Messages */}
           <div className="space-y-4">
             <h1 className="text-4xl font-bold text-[#22c55e] animate-bounce">
-              Thank You!
+              {t("screen.complete.title")}
             </h1>
             <p className="text-xl font-semibold text-[#FF4B28]">
-              Your medicine has been dispensed successfully
+              {t("screen.complete.message")}
             </p>
             <p className="text-lg text-[#FF4B28] mt-4">
-              Please check your phone for medication instructions
+              {t("screen.complete.subtitle")}
             </p>
           </div>
         </div>
