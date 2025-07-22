@@ -11,6 +11,8 @@ import './App.css';
 import './index.css';
 import Redirect from './pages/auth-redirect';
 import authUser from './hooks/authUser';
+import DashboardPage from './pages/dashboard-page';
+import UserLogPage from './pages/user-log-page';
 
 function App() {
   return (
@@ -21,11 +23,14 @@ function App() {
         <Route path="/result" element={authUser(<ResultPage />)} />
         <Route path='/loading' element={<LoadingPage />} />
         <Route path='/auth' element={<Redirect />} />
+        <Route path='/dashboard' element={<DashboardPage />} />
+        <Route path='/user-log' element={<UserLogPage />} />
         {/* For Screen Only */}
         <Route path='/screen/welcome' element={<ScreenWelcomePage />} />
         <Route path='/screen/qrcode' element={<ScreenQRCodePage />} />
         <Route path='/screen/giving' element={<GivingScreen />} />
         <Route path='/screen/complete' element={<CompletionScreen />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
       </Routes>
     </Router>
   );

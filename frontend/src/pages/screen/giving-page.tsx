@@ -2,8 +2,10 @@ import { Card } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
 import mqtt from "mqtt";
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const GivingScreen = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [currentEmoji, setCurrentEmoji] = useState(0);
   const [stars, setStars] = useState(Array(7).fill(true));
@@ -79,10 +81,10 @@ useEffect(() => {
             {waitingEmojis[currentEmoji]}
           </div>
           <h1 className="text-3xl font-bold animate-bounce" style={{ color: '#FF4B28' }}>
-            Please Wait...
+            {t("screen.giving.title")}
           </h1>
           <p className="text-muted-foreground mt-2">
-            Dispensing your request. Hold tight!
+            {t("screen.giving.subtitle")}
           </p>
         </div>
 

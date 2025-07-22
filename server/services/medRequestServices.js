@@ -91,18 +91,34 @@ export const getAllTimeMedicineRank = async () => {
   return final;
 };
 
-export const getMedicineRequestHistoryByDate = async (date) => {
-  const start = date ? new Date(`${date}T01:00:00Z`) : new Date();
-  const end = new Date(start);
-  end.setDate(end.getDate() + 1);
+export const getMedicineRequestHistoryByDate = async (startDate, endDate) => {
+  let whereClause = {};
+  
+  if (startDate && endDate) {
+    // Both dates provided - filter by range
+    const start = new Date(`${startDate}T00:00:00Z`);
+    const end = new Date(`${endDate}T23:59:59Z`);
+    whereClause.created_at = {
+      gte: start,
+      lte: end,
+    };
+  } else if (startDate) {
+    // Only start date provided - filter from start date onwards
+    const start = new Date(`${startDate}T00:00:00Z`);
+    whereClause.created_at = {
+      gte: start,
+    };
+  } else if (endDate) {
+    // Only end date provided - filter up to end date
+    const end = new Date(`${endDate}T23:59:59Z`);
+    whereClause.created_at = {
+      lte: end,
+    };
+  }
+  // If neither date is provided, no date filtering (get all records)
 
   const result = await prisma.requests.findMany({
-    where: {
-      created_at: {
-        gt: start,
-        lte: end,
-      },
-    },
+    where: whereClause,
     orderBy: {
       created_at: "desc",
     },

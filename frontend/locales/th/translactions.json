@@ -1,0 +1,97 @@
+{
+    "welcome": {
+        "title": "ยินดีต้อนรับ!"
+    },
+    "login": {
+        "subtitle": "น้องปัญญาอยากช่วยคุณ!",
+        "loginButton": "เข้าสู่ระบบ"
+    },
+    "dashboard": {
+        "title": "ยา",
+        "currentStock": "สต็อกยาปัจจุบัน",
+        "topDispensed": "ยาที่จ่ายมากที่สุด 5 อันดับตลอดกาล",
+        "medicineId": "รหัสยา",
+        "image": "รูปภาพ",
+        "name": "ชื่อ",
+        "inStock": "ในสต็อก",
+        "actions": "การดำเนินการ",
+        "add": "เพิ่ม",
+        "edit": "แก้ไข"
+    },
+    "form": {
+        "title": "Nongpanya",
+        "subtitle": "Your Friendly Medical Assistant",
+        "warning": "สำหรับอาการเล็กน้อยเท่านั้น หากอาการรุนแรงหรือไม่หายไป กรุณาไปที่ HCU",
+        "name": "ชื่อของคุณ",
+        "email": "อีเมลของคุณ",
+        "phone": "เบอร์โทรของคุณ",
+        "age": "อายุของคุณ",
+        "weight": "น้ำหนักของคุณ (กก.)",
+        "allergies": "อาการแพ้ (ถ้ามี)",
+        "allergiesPlaceholder": "เช่น เพนิซิลลิน แอสไพริน",
+        "symptoms": "เลือกอาการของคุณ",
+        "additionalNotes": "หมายเหตุเพิ่มเติม",
+        "additionalNotesPlaceholder": "ข้อมูลอื่นๆ ที่คุณต้องการแชร์...",
+        "termsAccept": "ฉันยอมรับข้อกำหนดและเงื่อนไข",
+        "submit": "ส่ง",
+        "pleaseAcceptTerms": "กรุณายอมรับข้อกำหนดและเงื่อนไข",
+        "invalidQR": "QR Code ไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง",
+        "limitReached": "คุณได้ถึงขีดจำกัดการส่งแล้ว",
+        "submitError": "เกิดข้อผิดพลาดในการส่งข้อมูล กรุณาลองใหม่อีกครั้ง",
+        "connectionError": "ไม่สามารถเชื่อมต่อได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ตและลองใหม่อีกครั้ง"
+    },
+    "result": {
+        "title": "ยาของคุณ",
+        "subtitle": "กรุณาอ่านคำแนะนำทั้งหมดอย่างระมัดระวัง",
+        "monthlyQuota": "โควต้ารายเดือน",
+        "used": "ใช้แล้ว",
+        "remaining": "เหลือ",
+        "resetsOn": "รีเซ็ตในวันที่",
+        "quantity": "จำนวน",
+        "instructions": "คำแนะนำ:",
+        "warnings": "คำเตือน:",
+        "representativeImage": "รูปภาพตัวอย่าง",
+        "dispenseNote": "เราจ่ายยา 2 โดส ให้กินครึ่งโดสในรอบแรก",
+        "emergencyTitle": "ในกรณีฉุกเฉิน:",
+        "emergencyContact": "ติดต่อ HCU: 1234 หรือไปโรงพยาบาลที่ใกล้ที่สุด"
+    },
+    "screen": {
+        "welcome": {
+            "title": "Nongpanya",
+            "subtitle": "Your Friendly Medical Assistant",
+            "pressToStart": "กดเพื่อเริ่มต้น"
+        },
+        "qrcode": {
+            "title": "สแกน QR Code",
+            "subtitle": "เพื่อดำเนินการต่อบนอุปกรณ์มือถือของคุณ"
+        },
+        "giving": {
+            "title": "กำลังจ่ายยา",
+            "subtitle": "กรุณารอสักครู่ในขณะที่เรากำลังเตรียมยาของคุณ"
+        },
+        "complete": {
+            "title": "ขอบคุณ!",
+            "subtitle": "กรุณาตรวจสอบโทรศัพท์ของคุณสำหรับคำแนะนำการใช้ยา",
+            "message": "ยาของคุณได้รับการจ่ายเรียบร้อยแล้ว"
+        }
+    },
+    "loading": {
+        "title": "กำลังประมวลผล...",
+        "subtitle": "กรุณารอสักครู่ในขณะที่เรากำลังวิเคราะห์อาการของคุณ"
+    },
+    "userLog": {
+        "title": "บันทึกผู้ใช้",
+        "subtitle": "ดูกิจกรรมและการส่งข้อมูลของผู้ใช้"
+    },
+    "symptoms": {
+        "diarrhea": "ท้องเสีย",
+        "bloating": "ท้องอืด",
+        "headache": "ปวดหัว",
+        "fever": "ไข้",
+        "toothache": "ปวดฟัน",
+        "menstrualPain": "ปวดประจำเดือน",
+        "backShoulderMuscleJointPain": "ปวดหลัง/ไหล่/กล้ามเนื้อ/ข้อต่อ",
+        "musclePain": "ปวดกล้ามเนื้อ",
+        "tremors": "สั่น (โรคพาร์กินสัน)"
+    }
+}

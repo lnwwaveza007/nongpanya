@@ -1,0 +1,97 @@
+{
+    "welcome": {
+        "title": "Welcome!"
+    },
+    "login": {
+        "subtitle": "Nongpanya want to help you!",
+        "loginButton": "Login"
+    },
+    "dashboard": {
+        "title": "Medicine",
+        "currentStock": "Current Medicine Stock",
+        "topDispensed": "Top 5 All Time Dispensed Medicines",
+        "medicineId": "Medicine ID",
+        "image": "Image",
+        "name": "Name",
+        "inStock": "In Stock",
+        "actions": "Actions",
+        "add": "Add",
+        "edit": "Edit"
+    },
+    "form": {
+        "title": "Nongpanya",
+        "subtitle": "Your Friendly Medical Assistant",
+        "warning": "For mild symptoms only. If symptoms are severe or persist, please visit the HCU.",
+        "name": "Your Name",
+        "email": "Your Email",
+        "phone": "Your Phone",
+        "age": "Your Age",
+        "weight": "Your Weight (kg)",
+        "allergies": "Allergies (if any)",
+        "allergiesPlaceholder": "e.g., Penicillin, Aspirin",
+        "symptoms": "Select Your Symptoms",
+        "additionalNotes": "Additional Notes",
+        "additionalNotesPlaceholder": "Any other information you'd like to share...",
+        "termsAccept": "I accept the terms and conditions",
+        "submit": "Submit",
+        "pleaseAcceptTerms": "Please accept the terms and conditions.",
+        "invalidQR": "Invalid QR Code. Please try again.",
+        "limitReached": "You have reached the limit of submission.",
+        "submitError": "An error occurred while submitting your data. Please try again.",
+        "connectionError": "Unable to connect. Please check your internet connection and try again."
+    },
+    "result": {
+        "title": "Your Medications",
+        "subtitle": "Please read all instructions carefully",
+        "monthlyQuota": "Monthly Quota",
+        "used": "Used",
+        "remaining": "Remaining",
+        "resetsOn": "Resets on",
+        "quantity": "Quantity",
+        "instructions": "Instructions:",
+        "warnings": "Warnings:",
+        "representativeImage": "Representative image",
+        "dispenseNote": "We dispense 2 doses, take half in the first round.",
+        "emergencyTitle": "In case of emergency:",
+        "emergencyContact": "Contact HCU: 1234 or Visit nearest hospital"
+    },
+    "screen": {
+        "welcome": {
+            "title": "Nongpanya",
+            "subtitle": "Your Friendly Medical Assistant",
+            "pressToStart": "Press to Start"
+        },
+        "qrcode": {
+            "title": "Scan QR Code",
+            "subtitle": "To continue on your mobile device"
+        },
+        "giving": {
+            "title": "Dispensing Medicine",
+            "subtitle": "Please wait while we prepare your medication"
+        },
+        "complete": {
+            "title": "Thank You!",
+            "subtitle": "Please check your phone for medication instructions",
+            "message": "Your medicine has been dispensed successfully"
+        }
+    },
+    "loading": {
+        "title": "Processing...",
+        "subtitle": "Please wait while we analyze your symptoms"
+    },
+    "userLog": {
+        "title": "User Log",
+        "subtitle": "View user activity and submissions"
+    },
+    "symptoms": {
+        "diarrhea": "Diarrhea",
+        "bloating": "Bloating",
+        "headache": "Headache",
+        "fever": "Fever",
+        "toothache": "Toothache",
+        "menstrualPain": "Menstrual Pain",
+        "backShoulderMuscleJointPain": "Back/Shoulder/Muscle/Joint Pain",
+        "musclePain": "Muscle Pain",
+        "tremors": "Tremors (Parkinson's Disease)"
+    }
+}

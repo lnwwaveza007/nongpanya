@@ -1,10 +1,12 @@
-import { axiosInstance } from "@/utils/axiosInstance";
+import { getUserQuota } from "@/api";
 import { HeartPulse, AlertCircle, Clock, Calendar, Info } from "lucide-react";
 import {
   useState,
   useEffect,
 } from "react";
 import { useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import LanguageToggle from "@/components/ui/language-toggle";
 
 interface Medical {
   imageUrl: string;
@@ -12,18 +14,21 @@ interface Medical {
   type: string;
   quantity: number;
   frequency: number;
-  instructions: unknown[];
-  warnings: unknown[];
+  instructions: string[];
+  warnings: string[];
 }
 
 const ResultsPage = () => {
+  const { t } = useTranslation();
   const [used, setUsed] = useState(0);
   const prescribedMedications = useLocation().state?.data;
 
   useEffect(() => {
-    axiosInstance.get("/user/quota").then((res) => {
+    const getUserQuotaAPI = async () => {
+      const res = await getUserQuota();
       setUsed(res.data.data);
-    });
+    }
+    getUserQuotaAPI();
   }, []);
 
   const studentQuota = {
@@ -34,34 +39,36 @@ const ResultsPage = () => {
 
   return (
     <div className="min-h-screen p-8">
+      <LanguageToggle variant="floating" />
+      
       {/* Header with Robot */}
       <div className="text-center mb-8">
         <div className="text-6xl font-bold text-[#FF4B28] animate-bounce-slow">
           (｡^‿^｡)
         </div>
         <h1 className="text-4xl font-bold mt-4 text-[#FF4B28]">
-          Your Medications
+          {t("result.title")}
         </h1>
         <p className="text-gray-600 mt-2">
-          Please read all instructions carefully
+          {t("result.subtitle")}
         </p>
       </div>
 
       {/* Quota Card */}
       <div className="max-w-md mx-auto mb-8 bg-white rounded-xl shadow-lg p-6 border-2 border-[#FF4B28]">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-[#FF4B28]">Monthly Quota</h2>
+          <h2 className="text-xl font-bold text-[#FF4B28]">{t("result.monthlyQuota")}</h2>
           <HeartPulse className="text-[#FF4B28]" />
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div className="text-center p-3 bg-[#F5F7F9] rounded-lg">
-            <p className="text-sm text-gray-600">Used</p>
+            <p className="text-sm text-gray-600">{t("result.used")}</p>
             <p className="text-2xl font-bold text-[#FF4B28]">
               {studentQuota.used}/{studentQuota.maxPerMonth}
             </p>
           </div>
           <div className="text-center p-3 bg-[#F5F7F9] rounded-lg">
-            <p className="text-sm text-gray-600">Remaining</p>
+            <p className="text-sm text-gray-600">{t("result.remaining")}</p>
             <p className="text-2xl font-bold text-[#FFC926]">
               {studentQuota.maxPerMonth - studentQuota.used}
             </p>
@@ -69,7 +76,7 @@ const ResultsPage = () => {
         </div>
         <div className="mt-4 flex items-center text-sm text-gray-600">
           <Calendar className="w-4 h-4 mr-2" />
-          <span>Resets on {studentQuota.resetDate}</span>
+          <span>{t("result.resetsOn")} {studentQuota.resetDate}</span>
         </div>
       </div>
 
@@ -94,7 +101,7 @@ const ResultsPage = () => {
                     <p className="text-sm text-gray-600">{med.type}</p>
                     <div className="flex items-center justify-center mt-2 text-xs text-gray-500">
                       <Info className="w-3 h-3 mr-1" />
-                      <span>Representative image</span>
+                      <span>{t("result.representativeImage")}</span>
                     </div>
                   </div>
                 </div>
@@ -108,7 +115,7 @@ const ResultsPage = () => {
                       {med.name}
                     </h3>
                     <p className="text-gray-600 text-left">
-                      Quantity: {med.quantity}
+                      {t("result.quantity")}: {med.quantity}
                     </p>
                   </div>
                   <div className="bg-[#F5F7F9] px-4 py-2 rounded-lg">
@@ -119,11 +126,11 @@ const ResultsPage = () => {
 
                 <div className="mt-4 space-y-4">
                   <div>
-                    <h4 className="font-semibold mb-2">Instructions:</h4>
+                    <h4 className="font-semibold mb-2">{t("result.instructions")}</h4>
                     <ul className="space-y-2 text-left">
                       <li key="zero" className="flex items-center text-gray-600">
                           <span className="w-2 h-2 bg-[#FFC926] rounded-full mr-2"></span>
-                          We dispense 2 doses, take half in the first round.
+                          {t("result.dispenseNote")}
                       </li>
                       {med.instructions?.map((instruction, i) => (
                         <li key={i} className="flex items-center text-gray-600">
@@ -137,7 +144,7 @@ const ResultsPage = () => {
                   <div className="bg-red-50 p-4 rounded-lg">
                     <div className="flex items-start mb-2">
                       <AlertCircle className="text-red-500 mr-2" size={16} />
-                      <h4 className="font-semibold text-red-500">Warnings:</h4>
+                      <h4 className="font-semibold text-red-500">{t("result.warnings")}</h4>
                     </div>
                     <ul className="space-y-2 text-left">
                       {med.warnings?.map((warning, i) => (
@@ -160,10 +167,10 @@ const ResultsPage = () => {
         <AlertCircle className="text-red-500 mr-3" />
         <div>
           <p className="text-left font-semibold text-red-500">
-            In case of emergency:
+            {t("result.emergencyTitle")}
           </p>
           <p className="text-red-600">
-            Contact HCU: 1234 or Visit nearest hospital
+            {t("result.emergencyContact")}
           </p>
         </div>
       </div>

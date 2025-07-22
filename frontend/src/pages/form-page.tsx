@@ -12,10 +12,13 @@ import CustomCheckbox from "@/components/form/CustomCheckbox";
 import { CustomInput, CustomTextArea } from "@/components/form/CustomInput";
 import { useNavigate } from "react-router-dom";
 import ModalBox from "@/components/form/ModalBox";
+import { AxiosError } from "axios";
 
-import { axiosInstance } from "@/utils/axiosInstance";
 import { useValidateCode } from "@/hooks/validateCode";
 import TermsCheckbox from "@/components/form/TermCheckBox";
+import { getSymptoms, getUser, submitSymptoms } from "@/api";
+import { useTranslation } from "react-i18next";
+import LanguageToggle from "@/components/ui/language-toggle";
 
 interface Symptom {
   id: string;
@@ -30,6 +33,7 @@ interface UserInt {
 }
 
 const NongpanyaVending = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [symptoms, setSymptoms] = useState<string[]>([]);
   const [user, setUser] = useState<UserInt>();
@@ -50,8 +54,8 @@ const NongpanyaVending = () => {
 
   const fetchFrom = async () => {
     try {
-      const resUser = await axiosInstance.get("/user");
-      const resSymp = await axiosInstance.get("/med/symptoms");
+      const resUser = await getUser();
+      const resSymp = await getSymptoms();
 
       setUser(resUser.data.data);
       setSymptomsList(resSymp.data.data);
@@ -108,57 +112,51 @@ const NongpanyaVending = () => {
 
   const postAPI = async () => {
     if (!showTerms) {
-      alert("Please accept the terms and conditions.");
+      alert(t("form.pleaseAcceptTerms"));
       return;
     }
 
     if (showModal) return;
     setShowModal(true);
     try {
-      const formData = {
-        code: code,
-        name: name,
-        email: email,
-        phone: phone,
-        age: age,
-        weight: weight,
-        allergies: allergies,
-        symptoms: symptoms,
-        additional_notes: note,
-      };
-      const response = await axiosInstance.post(
-        "/med/symptoms/submit",
-        formData
-      );
-      
+      const formData = new FormData();
+      formData.append('code', code || '');
+      formData.append('name', name);
+      formData.append('email', email);
+      formData.append('phone', phone);
+      formData.append('age', age?.toString() || '');
+      formData.append('weight', weight?.toString() || '');
+      formData.append('allergies', allergies);
+      formData.append('symptoms', JSON.stringify(symptoms));
+      formData.append('additional_notes', note);
+      const response = await submitSymptoms(formData);
       if (response.status === 201 && response.data.success) {
         navigate("/loading");
       }
-    } catch (error: any) {
-      if (error.response) {
-        if (error.response.status === 403) {
-          if (error.response.data.message === "QR code timeout") {
-            alert("Invalid QR Code. Please try again.");
-          } else if (error.response.data.message === "Limit Reach") {
-            alert("You have reached the limit of submission.");
+    } catch (error: unknown) {
+      const axiosError = error as AxiosError<{ message: string }>;
+      if (axiosError.response) {
+        if (axiosError.response.status === 403) {
+          if (axiosError.response.data.message === "QR code timeout") {
+            alert(t("form.invalidQR"));
+          } else if (axiosError.response.data.message === "Limit Reach") {
+            alert(t("form.limitReached"));
           }
           navigate('/');
         } else {
-          alert(
-            "An error occurred while submitting your data. Please try again."
-          );
+          alert(t("form.submitError"));
         }
       } else {
-        alert(
-          "Unable to connect. Please check your internet connection and try again."
-        );
+        alert(t("form.connectionError"));
       }
       setShowModal(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-gray-50 p-8 md:mx-6 lg:mx-10 max-w-[1248px] xl:mx-auto">
+      <LanguageToggle variant="floating" />
+      
       {/* Animated Robot Face Header */}
       <div className="text-center mb-8 animate-fade-in">
         <div
@@ -171,10 +169,10 @@ const NongpanyaVending = () => {
           className="text-4xl font-bold mt-4 animate-bounce"
           style={{ color: "#FF4B28" }}
         >
-          Nongpanya
+          {t("form.title")}
         </h1>
         <p className="text-xl mt-2" style={{ color: "#919191" }}>
-          Your Friendly Medical Assistant
+          {t("form.subtitle")}
         </p>
       </div>
 
@@ -182,8 +180,7 @@ const NongpanyaVending = () => {
       <div className="max-w-4xl mx-auto mb-6 p-4 bg-yellow-100 rounded-lg flex items-center gap-2">
         <AlertCircle className="text-yellow-600" />
         <p className="text-yellow-700">
-          For mild symptoms only. If symptoms are severe or persist, please
-          visit the HCU.
+          {t("form.warning")}
         </p>
       </div>
 
@@ -192,7 +189,7 @@ const NongpanyaVending = () => {
           icon={<User size={20} />}
           type="text"
           name="name"
-          placeholder="Your Name"
+          placeholder={t("form.name")}
           value={user?.fullname}
           // value="Nongpanya Nim"
           onChange={handleInputChange}
@@ -202,7 +199,7 @@ const NongpanyaVending = () => {
           icon={<Mail size={20} />}
           type="email"
           name="email"
-          placeholder="Email Address"
+          placeholder={t("form.email")}
           value={user?.email}
           // value="nongpanya@nim.com"
           onChange={handleInputChange}
@@ -212,7 +209,7 @@ const NongpanyaVending = () => {
           icon={<Phone size={20} />}
           type="tel"
           name="phone"
-          placeholder="Phone Number"
+          placeholder={t("form.phone")}
           value={phone}
           onChange={handleInputChange}
           readOnly={true}
@@ -221,23 +218,23 @@ const NongpanyaVending = () => {
           icon={<UserCog size={20} />}
           type="number"
           name="age"
-          placeholder="Your Age (years)"
-          value={age}
+          placeholder={t("form.age")}
+          value={age ?? ''}
           onChange={handleInputChange}
         />
         <CustomInput
           icon={<Weight size={20} />}
           type="number"
           name="weight"
-          placeholder="Your Weight (kg)"
-          value={weight}
+          placeholder={t("form.weight")}
+          value={weight ?? ''}
           onChange={handleInputChange}
         />
         <CustomInput
           icon={<Pill size={20} />}
           type="text"
           name="allergies"
-          placeholder="Any Allergies"
+          placeholder={t("form.allergies")}
           value={allergies}
           onChange={handleInputChange}
         />
@@ -245,7 +242,7 @@ const NongpanyaVending = () => {
 
       {/* Custom Checkbox Component */}
       <CustomCheckbox
-        checkboxprops={{ label: "Symptoms" }}
+        checkboxprops={{ label: t("form.symptoms") }}
         symptomsList={symptomsList}
         symptoms={symptoms}
         handleSymptomToggle={handleSymptomToggle}
@@ -255,7 +252,7 @@ const NongpanyaVending = () => {
       <div className="md:col-span-2 mt-5">
         <CustomTextArea
           name="note"
-          placeholder="Other symptoms or notes"
+          placeholder={t("form.additionalNotesPlaceholder")}
           value={note}
           onChange={handleInputChange}
         />
@@ -269,7 +266,7 @@ const NongpanyaVending = () => {
           className="bg-primary text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-600 transition-all duration-300"
           onClick={() => postAPI()}
         >
-          Submit
+          {t("form.submit")}
         </button>
       </div>
       {/* Add this before the closing div */}

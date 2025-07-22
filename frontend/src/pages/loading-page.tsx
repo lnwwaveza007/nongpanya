@@ -2,8 +2,10 @@ import { Card } from '@/components/ui/card';
 import { useEffect } from 'react';
 import mqtt from "mqtt";
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const LoadingScreen = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -50,9 +52,9 @@ const LoadingScreen = () => {
             (｡•ᴗ•｡)
           </div>
           <h1 className="text-3xl font-bold animate-bounce" style={{ color: '#FF4B28' }}>
-            Please Wait...
+            {t("loading.title")}
           </h1>
-          <p className="text-muted-foreground mt-2">Dispensing your request. Hold tight!</p>
+          <p className="text-muted-foreground mt-2">{t("loading.subtitle")}</p>
         </div>
 
         {/* Animated Pills */}

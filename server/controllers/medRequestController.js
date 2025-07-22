@@ -50,14 +50,14 @@ export const getMedicineRank = async (req, res, next) => {
 
 export const getMedicineRequestHistory = async (req, res, next) => {
   try {
-    const { date } = req.query;
+    const { startDate, endDate } = req.query;
 
-    const response = await getMedicineRequestHistoryByDate(date);
+    const response = await getMedicineRequestHistoryByDate(startDate, endDate);
 
     if (!response || response.length === 0) {
       return res.status(404).json({
         success: false,
-        message: "No data found for the specified date",
+        message: "No data found for the specified date range",
       });
     }
 
