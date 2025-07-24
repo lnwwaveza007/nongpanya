@@ -7,12 +7,16 @@ import cookieParser from "cookie-parser";
 import userRoute from "./routes/userRoutes.js";
 import medRoute from "./routes/medRoutes.js";
 import codeRoute from "./routes/codeRoutes.js";
+import { getConfig, getCorsOrigins } from "./config/envConfig.js";
 
 const app = express();
-const port = 3000;
+
+// Load configuration based on selected environment
+const config = getConfig();
+const port = config.port;
 
 const corsOptions = {
-    origin: ['http://localhost:3001','https://nongpanya-website2.scnd.space'],
+    origin: getCorsOrigins(),
     optionsSuccessStatus: 200,
     credentials: true,
 };
@@ -37,5 +41,7 @@ app.use((err, req, res, next) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server listening at ${port}`);
+  console.log('-'.repeat(60));
+  console.log(`  SERVER RUNNING ON http://localhost:${port}`);
+  console.log('-'.repeat(60));
 });

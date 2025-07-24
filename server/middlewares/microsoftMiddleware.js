@@ -3,19 +3,23 @@ import { Strategy as MicrosoftStrategy } from "passport-microsoft";
 import dotenv from "dotenv";
 import { createUser, findUserById } from "../services/userServices.js";
 import axios from "axios";
+import { getConfig } from "../config/envConfig.js";
 
 dotenv.config();
+
+// Get environment-specific configuration
+const config = getConfig();
 
 passport.use(
   new MicrosoftStrategy(
     {
       // Standard OAuth2 options
-      clientID: process.env.MICROSOFT_CLIENT_ID || "",
-      clientSecret: process.env.MICROSOFT_CLIENT_SECRET || "",
-      callbackURL: process.env.MICROSOFT_CALLBACK_URL || "",
+      clientID: config.microsoft.clientId || "",
+      clientSecret: config.microsoft.clientSecret || "",
+      callbackURL: config.microsoft.callbackUrl || "",
       scope: ["user.read"],
-      authorizationURL: process.env.MICROSOFT_AUTH_URL || "",
-      tokenURL: process.env.MICROSOFT_TOKEN_URL || "",
+      authorizationURL: config.microsoft.authUrl || "",
+      tokenURL: config.microsoft.tokenUrl || "",
       apiEntryPoint: "https://graph.microsoft.com",
     },
     async function (accessToken, refreshToken, profile, done) {
