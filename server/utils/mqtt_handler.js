@@ -1,19 +1,26 @@
 import mqtt from "mqtt";
-import dotenv from "dotenv";
-
-dotenv.config();
+import { getConfig } from "../config/envConfig.js";
 
 class MqttHandler {
   constructor() {
-    this.mqttClient = "mqttx_66130500012";
-    this.host = process.env.VITE_MQTT_ENDPOINT;
-    this.username = process.env.VITE_MQTT_USERNAME;
-    this.password = process.env.VITE_MQTT_PASSWORD;
+    const config = getConfig();
+    this.mqttClient = null;
+    this.host = config.mqtt.endpoint;
+    this.username = config.mqtt.username;
+    this.password = config.mqtt.password;
+    this.clientId = config.mqtt.clientId;
   }
 
   connect() {
+    // Check if MQTT configuration is available
+    if (!this.host) {
+      console.warn("⚠️  MQTT endpoint not configured. Skipping MQTT connection.");
+      return;
+    }
+
     // Connect mqtt with credentials (in case of needed, otherwise we can omit 2nd param)
     this.mqttClient = mqtt.connect(this.host, {
+      clientId: this.clientId,
       username: this.username,
       password: this.password,
     });
@@ -44,6 +51,10 @@ class MqttHandler {
 
   // Sends a mqtt message to topic: mytopic
   sendMessage(topic, message) {
+    if (!this.mqttClient) {
+      console.warn("⚠️  MQTT client not connected. Cannot send message.");
+      return;
+    }
     this.mqttClient.publish(topic, message);
   }
 }
