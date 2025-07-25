@@ -113,7 +113,6 @@ async function startDev() {
       env: {
         ...process.env,
         VITE_SELECTED_ENV: selectedEnv,
-        NODE_ENV: selectedEnv.toLowerCase()
       }
     });
     

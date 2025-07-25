@@ -113,7 +113,6 @@ async function startServer() {
       env: {
         ...process.env,
         SELECTED_ENV: selectedEnv,
-        NODE_ENV: selectedEnv.toLowerCase()
       }
     });
     

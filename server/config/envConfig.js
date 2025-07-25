@@ -70,7 +70,6 @@ export function getConfig() {
   const config = {
     environment: SELECTED_ENV,
     port: getEnvVar('PORT', null, true) || DEFAULT_PORTS[SELECTED_ENV],
-    nodeEnv: getEnvVar('NODE_ENV', null, true),
     
     // Database configuration
     database: {
@@ -192,11 +191,6 @@ function validateConfig(config) {
   
   if (!config.microsoft.callbackUrl) {
     console.warn(`⚠️  Missing Microsoft OAuth callback URL: ${SELECTED_ENV}_MICROSOFT_CALLBACK_URL`);
-  }
-  
-  // Warn about missing global configurations
-  if (!config.nodeEnv) {
-    console.warn(`⚠️  Missing NODE_ENV configuration`);
   }
   
   if (missingVars.length > 0) {
