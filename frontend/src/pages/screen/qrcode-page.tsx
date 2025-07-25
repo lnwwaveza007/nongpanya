@@ -6,6 +6,7 @@ import mqtt from 'mqtt';
 import { useNavigate } from 'react-router-dom';
 import { getCode } from '@/api';
 import { useTranslation } from 'react-i18next';
+import { config } from '../../config';
 
 const QRCodeScreen = () => {
   const { t } = useTranslation();
@@ -16,9 +17,9 @@ const QRCodeScreen = () => {
   const face = '(｡♥‿♥｡)';
 
   useEffect(() => {
-    const client = mqtt.connect(import.meta.env.VITE_MQTT_ENDPOINT, {
-      username: import.meta.env.VITE_MQTT_USERNAME,
-      password: import.meta.env.VITE_MQTT_PASSWORD,
+    const client = mqtt.connect(config.mqtt.endpoint, {
+      username: config.mqtt.username,
+      password: config.mqtt.password,
     });
     client.on("connect", () => {
       console.log("connected");
@@ -74,7 +75,7 @@ const QRCodeScreen = () => {
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
           >
-            <QRCodeSVG value={`${import.meta.env.VITE_URL}/form?code=${code}`} size={200} fgColor='#ff9e1f' />
+            <QRCodeSVG value={`${config.app.url}/form?code=${code}`} size={200} fgColor='#ff9e1f' />
           </div>
           
           <div className="flex flex-col items-center gap-4">

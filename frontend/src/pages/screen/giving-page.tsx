@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import mqtt from "mqtt";
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { config } from '../../config';
 
 const GivingScreen = () => {
   const { t } = useTranslation();
@@ -41,9 +42,9 @@ const GivingScreen = () => {
   }, []);
 
 useEffect(() => {
-  const clientRef = mqtt.connect(import.meta.env.VITE_MQTT_ENDPOINT, {
-    username: import.meta.env.VITE_MQTT_USERNAME,
-    password: import.meta.env.VITE_MQTT_PASSWORD,
+  const clientRef = mqtt.connect(config.mqtt.endpoint, {
+    username: config.mqtt.username,
+    password: config.mqtt.password,
   });
 
   clientRef.on("connect", () => {

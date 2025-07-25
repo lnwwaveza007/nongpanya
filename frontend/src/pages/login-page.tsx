@@ -4,6 +4,8 @@ import { Sparkles } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import LanguageToggle from "@/components/ui/language-toggle";
 
+import { config } from '../config';
+
 const LoginPage = () => {
   const { t } = useTranslation();
 
@@ -14,7 +16,7 @@ const LoginPage = () => {
 
   const handleLogin = () => {
     window.location.href = `${
-      import.meta.env.VITE_API_URL
+      config.api.url
     }/auth/microsoft`;
   };
 
