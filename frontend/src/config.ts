@@ -3,7 +3,7 @@
 
 type Environment = 'LOCAL' | 'DEV' | 'PROD';
 
-const DEFAULT_ENV: Environment = 'LOCAL';
+const DEFAULT_ENV: Environment = 'PROD';
 const SELECTED_ENV: Environment = (import.meta.env.VITE_SELECTED_ENV as Environment) || DEFAULT_ENV;
 
 // Environment-specific configurations
@@ -28,10 +28,10 @@ const environmentConfigs = {
       password: "1234"
     },
     api: {
-      url: "https://nongpanya.sit.kmutt.ac.th/api"
+      url: "http://nongpanya.sit.kmutt.ac.th/api"
     },
     app: {
-      url: "https://nongpanya-dev.sit.kmutt.ac.th"
+      url: "http://nongpanya.sit.kmutt.ac.th"
     }
   },
   PROD: {

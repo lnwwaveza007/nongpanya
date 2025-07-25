@@ -2,6 +2,8 @@ version: '3.8'
 
 services:
   frontend:
+    image: nongpanya-client
+    container_name: nongpanya-client
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -12,8 +14,12 @@ services:
       - /etc/ssl/custom:/etc/nginx/cert
       - ./config/nginx.conf:/etc/nginx/conf.d/default.conf  # Volume for Nginx configuration
     restart: unless-stopped
+    networks:
+      - nongpanya-net
 
   server:
+    image: nongpanya-server
+    container_name: nongpanya-server
     build:
       context: ./server
       dockerfile: dockerfile
@@ -25,3 +31,10 @@ services:
     ports:
       - "3000:3000"
     restart: unless-stopped
+    networks:
+      - nongpanya-net
+
+networks:
+  nongpanya-net:
+    name: nongpanya-net
+    driver: bridge
