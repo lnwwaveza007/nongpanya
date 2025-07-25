@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
 import EditStockModal from "../components/form/EditStockModal";
 import AddStockModal from "../components/form/AddStockModal";
@@ -202,7 +202,7 @@ export default function DashboardPage() {
                   }}
                 />
                 <Bar dataKey="total" isAnimationActive fill="rgb(249 115 22)">
-                  {topDispensed.map((entry, index) => (
+                  {topDispensed.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={`hsl(${index * 60}, 70%, 50%)`} />
                   ))}
                 </Bar>
