@@ -194,10 +194,10 @@ export const getPillsData = async (pills) => {
     imageUrl: medicine.image_url,
     instructions: instructions
       .filter((e) => e.type === "Instruction")
-      .map((e) => e.content),
+      .map((e) => e.id),
     warnings: instructions
       .filter((e) => e.type === "Warning")
-      .map((e) => e.content),
+      .map((e) => e.id),
   };
   return pillsData;
 };
