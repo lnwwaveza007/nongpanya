@@ -55,5 +55,17 @@ export interface HeaderProps {
   activePage?: string;
 }
 
+export interface FormDataset {
+    code: string | null;
+    name: string | null;
+    email: string | null;
+    phone: string | null;
+    age: number | null;
+    weight: number | null;
+    allergies: string | null;
+    symptoms: string[] | null;
+    additional_notes: string | null;
+}
+
 // Import dependencies
 import { Symptom, StockEntry, UserLog } from './medicine'; 

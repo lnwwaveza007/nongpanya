@@ -41,13 +41,6 @@ export const createRequest = async (formData, userId) => {
     if (!userId) {
       throw new Error("User ID is required.");
     }
-    // Validate form data
-    if (!formData.age || isNaN(formData.age)) {
-      throw new Error("Valid age is required.");
-    }
-    if (!formData.weight || isNaN(formData.weight)) {
-      throw new Error("Valid weight is required.");
-    }
     if (!formData.code) {
       throw new Error("Request code is required.");
     }
@@ -63,7 +56,7 @@ export const createRequest = async (formData, userId) => {
       data: {
         code: formData.code,
         user_id: userId,
-        weight: formData.weight,
+        weight: formData.weight || 0,
         additional_notes: formData.additional_notes ? formData.additional_notes : null,
         allergies: formData.allergies ? formData.allergies : null,
       },

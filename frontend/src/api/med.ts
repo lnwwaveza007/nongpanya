@@ -1,11 +1,12 @@
+import { FormDataset } from "@/types";
 import { axiosInstance } from "./axiosInstance";
 
 export const getSymptoms = async () => {
     return await axiosInstance.get("/med/symptoms");
 }
 
-export const submitSymptoms = async (formData: FormData) => {
-    return await axiosInstance.post("/med/symptoms/submit", formData);
+export const submitSymptoms = async (formData: FormDataset) => {
+    return await axiosInstance.post("/med/form", formData);
 }
 
 export const getMedStock = async () => {

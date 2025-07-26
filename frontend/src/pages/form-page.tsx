@@ -19,6 +19,7 @@ import TermsCheckbox from "@/components/form/TermCheckBox";
 import { getSymptoms, getUser, submitSymptoms } from "@/api";
 import { useTranslation } from "react-i18next";
 import LanguageToggle from "@/components/ui/language-toggle";
+import { FormDataset } from "@/types";
 
 interface Symptom {
   id: string;
@@ -26,17 +27,10 @@ interface Symptom {
   name: string;
 }
 
-interface UserInt {
-  id: string;
-  fullname: string;
-  email: string;
-}
-
 const NongpanyaVending = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [symptoms, setSymptoms] = useState<string[]>([]);
-  const [user, setUser] = useState<UserInt>();
   const [symptomsList, setSymptomsList] = useState<Symptom[]>([]);
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
@@ -57,7 +51,12 @@ const NongpanyaVending = () => {
       const resUser = await getUser();
       const resSymp = await getSymptoms();
 
-      setUser(resUser.data.data);
+      setName(resUser.data.data.fullname);
+      setEmail(resUser.data.data.email);
+      setPhone(resUser.data.data.phone || "");
+      setAge(resUser.data.data.age || null);
+      setWeight(resUser.data.data.weight || null);
+      setAllergies(resUser.data.data.allergies || "");
       setSymptomsList(resSymp.data.data);
     } catch (error) {
       return error;
@@ -119,16 +118,17 @@ const NongpanyaVending = () => {
     if (showModal) return;
     setShowModal(true);
     try {
-      const formData = new FormData();
-      formData.append('code', code || '');
-      formData.append('name', name);
-      formData.append('email', email);
-      formData.append('phone', phone);
-      formData.append('age', age?.toString() || '');
-      formData.append('weight', weight?.toString() || '');
-      formData.append('allergies', allergies);
-      formData.append('symptoms', JSON.stringify(symptoms));
-      formData.append('additional_notes', note);
+      const formData: FormDataset = {
+        code: code?.toString() || "",
+        name: name,
+        email: email,
+        phone: phone,
+        age: age,
+        weight: weight,
+        allergies: allergies,
+        symptoms: symptoms,
+        additional_notes: note,
+      };
       const response = await submitSymptoms(formData);
       if (response.status === 201 && response.data.success) {
         navigate("/loading");
@@ -190,7 +190,7 @@ const NongpanyaVending = () => {
           type="text"
           name="name"
           placeholder={t("form.name")}
-          value={user?.fullname}
+          value={name}
           // value="Nongpanya Nim"
           onChange={handleInputChange}
           readOnly={true}
@@ -200,7 +200,7 @@ const NongpanyaVending = () => {
           type="email"
           name="email"
           placeholder={t("form.email")}
-          value={user?.email}
+          value={email}
           // value="nongpanya@nim.com"
           onChange={handleInputChange}
           readOnly={true}
@@ -212,7 +212,6 @@ const NongpanyaVending = () => {
           placeholder={t("form.phone")}
           value={phone}
           onChange={handleInputChange}
-          readOnly={true}
         />
         <CustomInput
           icon={<UserCog size={20} />}
