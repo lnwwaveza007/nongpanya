@@ -5,6 +5,7 @@ import { spawn } from 'child_process';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { existsSync } from 'fs';
+import mqttService from '../services/mqttService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -12,7 +13,7 @@ const __dirname = dirname(__filename);
 // Check if we're in the right directory
 const serverPath = join(__dirname, '..', 'server.js');
 if (!existsSync(serverPath)) {
-  console.error('❌ Error: server.js not found. Make sure you\'re running this from the server directory.');
+  console.error('Error: server.js not found. Make sure you\'re running this from the server directory.');
   process.exit(1);
 }
 
@@ -55,7 +56,7 @@ function promptEnvironment() {
         const env = environments[answer.trim()];
         if (env) {
           if (env === 'EXIT') {
-            console.log('\n👋 Goodbye!');
+            console.log('\nGoodbye!');
             rl.close();
             process.exit(0);
           }
@@ -74,19 +75,28 @@ async function startServer() {
   let serverProcess = null;
   
   // Setup signal handlers once
-  const cleanup = (signal) => {
-    console.log(`\n${'-'.repeat(30)}`);
-    console.log('  SHUTTING DOWN SERVER...');
-    console.log('-'.repeat(30));
-    
+  const cleanup = async (signal) => {    
+    // Close readline interface
     if (rl && !rl.closed) {
       rl.close();
     }
     
+    // Disconnect MQTT client using singleton service
+    mqttService.disconnect();
+    
+    // Kill server process
     if (serverProcess && !serverProcess.killed) {
+      console.log('\nStopping server process...');
       serverProcess.kill(signal || 'SIGTERM');
+      
+      // Wait a bit for graceful shutdown
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
     
+    console.log('Cleanup complete');
+    console.log(`\n${'-'.repeat(30)}`);
+    console.log('  SHUTTING DOWN SERVER...');
+    console.log('-'.repeat(30));
     process.exit(0);
   };
   

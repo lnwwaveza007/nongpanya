@@ -8,7 +8,7 @@ dotenv.config();
  * Supports LOCAL, DEV, and PROD environments with different configurations
  */
 
-const DEFAULT_ENV = 'LOCAL';
+const DEFAULT_ENV = 'DEV';
 const SELECTED_ENV = process.env.SELECTED_ENV || DEFAULT_ENV;
 
 // CORS Origins configuration for each environment

@@ -1,5 +1,4 @@
-import dotenv from "dotenv";
-import { MqttHandler } from "../utils/mqtt_handler.js";
+import mqttService from "../services/mqttService.js";
 import {
   createRequest,
   deleteRequest,
@@ -7,13 +6,14 @@ import {
   giveMedicine,
   setReqStatus,
   getMedicines,
+  createRequestMedicines,
 } from "../services/medServices.js";
 import * as code from "../utils/codeStore.js";
 import { getQuotaByUserId } from "../services/userServices.js";
 import { getAllMedicineStock } from "../services/medStockServices.js";
 
-dotenv.config();
-const mqttClient = new MqttHandler();
+// Initialize and connect MQTT client
+mqttService.initialize();
 
 export const getAllSymptoms = async (req, res, next) => {
   try {
@@ -116,8 +116,7 @@ export const submitRequestForm = async (req, res, next) => {
     });
 
     //Send Data To Vending Machine
-    mqttClient.connect();
-    mqttClient.sendMessage(
+    mqttService.getClient().sendMessage(
       "nongpanya/order",
       JSON.stringify({ message: "order" })
     );
@@ -135,12 +134,13 @@ export const submitRequestForm = async (req, res, next) => {
           );
           await createRequestMedicines(formData.code, medRes.medicines);
           //Send Complete To Vending Machine
-          mqttClient.sendMessage("nongpanya/complete", JSON.stringify(medRes));
+          mqttService.getClient().sendMessage("nongpanya/complete", JSON.stringify(medRes));
           await setReqStatus(formData.code);
           console.log("completed");
         } catch (asyncError) {
           await deleteRequest(formData.code);
-          mqttClient.sendMessage("nongpanya/complete", "error");
+          console.log("Error in async operation:", asyncError);
+          mqttService.getClient().sendMessage("nongpanya/complete", "error");
         }
       }, 1000);
     });

@@ -45,6 +45,24 @@ export const createRequest = async (formData, userId) => {
       throw new Error("Request code is required.");
     }
 
+    // Check if user exists
+    const userExists = await prisma.users.findUnique({
+      where: { id: userId }
+    });
+    
+    if (!userExists) {
+      throw new Error(`User with ID ${userId} not found.`);
+    }
+
+    // Check if request code already exists
+    const existingRequest = await prisma.requests.findUnique({
+      where: { code: formData.code }
+    });
+    
+    if (existingRequest) {
+      throw new Error(`Request with code ${formData.code} already exists.`);
+    }
+
     // Update user information
     await prisma.users.update({
       where: { id: userId },

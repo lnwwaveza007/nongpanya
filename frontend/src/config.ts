@@ -23,9 +23,9 @@ const environmentConfigs = {
   },
   DEV: {
     mqtt: {
-      endpoint: "ws://nongpanya.sit.kmutt.ac.th:9001",
+      endpoint: "ws://nongpanya.sit.kmutt.ac.th:9001/mqtt",
       username: "mqttuser", 
-      password: "1234"
+      password: "nongpanya"
     },
     api: {
       url: "http://localhost:3000/api"
@@ -36,9 +36,9 @@ const environmentConfigs = {
   },
   PROD: {
     mqtt: {
-      endpoint: "wss://nongpanya.sit.kmutt.ac.th/mqtt",
+      endpoint: "wss://nongpanya.sit.kmutt.ac.th:9001/mqtt",
       username: "mqttuser",
-      password: "1234"
+      password: "nongpanya"
     },
     api: {
       url: "https://nongpanya.sit.kmutt.ac.th/api"

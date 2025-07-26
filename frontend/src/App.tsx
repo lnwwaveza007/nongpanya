@@ -23,14 +23,13 @@ function App() {
         <Route path="/result" element={authUser(<ResultPage />)} />
         <Route path='/loading' element={<LoadingPage />} />
         <Route path='/auth' element={<Redirect />} />
-        <Route path='/dashboard' element={<DashboardPage />} />
-        <Route path='/user-log' element={<UserLogPage />} />
+        <Route path='/dashboard' element={authUser(<DashboardPage />)} />
+        <Route path='/user-log' element={authUser(<UserLogPage />)} />
         {/* For Screen Only */}
         <Route path='/screen/welcome' element={<ScreenWelcomePage />} />
         <Route path='/screen/qrcode' element={<ScreenQRCodePage />} />
         <Route path='/screen/giving' element={<GivingScreen />} />
         <Route path='/screen/complete' element={<CompletionScreen />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
       </Routes>
     </Router>
   );
