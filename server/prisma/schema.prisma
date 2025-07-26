@@ -110,6 +110,7 @@ model users {
   fullname      String?              @db.VarChar(255)
   role          users_role?          @default(user)
   password      String?              @db.VarChar(255)
+  phone         String?              @db.VarChar(20)
   age           Int?
   weight        Int?
   allergies     String?              @db.Text

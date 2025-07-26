@@ -5,6 +5,7 @@ CREATE TABLE users (
     fullname VARCHAR(255),
     role ENUM('user', 'admin', 'superadmin') DEFAULT 'user',
     password VARCHAR(255),
+    phone VARCHAR(20),
     age INT,
     weight INT,
     allergies TEXT,

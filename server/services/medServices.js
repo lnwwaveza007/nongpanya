@@ -48,7 +48,7 @@ export const createRequest = async (formData, userId) => {
     // Update user information
     await prisma.users.update({
       where: { id: userId },
-      data: { age: formData.age, weight: formData.weight, allergies: formData.allergies ? formData.allergies : null },
+      data: { phone: formData.phone, age: formData.age, weight: formData.weight, allergies: formData.allergies ? formData.allergies : null },
     });
 
     // Create the request in the database   
