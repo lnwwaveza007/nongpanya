@@ -28,8 +28,7 @@ const CustomCheckbox: React.FC<CheckboxComponentProps> = ({ symptomsList, sympto
       {symptomsList.map((symptom) => (
         <Card
           key={symptom.id}
-          className="p-6 transition-all duration-300 hover:shadow-xl"
-          style={{ borderColor: '#FF4B28' }}
+          className="p-6 transition-all duration-300 hover:shadow-xl border-primary"
         >
           <div className="flex flex-col space-y-4">
             <div className="flex items-center space-x-4">

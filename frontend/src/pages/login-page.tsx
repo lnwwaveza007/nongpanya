@@ -5,13 +5,28 @@ import { useTranslation } from "react-i18next";
 import LanguageToggle from "@/components/ui/language-toggle";
 
 import { config } from '../config';
+import { useEffect } from "react";
+import { auth } from "@/api/auth";
 
 const LoginPage = () => {
   const { t } = useTranslation();
 
-  // Primary: PANTONE 172 C (orange)
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get("code");
+
+  useEffect(() => {
+    const verifyAuth = async () => {
+      const response = await auth();
+      if (response.data.success) {
+        window.location.href = `/form?code=${code}`;
+      } else {
+        window.location.href = "/";
+      }
+    };
+    verifyAuth();
+  }, []);
+
   const primaryColor = "hsl(34, 100%, 56%)";
-  // Secondary: PANTONE 123 C (yellow)
   const secondaryColor = "hsl(48, 100%, 57%)";
 
   const handleLogin = () => {

@@ -15,6 +15,7 @@ interface Medical {
   quantity: number;
   frequency: number;
   instructions: string[];
+  description: string;
   warnings: string[];
 }
 
@@ -32,10 +33,23 @@ const ResultsPage = () => {
   }, []);
 
   const studentQuota = {
-    maxPerMonth: 5,
+    maxPerMonth: 3,
     used: used,
-    resetDate: "1 Feb 2025",
+    resetDate: new Date(new Date().setMonth(new Date().getMonth() + 1)).setDate(1).toLocaleString() 
   };
+
+  // const mockupMedications = [
+  //   {
+  //     imageUrl: "https://hdmall.co.th/blog/wp-content/uploads/2024/07/paracetamol.jpg",
+  //     name: "Medication 1",
+  //     type: "Tablet",
+  //     quantity: 1,
+  //     frequency: 1,
+  //     instructions: ["Take 1 tablet daily"],
+  //     description: "This is a description of the medication",
+  //     warnings: ["May cause drowsiness", "May cause nausea"],
+  //   },
+  // ];
 
   return (
     <div className="min-h-screen p-8">
@@ -125,6 +139,12 @@ const ResultsPage = () => {
                 </div>
 
                 <div className="mt-4 space-y-4">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p>{med.description}</p>
+                    </div>
+                  </div>
+
                   <div>
                     <h4 className="font-semibold mb-2">{t("result.instructions")}</h4>
                     <ul className="space-y-2 text-left">

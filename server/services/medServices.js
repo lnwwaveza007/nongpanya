@@ -61,6 +61,7 @@ export const createRequest = async (formData, userId) => {
         allergies: formData.allergies ? formData.allergies : null,
       },
     });
+
     if (formData.symptoms && formData.symptoms.length > 0) {
       const symptomData = formData.symptoms.map((symptomId) => ({
         request_code: formData.code,

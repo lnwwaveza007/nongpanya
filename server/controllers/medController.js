@@ -96,7 +96,7 @@ export const submitRequestForm = async (req, res, next) => {
     }
 
     //Check quota
-    if ((await getQuotaByUserId(userId)) >= 5) {
+    if ((await getQuotaByUserId(userId)) >= 3) {
       res.status(403).json({
         success: false,
         message: "Limit Reach",

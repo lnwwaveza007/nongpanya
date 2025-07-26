@@ -4,6 +4,8 @@ import {
   AlertCircle,
   Weight,
   UserCog,
+  HeartPulse,
+  Calendar,
   // Toilet,
   // BicepsFlexed
 } from "lucide-react";
@@ -16,7 +18,7 @@ import { AxiosError } from "axios";
 
 import { useValidateCode } from "@/hooks/validateCode";
 import TermsCheckbox from "@/components/form/TermCheckBox";
-import { getSymptoms, getUser, submitSymptoms } from "@/api";
+import { getSymptoms, getUser, getUserQuota, submitSymptoms } from "@/api";
 import { useTranslation } from "react-i18next";
 import LanguageToggle from "@/components/ui/language-toggle";
 import { FormDataset } from "@/types";
@@ -43,8 +45,20 @@ const NongpanyaVending = () => {
   const [showTerms, setShowTerms] = useState<boolean>(false);
   const getSearchParams = new URLSearchParams(window.location.search);
   const code = getSearchParams.get("code");
+  const [quota, setQuota] = useState<number>(0);
 
   useValidateCode(code);
+
+    const getQuota = async () => {
+      const response = await getUserQuota();
+      if (response.status === 200 && response.data.success) {
+        setQuota(response.data.data);
+      }
+    };
+
+  useEffect(() => {
+    getQuota();
+  });
 
   const fetchFrom = async () => {
     try {
@@ -153,6 +167,12 @@ const NongpanyaVending = () => {
     }
   };
 
+  const studentQuota = {
+    used: quota,
+    maxPerMonth: 3,
+    resetDate: new Date(new Date(new Date().setMonth(new Date().getMonth() + 1)).setDate(1)).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-8 md:mx-6 lg:mx-10 max-w-[1248px] xl:mx-auto">
       <LanguageToggle variant="floating" />
@@ -175,6 +195,32 @@ const NongpanyaVending = () => {
           {t("form.subtitle")}
         </p>
       </div>
+
+     {/* Quota Card */}
+     <div className="max-w-md mx-auto mb-8 bg-white rounded-xl shadow-lg p-6 border-2 border-primary">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-[#FF4B28]">{t("result.monthlyQuota")}</h2>
+          <HeartPulse className="text-[#FF4B28]" />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="text-center p-3 bg-[#F5F7F9] rounded-lg">
+            <p className="text-sm text-gray-600">{t("result.used")}</p>
+            <p className="text-2xl font-bold text-[#FF4B28]">
+              {studentQuota.used}/{studentQuota.maxPerMonth}
+            </p>
+          </div>
+          <div className="text-center p-3 bg-[#F5F7F9] rounded-lg">
+            <p className="text-sm text-gray-600">{t("result.remaining")}</p>
+            <p className="text-2xl font-bold text-[#FFC926]">
+              {studentQuota.maxPerMonth - studentQuota.used}
+            </p>
+          </div>
+        </div>
+        <div className="mt-4 flex items-center text-sm text-gray-600">
+          <Calendar className="w-4 h-4 mr-2" />
+          <span>{t("result.resetsOn")} {studentQuota.resetDate}</span>
+        </div>
+      </div> 
 
       {/* Warning Message */}
       <div className="max-w-4xl mx-auto mb-6 p-4 bg-yellow-100 rounded-lg flex items-center gap-2">
