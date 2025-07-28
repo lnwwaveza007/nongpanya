@@ -136,7 +136,6 @@ export const submitRequestForm = async (req, res, next) => {
           await createRequestMedicines(formData.code, medRes);
           // Log successful completion
           console.log("Medicine dispensing completed for code:", formData.code);
-          console.log("Dispensed medicines:", JSON.stringify(medRes, null, 2));
           await setReqStatus(formData.code);
           console.log("Order completed successfully");
           

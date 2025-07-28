@@ -117,3 +117,20 @@ export const addStock = async (medicineId, amount, expireAt) => {
     });
   }
 };
+
+// Check if medicine has available stock (excluding expired stock)
+export const checkMedicineStock = async (medicineId) => {
+  const now = new Date();
+  
+  const stockSum = await prisma.medicine_stocks.aggregate({
+    where: { 
+      medicine_id: medicineId,
+      expire_at: {
+        gt: now // Only include non-expired stock
+      }
+    },
+    _sum: { stock_amount: true },
+  });
+
+  return stockSum._sum.stock_amount || 0;
+};

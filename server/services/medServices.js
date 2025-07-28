@@ -1,7 +1,7 @@
 import prisma from "../config/prismaClient.js";
 import { cleanMedicineName } from "../utils/formatter.js";
 import { dropPills } from "./boardServices.js";
-import { removeStock } from "./medStockServices.js";
+import { checkMedicineStock, removeStock } from "./medStockServices.js";
 
 export const getSymptoms = async () => {
   const symptoms = await prisma.symptoms.findMany();
@@ -145,7 +145,9 @@ export const giveMedicine = async (weight, age, allergies, symptomIds = [], medi
 
   if (medicineIds.length > 0) {
     allMedicineMatches = medicineIds.map((id) => ({ medicine_id: id }));
-  } else if (symptomIds.length > 0) {
+  }
+  
+  if (symptomIds.length > 0) {
     for (const symptomId of symptomIds) {
       const matches = await matchSymptoms(symptomId);
       allMedicineMatches.push(...matches);
@@ -162,6 +164,13 @@ export const giveMedicine = async (weight, age, allergies, symptomIds = [], medi
 
     if (allergyList.includes(medicineName)) {
       console.log(`Skipping ${medicineName} due to allergy.`);
+      continue;
+    }
+
+    // Check if medicine has available stock
+    const availableStock = await checkMedicineStock(match.medicine_id);
+    if (availableStock <= 0) {
+      console.log(`Skipping ${medicineName} due to insufficient stock.`);
       continue;
     }
 
