@@ -7,6 +7,7 @@ import LanguageToggle from "@/components/ui/language-toggle";
 import { config } from '../config';
 import { useEffect } from "react";
 import { auth } from "@/api/auth";
+import { getUser } from "@/api/user";
 
 const LoginPage = () => {
   const { t } = useTranslation();
@@ -16,15 +17,33 @@ const LoginPage = () => {
 
   useEffect(() => {
     const verifyAuth = async () => {
-      const response = await auth();
-      if (response.data.success) {
-        window.location.href = `/form?code=${code}`;
-      } else {
+      try {
+        const response = await auth();
+        if (response.data.success) {
+          // Fetch and store user data for role-based access control
+          try {
+            const userResponse = await getUser();
+            if (userResponse.data && userResponse.data.data) {
+              localStorage.setItem('user', JSON.stringify(userResponse.data.data));
+            }
+          } catch (userError) {
+            console.error('Failed to fetch user data:', userError);
+          }
+          
+          window.location.href = `/form?code=${code}`;
+        } else {
+          window.location.href = "/";
+        }
+      } catch (error) {
+        console.error('Auth verification failed:', error);
         window.location.href = "/";
       }
     };
-    verifyAuth();
-  }, []);
+    
+    if (code) {
+      verifyAuth();
+    }
+  }, [code]);
 
   const primaryColor = "hsl(34, 100%, 56%)";
   const secondaryColor = "hsl(48, 100%, 57%)";

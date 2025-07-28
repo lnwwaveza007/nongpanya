@@ -3,6 +3,7 @@ export interface User {
   id: string;
   fullname: string;
   email: string;
+  role: 'user' | 'admin' | 'superadmin';
   weight?: string;
   allergies?: string;
   additional_notes?: string;

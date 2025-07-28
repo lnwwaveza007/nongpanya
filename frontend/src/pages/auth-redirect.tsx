@@ -2,32 +2,43 @@ import { Card } from "@/components/ui/card";
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { redirectAuth } from "@/api";
+import { getUser } from "@/api/user";
 
 const Redirect = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const code = searchParams.get("code");
 
-  const redirectAuthAPI = async () => {
-      const response = await redirectAuth(code || '');
-      try {
-        if (response.status === 200) {
-          const resCode = response.data?.data?.code; // Use optional chaining to avoid errors
-          if (response.data.success) {
+  useEffect(() => {
+    const redirectAuthAPI = async () => {
+        try {
+          const response = await redirectAuth(code || '');
+          if (response.status === 200 && response.data.success) {
+            // After successful authentication, fetch user data to store role information
+            try {
+              const userResponse = await getUser();
+              if (userResponse.data && userResponse.data.data) {
+                // Store user data in localStorage for role-based access control
+                localStorage.setItem('user', JSON.stringify(userResponse.data.data));
+              }
+            } catch (userError) {
+              console.error('Failed to fetch user data:', userError);
+              // Continue without user data - will default to 'user' role
+            }
+            
+            const resCode = response.data?.data?.code;
             navigate(`/form?code=${resCode}`);
           } else {
             navigate(`/`);
           }
+        } catch (error) {
+          console.error(error);
+          navigate(`/`);
         }
-      } catch (error) {
-        console.error(error);
-        navigate(`/`);
-      }
-  };
+    };
 
-  useEffect(() => {
     redirectAuthAPI();
-  }, []);
+  }, [code, navigate]);
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
