@@ -70,7 +70,7 @@ export function getConfig() {
   const config = {
     environment: SELECTED_ENV,
     port: getEnvVar('PORT', null, true) || DEFAULT_PORTS[SELECTED_ENV],
-    websocketPort: getEnvVar('WEBSOCKET_PORT', '3001'),
+    websocketPort: getEnvVar('WEBSOCKET_PORT', '3002'),
     
     // Database configuration
     database: {

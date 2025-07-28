@@ -14,7 +14,7 @@ class WebSocketService {
     this.currentPort = null;
   }
 
-  async initialize(port = 3001, maxRetries = 5) {
+  async initialize(port = 3002, maxRetries = 5) {
     if (this.isInitialized) {
       console.log('WebSocket service already initialized');
       return;

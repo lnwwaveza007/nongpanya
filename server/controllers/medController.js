@@ -132,7 +132,7 @@ export const submitRequestForm = async (req, res, next) => {
             formData.symptoms,
             formData.medicines
           );
-          await createRequestMedicines(formData.code, medRes.medicines);
+          await createRequestMedicines(formData.code, medRes);
           //Send Complete To Vending Machine
           mqttService.getClient().sendMessage("nongpanya/complete", JSON.stringify(medRes));
           await setReqStatus(formData.code);

@@ -16,7 +16,7 @@ const app = express();
 // Load configuration based on selected environment
 const config = getConfig();
 const port = config.port;
-const websocketPort = config.websocketPort || 3001;
+const websocketPort = config.websocketPort || 3002;
 
 const corsOptions = {
     origin: getCorsOrigins(),

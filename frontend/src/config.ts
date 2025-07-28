@@ -10,7 +10,7 @@ const SELECTED_ENV: Environment = (import.meta.env.VITE_SELECTED_ENV as Environm
 const environmentConfigs = {
   LOCAL: {
     websocket: {
-      endpoint: "ws://localhost:3001"
+      endpoint: "ws://localhost:3002"
     },
     api: {
       url: "http://localhost:3000/api"
@@ -21,7 +21,7 @@ const environmentConfigs = {
   },
   DEV: {
     websocket: {
-      endpoint: "ws://nongpanya.sit.kmutt.ac.th:3001"
+      endpoint: "ws://localhost:3002"
     },
     api: {
       url: "http://localhost:3000/api"
@@ -32,7 +32,7 @@ const environmentConfigs = {
   },
   PROD: {
     websocket: {
-      endpoint: "wss://nongpanya.sit.kmutt.ac.th:3001"
+      endpoint: "wss://nongpanya.sit.kmutt.ac.th:3002"
     },
     api: {
       url: "https://nongpanya.sit.kmutt.ac.th/api"

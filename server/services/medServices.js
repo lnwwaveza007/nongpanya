@@ -97,6 +97,17 @@ export const createRequest = async (formData, userId) => {
 
 export const createRequestMedicines = async (code, medicines) => {
   try {
+    // Validate that medicines is an array and not empty
+    if (!Array.isArray(medicines)) {
+      console.warn(`medicines parameter is not an array: ${typeof medicines}`, medicines);
+      return { success: false, message: "Invalid medicines parameter" };
+    }
+    
+    if (medicines.length === 0) {
+      console.log("No medicines to create request for");
+      return { success: false, message: "No medicines provided" };
+    }
+
     for (const medicine of medicines) {
       await prisma.request_medicines.create({
         data: {
