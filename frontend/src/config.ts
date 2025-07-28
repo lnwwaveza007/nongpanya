@@ -3,7 +3,7 @@
 
 type Environment = 'LOCAL' | 'DEV' | 'PROD';
 
-const DEFAULT_ENV: Environment = 'DEV';
+const DEFAULT_ENV: Environment = 'PROD';
 const SELECTED_ENV: Environment = (import.meta.env.VITE_SELECTED_ENV as Environment) || DEFAULT_ENV;
 
 // Environment-specific configurations
@@ -32,7 +32,7 @@ const environmentConfigs = {
   },
   PROD: {
     websocket: {
-      endpoint: "wss://nongpanya.sit.kmutt.ac.th:3002"
+      endpoint: "wss://nongpanya.sit.kmutt.ac.th/ws"
     },
     api: {
       url: "https://nongpanya.sit.kmutt.ac.th/api"

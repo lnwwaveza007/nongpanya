@@ -3,6 +3,9 @@
 
 import { WebSocketServer, WebSocket } from 'ws';
 import { createServer } from 'http';
+import { createServer as createHttpsServer } from 'https';
+import { readFileSync } from 'fs';
+import { getCurrentEnvironment } from '../config/envConfig.js';
 
 class WebSocketService {
   constructor() {
@@ -21,11 +24,31 @@ class WebSocketService {
 
     let currentPort = port;
     let retries = 0;
+    const isProduction = getCurrentEnvironment() === 'PROD';
 
     while (retries < maxRetries) {
       try {
-        // Create HTTP server for WebSocket
-        this.server = createServer();
+        // Create server (HTTP for dev, HTTPS for production)
+        if (isProduction) {
+          // Try to load SSL certificates for production
+          try {
+            const serverOptions = {
+              cert: readFileSync('/etc/nginx/cert/fullchain.pem'),
+              key: readFileSync('/etc/nginx/cert/privkey.pem')
+            };
+            this.server = createHttpsServer(serverOptions);
+            console.log('WebSocket server using HTTPS/WSS');
+          } catch (sslError) {
+            console.warn('SSL certificates not found, falling back to HTTP:', sslError.message);
+            this.server = createServer();
+            console.log('WebSocket server using HTTP/WS (SSL fallback)');
+          }
+        } else {
+          // Development: use HTTP
+          this.server = createServer();
+          console.log('WebSocket server using HTTP/WS (development)');
+        }
+        
         this.wss = new WebSocketServer({ server: this.server });
 
         // Set up WebSocket connection handling
