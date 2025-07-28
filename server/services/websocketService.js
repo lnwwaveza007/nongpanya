@@ -1,7 +1,7 @@
 // WebSocket server service for handling browser connections
 // Provides real-time communication between server and clients
 
-import { WebSocketServer } from 'ws';
+import { WebSocketServer, WebSocket } from 'ws';
 import { createServer } from 'http';
 
 class WebSocketService {
@@ -127,7 +127,7 @@ class WebSocketService {
   }
 
   sendToClient(ws, message) {
-    if (ws.readyState === ws.OPEN) {
+    if (ws.readyState === WebSocket.OPEN) {
       ws.send(JSON.stringify(message));
     }
   }
@@ -136,7 +136,7 @@ class WebSocketService {
     console.log(`Broadcasting to ${this.clients.size} clients:`, message);
     
     this.clients.forEach(client => {
-      if (client.readyState === client.OPEN) {
+      if (client.readyState === WebSocket.OPEN) {
         try {
           client.send(JSON.stringify(message));
         } catch (error) {
