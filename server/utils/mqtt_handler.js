@@ -9,6 +9,7 @@ class MqttHandler {
     this.username = config.mqtt.username;
     this.password = config.mqtt.password;
     this.clientId = config.mqtt.clientId;
+    this.messageHandlers = new Map();
   }
 
   connect() {
@@ -36,14 +37,52 @@ class MqttHandler {
       console.log(`mqtt client connected`);
     });
     
-    // When a message arrives, console.log it
-    this.mqttClient.on("message", function (topic, message) {
-      console.log(message.toString());
+    // When a message arrives, handle it with registered callbacks
+    this.mqttClient.on("message", (topic, message) => {
+      console.log(`Received MQTT message on topic ${topic}:`, message.toString());
+      
+      const handler = this.messageHandlers.get(topic);
+      if (handler) {
+        try {
+          handler(topic, message.toString());
+        } catch (error) {
+          console.error(`Error handling message for topic ${topic}:`, error);
+        }
+      }
     });
 
     this.mqttClient.on("close", () => {
       console.log(`mqtt client disconnected`);
     });
+  }
+
+  // Subscribe to a topic with a callback handler
+  subscribeToTopic(topic, callback) {
+    if (!this.mqttClient) {
+      console.warn("⚠️  MQTT client not connected. Cannot subscribe to topic.");
+      return;
+    }
+
+    this.messageHandlers.set(topic, callback);
+    this.mqttClient.subscribe(topic, (err) => {
+      if (err) {
+        console.error(`Failed to subscribe to topic ${topic}:`, err);
+      } else {
+        console.log(`Successfully subscribed to topic: ${topic}`);
+      }
+    });
+  }
+
+  // Unsubscribe from a topic
+  unsubscribeFromTopic(topic) {
+    if (!this.mqttClient) {
+      console.warn("⚠️  MQTT client not connected. Cannot unsubscribe from topic.");
+      return;
+    }
+
+    this.messageHandlers.delete(topic);
+    this.mqttClient.unsubscribe(topic);
+    console.log(`Unsubscribed from topic: ${topic}`);
   }
 
   // Sends a mqtt message to topic: mytopic
@@ -53,6 +92,20 @@ class MqttHandler {
       return;
     }
     this.mqttClient.publish(topic, message);
+  }
+
+  // Check if client is connected
+  isClientConnected() {
+    return this.mqttClient && this.mqttClient.connected;
+  }
+
+  // Disconnect MQTT client
+  disconnect() {
+    if (this.mqttClient) {
+      this.mqttClient.end();
+      this.mqttClient = null;
+    }
+    this.messageHandlers.clear();
   }
 }
 

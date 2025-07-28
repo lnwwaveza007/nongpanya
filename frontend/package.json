@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "node scripts/select-env.js",
     "dev:local": "VITE_SELECTED_ENV=LOCAL vite",
-    "dev:dev": "VITE_SELECTED_ENV=DEV vite", 
+    "dev:dev": "VITE_SELECTED_ENV=DEV vite",
     "dev:prod": "VITE_SELECTED_ENV=PROD vite",
     "build": "tsc -b && vite build",
     "build:local": "VITE_SELECTED_ENV=LOCAL tsc -b && vite build",
@@ -24,7 +24,6 @@
     "clsx": "^2.1.1",
     "i18next": "^25.3.2",
     "lucide-react": "^0.469.0",
-    "mqtt": "^5.10.3",
     "qrcode.react": "^4.2.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

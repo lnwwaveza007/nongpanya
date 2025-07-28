@@ -2,11 +2,11 @@ import { Card } from '@/components/ui/card';
 import { Smartphone } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import mqtt from 'mqtt';
 import { useNavigate } from 'react-router-dom';
 import { getCode } from '@/api';
 import { useTranslation } from 'react-i18next';
 import { config } from '../../config';
+import { useWebSocket } from '@/hooks/useWebSocket';
 
 const QRCodeScreen = () => {
   const { t } = useTranslation();
@@ -14,46 +14,39 @@ const QRCodeScreen = () => {
   const [code, setCode] = useState<string>('');
   const genQrCode = useRef(false);
   const [isHovering, setIsHovering] = useState(false);
+  const { subscribe, unsubscribe } = useWebSocket();
   const face = '(｡♥‿♥｡)';
 
   useEffect(() => {
-    const client = mqtt.connect(config.mqtt.endpoint, {
-      username: config.mqtt.username,
-      password: config.mqtt.password,
-    });
-    client.on("connect", () => {
-      console.log("connected");
-      client.subscribe("nongpanya/order");
-    });
-
-    client.on("message", (_) => {
+    const handleOrder = () => {
       navigate('/screen/giving');
-    });
+    };
+
+    subscribe('order', handleOrder);
 
     return () => {
-      console.log("disconnecting");
-      client.end();
+      unsubscribe('order');
     };
-  }, [navigate]);
+  }, [navigate, subscribe, unsubscribe]);
 
-  const getCodeAPI = async () => {
-    if (code !== '') return;
-    try {
+  useEffect(() => {
+    const getCodeAPI = async () => {
+      if (code !== '') return;
+      try {
         const res = await getCode(); 
         setCode(res.data.code);
         console.log(res.data.code);
-    } catch (error) {
+      } catch (error) {
         console.error(error);
-    }
-  }
+      }
+    };
 
-  useEffect(() => {
     if (!genQrCode.current) {
-        console.log('Generating code...');
-        genQrCode.current = true;
-        getCodeAPI();
+      console.log('Generating code...');
+      genQrCode.current = true;
+      getCodeAPI();
     }
-  }, []);
+  }, [code]);
 
   return (
     <div className="w-[1000px] h-[590px] flex items-center justify-center p-4">

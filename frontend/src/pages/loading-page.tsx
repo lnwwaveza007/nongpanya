@@ -1,39 +1,36 @@
 import { Card } from '@/components/ui/card';
 import { useEffect } from 'react';
-import mqtt from "mqtt";
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { config } from '../config';
+import { useWebSocket } from '@/hooks/useWebSocket';
 
 const LoadingScreen = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { subscribe, unsubscribe } = useWebSocket();
 
   useEffect(() => {
-    const client = mqtt.connect(config.mqtt.endpoint, {
-      username: config.mqtt.username,
-      password: config.mqtt.password,
-    });
-    client.on("connect", () => {
-      console.log("connected");
-      client.subscribe("nongpanya/complete");
-    });
-
-    client.on("message", (_, payload) => {
-      const message = payload.toString();
-      if(message === "error"){
-        alert('Error while sending data')
+    const handleComplete = (data: unknown) => {
+      if (data === "error") {
+        alert('Error while sending data');
         navigate('/');
-      }    
-      const messageJson = JSON.parse(message);  
-      navigate('/result', {state: {data: messageJson}});
-    });
+      } else {
+        try {
+          const messageJson = typeof data === 'string' ? JSON.parse(data) : data;
+          navigate('/result', { state: { data: messageJson } });
+        } catch (error) {
+          console.error('Error parsing message:', error);
+          navigate('/');
+        }
+      }
+    };
+
+    subscribe('complete', handleComplete);
 
     return () => {
-      console.log("disconnecting");
-      client.end();
+      unsubscribe('complete');
     };
-  }, []);
+  }, [navigate, subscribe, unsubscribe]);
   
   // Primary: PANTONE 172 C (orange)
   const primaryColor = 'hsl(34, 100%, 56%)';

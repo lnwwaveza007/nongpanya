@@ -9,10 +9,8 @@ const SELECTED_ENV: Environment = (import.meta.env.VITE_SELECTED_ENV as Environm
 // Environment-specific configurations
 const environmentConfigs = {
   LOCAL: {
-    mqtt: {
-      endpoint: "ws://localhost:9001",
-      username: "mqttuser",
-      password: "1234"
+    websocket: {
+      endpoint: "ws://localhost:3001"
     },
     api: {
       url: "http://localhost:3000/api"
@@ -22,10 +20,8 @@ const environmentConfigs = {
     }
   },
   DEV: {
-    mqtt: {
-      endpoint: "ws://nongpanya.sit.kmutt.ac.th:9001/mqtt",
-      username: "mqttuser", 
-      password: "nongpanya"
+    websocket: {
+      endpoint: "ws://nongpanya.sit.kmutt.ac.th:3001"
     },
     api: {
       url: "http://localhost:3000/api"
@@ -35,10 +31,8 @@ const environmentConfigs = {
     }
   },
   PROD: {
-    mqtt: {
-      endpoint: "wss://nongpanya.sit.kmutt.ac.th:9001/mqtt",
-      username: "mqttuser",
-      password: "nongpanya"
+    websocket: {
+      endpoint: "wss://nongpanya.sit.kmutt.ac.th:3001"
     },
     api: {
       url: "https://nongpanya.sit.kmutt.ac.th/api"
