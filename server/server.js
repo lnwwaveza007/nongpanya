@@ -8,7 +8,6 @@ import userRoute from "./routes/userRoutes.js";
 import medRoute from "./routes/medRoutes.js";
 import codeRoute from "./routes/codeRoutes.js";
 import { getConfig, getCorsOrigins } from "./config/envConfig.js";
-import mqttService from "./services/mqttService.js";
 import websocketService from "./services/websocketService.js";
 
 const app = express();
@@ -45,10 +44,6 @@ app.use((err, req, res, next) => {
 
 // Initialize services and start server
 async function startServer() {
-  // Initialize MQTT service
-  console.log('Initializing MQTT service...');
-  mqttService.initialize();
-
   // Initialize WebSocket service
   console.log('Initializing WebSocket service...');
   try {
@@ -77,18 +72,12 @@ startServer().catch((error) => {
 // Graceful shutdown
 process.on('SIGTERM', () => {
   console.log('\nReceived SIGTERM signal. Shutting down gracefully...');
-  
-  mqttService.disconnect();
   websocketService.close();
-  
   process.exit(0);
 });
 
 process.on('SIGINT', () => {
   console.log('\nReceived SIGINT signal. Shutting down gracefully...');
-  
-  mqttService.disconnect();
   websocketService.close();
-  
   process.exit(0);
 });

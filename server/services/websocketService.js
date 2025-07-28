@@ -1,9 +1,8 @@
 // WebSocket server service for handling browser connections
-// This bridges MQTT messages to WebSocket clients
+// Provides real-time communication between server and clients
 
-import { WebSocketServer } from 'ws';
+import { WebSocketServer, WebSocket } from 'ws';
 import { createServer } from 'http';
-import mqttService from './mqttService.js';
 
 class WebSocketService {
   constructor() {
@@ -65,9 +64,6 @@ class WebSocketService {
           console.error('WebSocket server error:', error);
         });
 
-        // Set up MQTT message forwarding
-        this.setupMqttForwarding();
-
         // Start the server with promise-based approach
         await new Promise((resolve, reject) => {
           this.server.on('error', (error) => {
@@ -114,32 +110,6 @@ class WebSocketService {
     }
   }
 
-  setupMqttForwarding() {
-    const mqttClient = mqttService.getClient();
-    
-    // Subscribe to MQTT topics and forward to WebSocket clients
-    mqttClient.subscribeToTopic('nongpanya/order', (topic, message) => {
-      this.broadcastToClients({
-        type: 'order',
-        data: message
-      });
-    });
-
-    mqttClient.subscribeToTopic('nongpanya/complete', (topic, message) => {
-      this.broadcastToClients({
-        type: 'complete',
-        data: message
-      });
-    });
-
-    mqttClient.subscribeToTopic('nongpanya/error', (topic, message) => {
-      this.broadcastToClients({
-        type: 'error',
-        data: message
-      });
-    });
-  }
-
   handleClientMessage(ws, message) {
     console.log('Received message from client:', message);
     
@@ -157,7 +127,7 @@ class WebSocketService {
   }
 
   sendToClient(ws, message) {
-    if (ws.readyState === ws.OPEN) {
+    if (ws.readyState === WebSocket.OPEN) {
       ws.send(JSON.stringify(message));
     }
   }
@@ -166,7 +136,7 @@ class WebSocketService {
     console.log(`Broadcasting to ${this.clients.size} clients:`, message);
     
     this.clients.forEach(client => {
-      if (client.readyState === client.OPEN) {
+      if (client.readyState === WebSocket.OPEN) {
         try {
           client.send(JSON.stringify(message));
         } catch (error) {

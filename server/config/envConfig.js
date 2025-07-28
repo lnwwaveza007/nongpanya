@@ -77,14 +77,6 @@ export function getConfig() {
       url: getEnvVar('DATABASE_URL'),
     },
     
-    // MQTT configuration
-    mqtt: {
-      endpoint: getEnvVar('VITE_MQTT_ENDPOINT'),
-      username: getEnvVar('VITE_MQTT_USERNAME'),
-      password: getEnvVar('VITE_MQTT_PASSWORD'),
-      clientId: getEnvVar('VITE_MQTT_CLIENT_ID', 'mqttx_66130500012'),
-    },
-    
     // Board/Hardware configuration
     board: {
       url: getEnvVar('BOARD_URL'),
@@ -180,11 +172,6 @@ function validateConfig(config) {
     missingVars.push('JWT_SECRET');
   }
   
-  // Warn about missing MQTT configuration (might not be critical for all environments)
-  if (!config.mqtt.endpoint) {
-    console.warn(`⚠️  Missing MQTT configuration: ${SELECTED_ENV}_VITE_MQTT_ENDPOINT`);
-  }
-  
   // Warn about missing Microsoft OAuth (might not be needed in all setups)
   if (!config.microsoft.clientId) {
     console.warn(`⚠️  Missing Microsoft OAuth configuration: MICROSOFT_CLIENT_ID`);
@@ -214,7 +201,6 @@ export function displayConfig() {
   console.log(`Node Environment: ${config.nodeEnv || 'Not set'}`);
   console.log(`Port: ${config.port}`);
   console.log(`Database: ${config.database.url ? '✓ Configured' : '❌ Missing'}`);
-  console.log(`MQTT: ${config.mqtt.endpoint ? '✓ Configured' : '❌ Missing'}`);
   console.log(`Microsoft OAuth: ${config.microsoft.clientId ? '✓ Configured' : '❌ Missing'}`);
   console.log(`Microsoft Callback: ${config.microsoft.callbackUrl ? '✓ Configured' : '❌ Missing'}`);
   console.log(`JWT: ${config.jwt.secret ? '✓ Configured' : '❌ Missing'}`);
