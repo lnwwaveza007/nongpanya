@@ -10,15 +10,21 @@ import {
   HeartPulse,
   Eye,
   LayoutDashboard,
+  Info,
+  AlertTriangle,
+  Pill,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import LanguageToggle from "@/components/ui/language-toggle";
 import { getUserQuota, getUserHistory } from "@/api";
+import { getAllMedicines } from "@/api/med";
 import { signOut } from "@/api/auth";
 import { UserLog } from "@/types";
+import { Medicine } from "@/types/medicine";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import UserLogDetailModal from "@/components/form/UserLogDetailModal";
+import MedicineDetailModal from "@/components/form/MedicineDetailModal";
 
 const Homepage = () => {
   const { t } = useTranslation();
@@ -27,8 +33,11 @@ const Homepage = () => {
 
   const [quota, setQuota] = useState({ used: 0, maxPerMonth: 3 });
   const [userLogs, setUserLogs] = useState<UserLog[]>([]);
+  const [medicines, setMedicines] = useState<Medicine[]>([]);
   const [selectedLog, setSelectedLog] = useState<UserLog | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(null);
+  const [isMedicineModalOpen, setIsMedicineModalOpen] = useState(false);
 
   useEffect(() => {
     fetchUserData();
@@ -57,6 +66,12 @@ const Homepage = () => {
           )
           .slice(0, 5);
         setUserLogs(sortedLogs);
+      }
+
+      // Fetch available medicines
+      const medicinesResponse = await getAllMedicines();
+      if (medicinesResponse.data.success) {
+        setMedicines(medicinesResponse.data.data);
       }
     } catch (error) {
       console.error("Failed to fetch user data:", error);
@@ -91,6 +106,16 @@ const Homepage = () => {
   const handleCloseDetailModal = () => {
     setIsDetailModalOpen(false);
     setSelectedLog(null);
+  };
+
+  const handleMedicineClick = (medicine: Medicine) => {
+    setSelectedMedicine(medicine);
+    setIsMedicineModalOpen(true);
+  };
+
+  const handleCloseMedicineModal = () => {
+    setIsMedicineModalOpen(false);
+    setSelectedMedicine(null);
   };
 
   const formatDate = (dateString: string) => {
@@ -197,6 +222,126 @@ const Homepage = () => {
       </div>
 
       <div className="max-w-6xl mx-auto space-y-8">
+        {/* Available Medicines Section */}
+        <Card className="border-[#FF4B28] shadow-xl overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-[#FF4B28] to-[#FF6B48] text-white">
+            <CardTitle className="flex items-center gap-3 text-lg">
+              <div className="bg-white/20 p-2 rounded-lg">
+                <Pill size={20} />
+              </div>
+              {t("homepage.availableMedicines.title")}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            {medicines.length === 0 ? (
+              <div className="text-center py-8">
+                <div className="bg-gray-100 rounded-full p-6 w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+                  <Pill size={28} className="text-gray-400" />
+                </div>
+                <p className="text-gray-500">{t("homepage.availableMedicines.noMedicines")}</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {medicines.map((medicine) => (
+                  <div
+                    key={medicine.id}
+                    onClick={() => handleMedicineClick(medicine)}
+                    className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer hover:border-[#FF4B28]/50 group"
+                  >
+                    <div className="text-center mb-3">
+                      {medicine.image_url ? (
+                        <img
+                          src={medicine.image_url}
+                          alt={medicine.name}
+                          className="w-16 h-16 mx-auto rounded-lg object-cover border border-gray-200"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iOCIgZmlsbD0iI0Y5RkFGQiIvPgo8cGF0aCBkPSJNMzIgMjBIMzZWMjhIMjhWMjBIMzJaIiBmaWxsPSIjRjU5RTBCIi8+CjxwYXRoIGQ9Ik0yOCAzNkg0NFYyOEgyOFYzNloiIGZpbGw9IiNGNTlFMEIiLz4KPC9zdmc+';
+                          }}
+                        />
+                      ) : (
+                        <div className="w-16 h-16 mx-auto rounded-lg bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center border border-orange-300">
+                          <Pill size={24} className="text-orange-600" />
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="text-center">
+                      <h3 className="font-semibold text-gray-800 text-sm mb-2 line-clamp-2">
+                        {medicine.name}
+                      </h3>
+                      
+                      {medicine.description && (
+                        <p className="text-xs text-gray-600 line-clamp-3 mb-3">
+                          {medicine.description}
+                        </p>
+                      )}
+                      
+                      <div className="bg-gradient-to-r from-[#FF4B28]/10 to-[#FF6B48]/10 rounded-lg p-2">
+                        <span className="text-xs font-medium text-[#FF4B28]">
+                          {t("homepage.availableMedicines.available")}
+                        </span>
+                      </div>
+                      
+                      <div className="mt-2 text-center">
+                        <span className="text-xs text-gray-400 group-hover:text-[#FF4B28] transition-colors">
+                          {t("homepage.availableMedicines.clickForDetails")}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Medicine Safety Guidelines */}
+            <div className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6">
+              <div className="flex items-start gap-4">
+                <div className="bg-blue-500 p-3 rounded-lg flex-shrink-0">
+                  <Info size={24} className="text-white" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-blue-800 mb-3">
+                    {t("homepage.availableMedicines.guidelines.title")}
+                  </h4>
+                  <ul className="space-y-2 text-sm text-blue-700">
+                    <li className="flex items-start gap-2">
+                      <span className="text-blue-500 mt-1 flex-shrink-0">•</span>
+                      {t("homepage.availableMedicines.guidelines.point1")}
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-blue-500 mt-1 flex-shrink-0">•</span>
+                      {t("homepage.availableMedicines.guidelines.point2")}
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-blue-500 mt-1 flex-shrink-0">•</span>
+                      {t("homepage.availableMedicines.guidelines.point3")}
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-blue-500 mt-1 flex-shrink-0">•</span>
+                      {t("homepage.availableMedicines.guidelines.point4")}
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            {/* Important Notice */}
+            <div className="mt-6 bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 rounded-xl p-4">
+              <div className="flex items-start gap-3">
+                <AlertTriangle size={24} className="text-red-500 mt-1 flex-shrink-0" />
+                <div>
+                  <h4 className="font-semibold text-red-800 mb-2">
+                    {t("homepage.availableMedicines.notice.title")}
+                  </h4>
+                  <p className="text-sm text-red-700">
+                    {t("homepage.availableMedicines.notice.description")}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Recent History */}
         <Card className="border-[#FF4B28] shadow-xl overflow-hidden">
@@ -425,6 +570,13 @@ const Homepage = () => {
           log={selectedLog}
         />
       )}
+
+      {/* Medicine Detail Modal */}
+      <MedicineDetailModal
+        isOpen={isMedicineModalOpen}
+        onClose={handleCloseMedicineModal}
+        medicine={selectedMedicine}
+      />
     </div>
   );
 };

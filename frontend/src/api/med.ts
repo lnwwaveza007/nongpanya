@@ -20,3 +20,7 @@ export const getMedRanking = async () => {
 export const getMedRequest = async (date: string) => {
     return await axiosInstance.get(`/med/req/timeseries?date=${date}`);
 }
+
+export const getAllMedicines = async () => {
+    return await axiosInstance.get("/med");
+}
