@@ -168,7 +168,7 @@ export const giveMedicine = async (weight, age, allergies, symptomIds = [], medi
     const dose = await doseCheck(match.medicine_id, weight, age);
 
     const alreadyAdded = pills.some(
-      (p) => p.medicine_id === match.medicine_id
+      (pill) => pill.medicine_id === match.medicine_id
     );
 
     if (!alreadyAdded) {
@@ -176,31 +176,31 @@ export const giveMedicine = async (weight, age, allergies, symptomIds = [], medi
     }
   }
 
+  await dropPills(pills.map(pill => pill.medicine_id));
   for (const pill of pills) {
-    await dropPills(pill.medicine_id, pill.amount);
     await removeStock(pill.medicine_id, pill.amount);
-    const data = await getPillsData(pill);
+    const data = await getPillData(pill);
     pillsOutcome.push(data);
   }
 
   return pillsOutcome;
 };
 
-export const getPillsData = async (pills) => {
+export const getPillData = async (pill) => {
   const medicine = await prisma.medicines.findUnique({
-    where: { id: pills.medicine_id },
+    where: { id: pill.medicine_id },
   });
 
   const instructions = await prisma.medicine_instructions.findMany({
-    where: { medicine_id: pills.medicine_id },
+    where: { medicine_id: pill.medicine_id },
   });
 
   const pillsData = {
-    id: pills.medicine_id,
+    id: pill.medicine_id,
     name: medicine.name,
-    quantity: pills.amount + " Pack",
-    dose: pills.dose?.dose_amount ? pills.dose.dose_amount + " " + medicine.type : null,
-    frequency: pills.dose?.dose_frequency ?? null,
+    quantity: pill.amount + " Pack",
+    dose: pill.dose?.dose_amount ? pill.dose.dose_amount + " " + medicine.type : null,
+    frequency: pill.dose?.dose_frequency ?? null,
     imageSize: { width: 150, height: 200 },
     imageUrl: medicine.image_url,
     instructions: instructions
