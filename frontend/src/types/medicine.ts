@@ -2,8 +2,11 @@
 export interface Medicine {
   id: number;
   name: string;
-  image_url: string;
-  description: string;
+  image_url: string | null;
+  description: string | null;
+  type: string;
+  strength: number;
+  total_stock: number;
 }
 
 export interface Symptom {
@@ -65,6 +68,13 @@ export interface MedTimeseriesMed {
   total: number;
 }
 
+export interface UserLogMedicine {
+  id: number;
+  name: string;
+  image_url: string | null;
+  description: string | null;
+}
+
 export interface UserLog {
   code: string;
   user_id: string;
@@ -76,6 +86,6 @@ export interface UserLog {
   status: string;
   created_at: string;
   updated_at: string;
-  medicines: Medicine[];
+  medicines: UserLogMedicine[];
   symptoms: Symptom[];
 } 

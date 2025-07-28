@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import LanguageToggle from "@/components/ui/language-toggle";
+import MedicineImage from "@/components/ui/medicine-image";
 import { getUserQuota, getUserHistory } from "@/api";
 import { getAllMedicines } from "@/api/med";
 import { signOut } from "@/api/auth";
@@ -36,7 +37,9 @@ const Homepage = () => {
   const [medicines, setMedicines] = useState<Medicine[]>([]);
   const [selectedLog, setSelectedLog] = useState<UserLog | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(null);
+  const [selectedMedicine, setSelectedMedicine] = useState<Medicine | null>(
+    null
+  );
   const [isMedicineModalOpen, setIsMedicineModalOpen] = useState(false);
 
   useEffect(() => {
@@ -68,7 +71,7 @@ const Homepage = () => {
         setUserLogs(sortedLogs);
       }
 
-      // Fetch available medicines
+      // Fetch available medicines with stock information
       const medicinesResponse = await getAllMedicines();
       if (medicinesResponse.data.success) {
         setMedicines(medicinesResponse.data.data);
@@ -83,7 +86,7 @@ const Homepage = () => {
       // Call the signout API endpoint
       await signOut();
     } catch (error) {
-      console.error('Failed to sign out:', error);
+      console.error("Failed to sign out:", error);
     } finally {
       // Always clear local storage and redirect, even if API call fails
       localStorage.removeItem("user");
@@ -162,14 +165,16 @@ const Homepage = () => {
 
             <div className="flex items-center gap-3">
               {/* Dashboard Button for Admin */}
-              {hasMinimumRole('admin') && (
+              {hasMinimumRole("admin") && (
                 <Button
-                  onClick={() => navigate('/dashboard')}
+                  onClick={() => navigate("/dashboard")}
                   variant="outline"
                   className="flex items-center gap-2 border-[#FF4B28] text-[#FF4B28] hover:bg-[#FF4B28] hover:text-white w-full sm:w-auto"
                 >
                   <LayoutDashboard size={20} />
-                  <span className="hidden sm:inline">{t("homepage.dashboard")}</span>
+                  <span className="hidden sm:inline">
+                    {t("homepage.dashboard")}
+                  </span>
                   <span className="sm:hidden">{t("homepage.dashboard")}</span>
                 </Button>
               )}
@@ -181,7 +186,9 @@ const Homepage = () => {
                 className="flex items-center gap-2 border-[#FF4B28] text-[#FF4B28] hover:bg-[#FF4B28] hover:text-white w-full sm:w-auto"
               >
                 <LogOut size={20} />
-                <span className="hidden sm:inline">{t("homepage.signOut")}</span>
+                <span className="hidden sm:inline">
+                  {t("homepage.signOut")}
+                </span>
                 <span className="sm:hidden">{t("homepage.signOut")}</span>
               </Button>
             </div>
@@ -238,7 +245,9 @@ const Homepage = () => {
                 <div className="bg-gray-100 rounded-full p-6 w-20 h-20 mx-auto mb-4 flex items-center justify-center">
                   <Pill size={28} className="text-gray-400" />
                 </div>
-                <p className="text-gray-500">{t("homepage.availableMedicines.noMedicines")}</p>
+                <p className="text-gray-500">
+                  {t("homepage.availableMedicines.noMedicines")}
+                </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -246,43 +255,53 @@ const Homepage = () => {
                   <div
                     key={medicine.id}
                     onClick={() => handleMedicineClick(medicine)}
-                    className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer hover:border-[#FF4B28]/50 group"
+                    className={`bg-white border rounded-xl p-4 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer group ${
+                      medicine.total_stock === 0
+                        ? "border-red-200 opacity-75 hover:border-red-300"
+                        : "border-gray-200 hover:border-[#FF4B28]/50"
+                    }`}
                   >
                     <div className="text-center mb-3">
-                      {medicine.image_url ? (
-                        <img
-                          src={medicine.image_url}
-                          alt={medicine.name}
-                          className="w-16 h-16 mx-auto rounded-lg object-cover border border-gray-200"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiByeD0iOCIgZmlsbD0iI0Y5RkFGQiIvPgo8cGF0aCBkPSJNMzIgMjBIMzZWMjhIMjhWMjBIMzJaIiBmaWxsPSIjRjU5RTBCIi8+CjxwYXRoIGQ9Ik0yOCAzNkg0NFYyOEgyOFYzNloiIGZpbGw9IiNGNTlFMEIiLz4KPC9zdmc+';
-                          }}
+                      <div className="flex justify-center">
+                        <MedicineImage
+                          medicine={medicine}
+                          size="md"
+                          showGrayscale={true}
                         />
-                      ) : (
-                        <div className="w-16 h-16 mx-auto rounded-lg bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center border border-orange-300">
-                          <Pill size={24} className="text-orange-600" />
-                        </div>
-                      )}
+                      </div>
                     </div>
-                    
+
                     <div className="text-center">
                       <h3 className="font-semibold text-gray-800 text-sm mb-2 line-clamp-2">
                         {medicine.name}
                       </h3>
-                      
+
                       {medicine.description && (
                         <p className="text-xs text-gray-600 line-clamp-3 mb-3">
                           {medicine.description}
                         </p>
                       )}
-                      
-                      <div className="bg-gradient-to-r from-[#FF4B28]/10 to-[#FF6B48]/10 rounded-lg p-2">
-                        <span className="text-xs font-medium text-[#FF4B28]">
-                          {t("homepage.availableMedicines.available")}
+
+                      <div
+                        className={`rounded-lg p-2 ${
+                          medicine.total_stock === 0
+                            ? "bg-red-100"
+                            : "bg-green-100"
+                        }`}
+                      >
+                        <span
+                          className={`text-xs font-medium ${
+                            medicine.total_stock === 0
+                              ? "text-red-600"
+                              : "text-green-600"
+                          }`}
+                        >
+                          {medicine.total_stock === 0
+                            ? t("homepage.availableMedicines.outOfStock")
+                            : `${t("homepage.availableMedicines.available")}`}
                         </span>
                       </div>
-                      
+
                       <div className="mt-2 text-center">
                         <span className="text-xs text-gray-400 group-hover:text-[#FF4B28] transition-colors">
                           {t("homepage.availableMedicines.clickForDetails")}
@@ -297,28 +316,34 @@ const Homepage = () => {
             {/* Medicine Safety Guidelines */}
             <div className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6">
               <div className="flex items-start gap-4">
-                <div className="bg-blue-500 p-3 rounded-lg flex-shrink-0">
-                  <Info size={24} className="text-white" />
-                </div>
+                <Info size={24} className="text-blue-500 mt-1 flex-shrink-0" />
                 <div>
                   <h4 className="font-semibold text-blue-800 mb-3">
                     {t("homepage.availableMedicines.guidelines.title")}
                   </h4>
                   <ul className="space-y-2 text-sm text-blue-700">
                     <li className="flex items-start gap-2">
-                      <span className="text-blue-500 mt-1 flex-shrink-0">•</span>
+                      <span className="text-blue-500 mt-1 flex-shrink-0">
+                        •
+                      </span>
                       {t("homepage.availableMedicines.guidelines.point1")}
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-blue-500 mt-1 flex-shrink-0">•</span>
+                      <span className="text-blue-500 mt-1 flex-shrink-0">
+                        •
+                      </span>
                       {t("homepage.availableMedicines.guidelines.point2")}
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-blue-500 mt-1 flex-shrink-0">•</span>
+                      <span className="text-blue-500 mt-1 flex-shrink-0">
+                        •
+                      </span>
                       {t("homepage.availableMedicines.guidelines.point3")}
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-blue-500 mt-1 flex-shrink-0">•</span>
+                      <span className="text-blue-500 mt-1 flex-shrink-0">
+                        •
+                      </span>
                       {t("homepage.availableMedicines.guidelines.point4")}
                     </li>
                   </ul>
@@ -329,7 +354,10 @@ const Homepage = () => {
             {/* Important Notice */}
             <div className="mt-6 bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 rounded-xl p-4">
               <div className="flex items-start gap-3">
-                <AlertTriangle size={24} className="text-red-500 mt-1 flex-shrink-0" />
+                <AlertTriangle
+                  size={24}
+                  className="text-red-500 mt-1 flex-shrink-0"
+                />
                 <div>
                   <h4 className="font-semibold text-red-800 mb-2">
                     {t("homepage.availableMedicines.notice.title")}
@@ -359,8 +387,12 @@ const Homepage = () => {
                 <div className="bg-gray-100 rounded-full p-8 w-24 h-24 mx-auto mb-4 flex items-center justify-center">
                   <Clock size={32} className="text-gray-400" />
                 </div>
-                <p className="text-gray-500 text-lg font-medium mb-2">{t("homepage.noHistory")}</p>
-                <p className="text-gray-400 text-sm">Your request history will appear here</p>
+                <p className="text-gray-500 text-lg font-medium mb-2">
+                  {t("homepage.noHistory")}
+                </p>
+                <p className="text-gray-400 text-sm">
+                  Your request history will appear here
+                </p>
               </div>
             ) : (
               <>
@@ -368,7 +400,7 @@ const Homepage = () => {
                 <div className="hidden lg:block overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="bg-gradient-to-r from-orange-50 to-pink-50 border-b-2 border-[#FF4B28]/20">
+                      <tr className="bg-orange-50 border-b-2 border-[#FF4B28]/20">
                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
                           {t("homepage.code")}
                         </th>
@@ -393,8 +425,8 @@ const Homepage = () => {
                       {userLogs.map((log, index) => (
                         <tr
                           key={log.code}
-                          className={`border-b border-gray-100 hover:bg-gradient-to-r hover:from-orange-25 hover:to-pink-25 transition-all duration-200 ${
-                            index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'
+                          className={`border-b border-gray-100 hover:bg-orange-50 transition-all duration-200 ${
+                            index % 2 === 0 ? "bg-white" : "bg-gray-50/50"
                           }`}
                         >
                           <td className="px-6 py-4">
@@ -407,7 +439,7 @@ const Homepage = () => {
                               {log.symptoms.slice(0, 2).map((symptom) => (
                                 <span
                                   key={symptom.id}
-                                  className="px-3 py-1 bg-gradient-to-r from-orange-100 to-orange-200 text-orange-800 rounded-full text-xs font-medium shadow-sm"
+                                  className="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-xs font-medium shadow-sm"
                                 >
                                   {symptom.name}
                                 </span>
@@ -424,7 +456,7 @@ const Homepage = () => {
                               {log.medicines.slice(0, 2).map((medicine) => (
                                 <span
                                   key={medicine.id}
-                                  className="px-3 py-1 bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 rounded-full text-xs font-medium shadow-sm"
+                                  className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium shadow-sm"
                                 >
                                   {medicine.name}
                                 </span>
@@ -440,8 +472,8 @@ const Homepage = () => {
                             <span
                               className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-2 w-fit shadow-sm ${
                                 log.status === "completed"
-                                  ? "bg-gradient-to-r from-green-100 to-green-200 text-green-800"
-                                  : "bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800"
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-yellow-100 text-yellow-800"
                               }`}
                             >
                               {log.status === "completed" ? (
@@ -486,8 +518,8 @@ const Homepage = () => {
                         <span
                           className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 shadow-sm ${
                             log.status === "completed"
-                              ? "bg-gradient-to-r from-green-100 to-green-200 text-green-800"
-                              : "bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800"
+                              ? "bg-green-100 text-green-800"
+                              : "bg-yellow-100 text-yellow-800"
                           }`}
                         >
                           {log.status === "completed" ? (
@@ -498,15 +530,17 @@ const Homepage = () => {
                           {log.status}
                         </span>
                       </div>
-                      
+
                       <div className="space-y-3">
                         <div>
-                          <p className="text-xs font-medium text-gray-500 mb-1">Symptoms</p>
+                          <p className="text-xs font-medium text-gray-500 mb-1">
+                            Symptoms
+                          </p>
                           <div className="flex flex-wrap gap-1">
                             {log.symptoms.slice(0, 3).map((symptom) => (
                               <span
                                 key={symptom.id}
-                                className="px-2 py-1 bg-gradient-to-r from-orange-100 to-orange-200 text-orange-800 rounded-full text-xs"
+                                className="px-2 py-1 bg-orange-100 text-orange-800 rounded-full text-xs"
                               >
                                 {symptom.name}
                               </span>
@@ -518,14 +552,16 @@ const Homepage = () => {
                             )}
                           </div>
                         </div>
-                        
+
                         <div>
-                          <p className="text-xs font-medium text-gray-500 mb-1">Medicines</p>
+                          <p className="text-xs font-medium text-gray-500 mb-1">
+                            Medicines
+                          </p>
                           <div className="flex flex-wrap gap-1">
                             {log.medicines.slice(0, 3).map((medicine) => (
                               <span
                                 key={medicine.id}
-                                className="px-2 py-1 bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 rounded-full text-xs"
+                                className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs"
                               >
                                 {medicine.name}
                               </span>
@@ -538,7 +574,7 @@ const Homepage = () => {
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="flex justify-between items-center mt-4 pt-3 border-t border-gray-100">
                         <span className="text-xs text-gray-500">
                           {formatDate(log.created_at)}

@@ -6,6 +6,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { User, Mail, Weight, AlertCircle, Clock, CheckCircle2 } from 'lucide-react';
+import MedicineImage from "@/components/ui/medicine-image";
 
 interface UserLogDetailModalProps {
   isOpen: boolean;
@@ -24,8 +25,8 @@ interface UserLogDetailModalProps {
     medicines: Array<{
       id: number;
       name: string;
-      image_url: string;
-      description: string;
+      image_url: string | null;
+      description: string | null;
     }>;
     symptoms: Array<{
       id: number;
@@ -136,14 +137,16 @@ const UserLogDetailModal: React.FC<UserLogDetailModalProps> = ({ isOpen, onClose
               {log.medicines.map((medicine) => (
                 <div key={medicine.id} className="bg-blue-50 p-4 rounded-lg">
                   <div className="flex items-start gap-3">
-                    <img
-                      src={medicine.image_url}
-                      alt={medicine.name}
-                      className="w-16 h-16 object-contain rounded-lg border bg-white"
-                    />
+                    <div className="flex-shrink-0">
+                      <MedicineImage
+                        medicine={medicine}
+                        size="md"
+                        className="border bg-white"
+                      />
+                    </div>
                     <div>
                       <div className="font-medium text-blue-700">{medicine.name}</div>
-                      <div className="text-sm text-blue-600 mt-1">{medicine.description}</div>
+                      <div className="text-sm text-blue-600 mt-1">{medicine.description || "No description available"}</div>
                     </div>
                   </div>
                 </div>

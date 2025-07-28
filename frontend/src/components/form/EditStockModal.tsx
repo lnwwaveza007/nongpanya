@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Card } from '../ui/card';
 import { X, Plus, Trash2 } from 'lucide-react';
 import { MedicineStock } from '@/types/medicine';
+import MedicineImage from "@/components/ui/medicine-image";
 
 interface StockEntry {
   id: number;
@@ -45,10 +46,10 @@ const EditStockModal: React.FC<EditStockModalProps> = ({ isOpen, onClose, medici
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b">
           <div className="flex items-center gap-4">
-            <img
-              src={medicine.image_url}
-              alt={medicine.name}
-              className="w-16 h-16 object-contain rounded-lg border"
+            <MedicineImage
+              medicine={medicine}
+              size="md"
+              className="border"
             />
             <div>
               <h2 className="text-2xl font-semibold text-gray-800">{medicine.name}</h2>

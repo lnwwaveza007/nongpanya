@@ -113,6 +113,7 @@
             "title": "Available Medicines in Vending Machine",
             "noMedicines": "No medicines currently available",
             "available": "Available",
+            "outOfStock": "Out of Stock",
             "clickForDetails": "Click for details",
             "guidelines": {
                 "title": "Medicine Safety Guidelines",
@@ -130,17 +131,12 @@
     "medicineModal": {
         "title": "Medicine Information",
         "available": "Available",
-        "overthecounter": "Over-the-Counter",
         "description": "Description",
         "generalGuidelines": {
             "title": "General Usage Guidelines",
             "point1": "Take as directed on the package or as advised by a healthcare professional",
             "point2": "Do not exceed the recommended dosage",
             "point3": "Store in a cool, dry place away from direct sunlight"
-        },
-        "disclaimer": {
-            "title": "Medical Disclaimer",
-            "description": "This information is for educational purposes only and should not replace professional medical advice. Always consult with a healthcare provider before starting any new medication."
         }
     },
     "userLog": {

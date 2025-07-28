@@ -7,7 +7,8 @@ import {
 } from "@/components/ui/dialog";
 import { Medicine } from "@/types/medicine";
 import { useTranslation } from "react-i18next";
-import { Pill, Info, AlertTriangle } from "lucide-react";
+import { Pill, Info } from "lucide-react";
+import MedicineImage from "@/components/ui/medicine-image";
 
 interface MedicineDetailModalProps {
   isOpen: boolean;
@@ -38,22 +39,12 @@ const MedicineDetailModal: React.FC<MedicineDetailModalProps> = ({
           {/* Medicine Header */}
           <div className="flex flex-col sm:flex-row gap-4 items-start">
             <div className="flex-shrink-0">
-              {medicine.image_url ? (
-                <img
-                  src={medicine.image_url}
-                  alt={medicine.name}
-                  className="w-24 h-24 rounded-xl object-cover border-2 border-gray-200"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src =
-                      "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHZpZXdCb3g9IjAgMCA5NiA5NiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9Ijk2IiBoZWlnaHQ9Ijk2IiByeD0iMTIiIGZpbGw9IiNGOUZBRkIiLz4KPHA+aCBkPSJNNDggMzBINTRWNDJINDJWMzBINDhaIiBmaWxsPSIjRjU5RTBCIi8+CjxwYXRoIGQ9Ik00MiA1NEg2NlY0Mkg0MlY1NFoiIGZpbGw9IiNGNTlFMEIiLz4KPC9zdmc+";
-                  }}
-                />
-              ) : (
-                <div className="w-24 h-24 rounded-xl bg-gradient-to-br from-orange-100 to-orange-200 flex items-center justify-center border-2 border-orange-300">
-                  <Pill size={32} className="text-orange-600" />
-                </div>
-              )}
+              <MedicineImage
+                medicine={medicine}
+                size="xl"
+                showGrayscale={true}
+                className="border-2 border-gray-100"
+              />
             </div>
 
             <div className="flex-1">
@@ -62,11 +53,18 @@ const MedicineDetailModal: React.FC<MedicineDetailModalProps> = ({
               </h2>
 
               <div className="flex items-center gap-2 mb-3">
-                <span className="bg-gradient-to-r from-[#FF4B28]/10 to-[#FF6B48]/10 text-[#FF4B28] px-3 py-1 rounded-full text-sm font-medium">
-                  {t("medicineModal.available")}
-                </span>
-                <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                  {t("medicineModal.overthecounter")}
+                <span
+                  className={`${
+                    medicine.total_stock === 0 ? "bg-red-100" : "bg-green-100"
+                  } ${
+                    medicine.total_stock === 0
+                      ? "text-red-600"
+                      : "text-green-600"
+                  } px-3 py-1 rounded-full text-sm font-medium`}
+                >
+                  {medicine.total_stock === 0
+                    ? t("homepage.availableMedicines.outOfStock")
+                    : `${t("homepage.availableMedicines.available")}`}
                 </span>
               </div>
             </div>
@@ -84,17 +82,6 @@ const MedicineDetailModal: React.FC<MedicineDetailModalProps> = ({
               </p>
             </div>
           )}
-        </div>
-
-        {/* Medical Disclaimer */}
-        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
-          <h3 className="font-semibold text-yellow-800 mb-2 flex items-center gap-2">
-            <AlertTriangle size={18} className="text-yellow-600" />
-            {t("medicineModal.disclaimer.title")}
-          </h3>
-          <p className="text-sm text-yellow-700">
-            {t("medicineModal.disclaimer.description")}
-          </p>
         </div>
       </DialogContent>
     </Dialog>
