@@ -2,7 +2,6 @@ import React from "react";
 import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import RoleIndicator from "../ui/role-indicator";
 
 interface HeaderProps {
   activePage?: "medicine" | "user-log";
@@ -10,7 +9,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ activePage = "medicine" }) => {
   const navigate = useNavigate();
-  const { hasMinimumRole, user } = useAuth();
+  const { hasMinimumRole } = useAuth();
 
   // Check if user has admin access
   const hasAdminAccess = hasMinimumRole('admin');
@@ -38,19 +37,6 @@ const Header: React.FC<HeaderProps> = ({ activePage = "medicine" }) => {
               User log
             </Button>
           </>
-        )}
-      </div>
-      
-      {/* User info and role display */}
-      <div className="flex items-center gap-4">
-        {user && (
-          <div className="flex items-center gap-3">
-            <div className="text-sm text-right">
-              <span className="text-white/70">Welcome, </span>
-              <span className="font-medium">{user.fullname || user.email}</span>
-            </div>
-            <RoleIndicator size="sm" />
-          </div>
         )}
       </div>
     </div>

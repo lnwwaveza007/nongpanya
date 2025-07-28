@@ -30,19 +30,20 @@ const LoginPage = () => {
             console.error('Failed to fetch user data:', userError);
           }
           
-          window.location.href = `/form?code=${code}`;
-        } else {
-          window.location.href = "/";
+          // If user has a code, redirect to form page, otherwise redirect to homepage
+          if (code) {
+            window.location.href = `/form?code=${code}`;
+          } else {
+            window.location.href = "/homepage";
+          }
         }
       } catch (error) {
         console.error('Auth verification failed:', error);
-        window.location.href = "/";
       }
     };
     
-    if (code) {
-      verifyAuth();
-    }
+    // Check auth status when component loads
+    verifyAuth();
   }, [code]);
 
   const primaryColor = "hsl(34, 100%, 56%)";

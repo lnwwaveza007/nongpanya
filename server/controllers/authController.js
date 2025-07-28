@@ -55,8 +55,8 @@ export const signin = async (req, res, next) => {
 
 export const signout = async (req, res) => {
   const cookies = req.cookies;
-  if (!cookies?.jwt) return res.status(204).send("Logged out");
-  res.clearCookie("jwt", { httpOnly: true, sameSite: "None", secure: true });
+  if (!cookies?.token) return res.status(204).send("Logged out");
+  res.clearCookie("token", { httpOnly: true, sameSite: "None", secure: true });
   return res.status(204).send("Logged out");
 };
 

@@ -8,6 +8,7 @@ import ScreenQRCodePage from "./pages/screen/qrcode-page";
 import GivingScreen from "./pages/screen/giving-page";
 import CompletionScreen from "./pages/screen/complete-page";
 import UnauthorizedPage from './pages/unauthorized-page';
+import Homepage from './pages/homepage';
 import './App.css';
 import './index.css';
 import Redirect from './pages/auth-redirect';
@@ -21,6 +22,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<LoginPage />} />
+        <Route path="/homepage" element={authUser(<Homepage />)} />
         <Route path="/form" element={authUser(<NongpanyaVending />)} />
         <Route path="/result" element={authUser(<ResultPage />)} />
         <Route path='/loading' element={<LoadingPage />} />
