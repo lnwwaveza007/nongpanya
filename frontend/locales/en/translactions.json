@@ -52,9 +52,9 @@
         "instructions": "Instructions:",
         "warnings": "Warnings:",
         "representativeImage": "Representative image",
-        "dispenseNote": "We dispense 2 doses, take half in the first round.",
         "emergencyTitle": "In case of emergency:",
-        "emergencyContact": "Contact HCU: 1234 or Visit nearest hospital"
+        "emergencyContact": "Contact HCU: 1234 or Visit nearest hospital",
+        "backToHome": "Back to Home"
     },
     "screen": {
         "welcome": {

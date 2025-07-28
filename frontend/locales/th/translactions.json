@@ -52,9 +52,9 @@
         "instructions": "คำแนะนำ:",
         "warnings": "คำเตือน:",
         "representativeImage": "รูปภาพตัวอย่าง",
-        "dispenseNote": "เราจ่ายยา 2 โดส ให้กินครึ่งโดสในรอบแรก",
         "emergencyTitle": "ในกรณีฉุกเฉิน:",
-        "emergencyContact": "ติดต่อ HCU: 1234 หรือไปโรงพยาบาลที่ใกล้ที่สุด"
+        "emergencyContact": "ติดต่อ HCU: 1234 หรือไปโรงพยาบาลที่ใกล้ที่สุด",
+        "backToHome": "กลับสู่หน้าหลัก"
     },
     "screen": {
         "welcome": {

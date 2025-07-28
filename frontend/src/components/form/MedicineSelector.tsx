@@ -26,45 +26,62 @@ const MedicineSelector: React.FC<MedicineSelectorProps> = ({
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {medicinesList.map((medicine) => (
-          <div
-            key={medicine.id}
-            className={`border-2 rounded-lg p-4 cursor-pointer transition-all duration-200 hover:shadow-md ${
-              selectedMedicines.includes(medicine.id.toString())
-                ? "border-primary bg-primary/5"
-                : "border-gray-200 hover:border-primary/50"
-            }`}
-            onClick={() => onMedicineToggle(medicine.id.toString())}
-          >
-            <div className="flex items-start gap-3">
-              <input
-                type="checkbox"
-                checked={selectedMedicines.includes(medicine.id.toString())}
-                onChange={() => onMedicineToggle(medicine.id.toString())}
-                className="mt-1 h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary"
-              />
-              <div className="flex-1">
-                <h4 className="font-medium text-gray-900 mb-1">
-                  {medicine.name}
-                </h4>
-                {medicine.image_url && (
-                  <div className="mb-2">
-                    <img
-                      src={medicine.image_url}
-                      alt={medicine.name}
-                      className="w-16 h-16 object-contain rounded border"
-                    />
+        {medicinesList.map((medicine) => {
+          const isOutOfStock = medicine.total_stock === 0;
+          const isSelected = selectedMedicines.includes(medicine.id.toString());
+          
+          return (
+            <div
+              key={medicine.id}
+              className={`border-2 rounded-lg p-4 transition-all duration-200 ${
+                isOutOfStock
+                  ? "border-gray-200 bg-gray-50 opacity-60 cursor-not-allowed"
+                  : `cursor-pointer hover:shadow-md ${
+                      isSelected
+                        ? "border-primary bg-primary/5"
+                        : "border-gray-200 hover:border-primary/50"
+                    }`
+              }`}
+              onClick={() => !isOutOfStock && onMedicineToggle(medicine.id.toString())}
+            >
+              <div className="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  checked={isSelected}
+                  onChange={() => !isOutOfStock && onMedicineToggle(medicine.id.toString())}
+                  disabled={isOutOfStock}
+                  className="mt-1 h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                />
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <h4 className={`font-medium mb-1 ${isOutOfStock ? "text-gray-500" : "text-gray-900"}`}>
+                      {medicine.name}
+                    </h4>
+                    {isOutOfStock && (
+                      <span className="text-xs text-red-500 font-medium bg-red-50 px-2 py-1 rounded">
+                        Out of Stock
+                      </span>
+                    )}
                   </div>
-                )}
-                {medicine.description && (
-                  <p className="text-sm text-gray-600 line-clamp-2">
-                    {medicine.description}
-                  </p>
-                )}
+                  {medicine.image_url && (
+                    <div className="mb-2">
+                      <img
+                        src={medicine.image_url}
+                        alt={medicine.name}
+                        className={`w-16 h-16 object-contain rounded border ${isOutOfStock ? "grayscale" : ""}`}
+                      />
+                    </div>
+                  )}
+                  {medicine.description && (
+                    <p className={`text-sm line-clamp-2 ${isOutOfStock ? "text-gray-400" : "text-gray-600"}`}>
+                      {medicine.description}
+                    </p>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       
       {medicinesList.length === 0 && (

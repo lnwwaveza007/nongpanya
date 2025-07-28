@@ -1,16 +1,17 @@
 import { getUserQuota } from "@/api";
-import { HeartPulse, AlertCircle, Clock, Calendar, Info } from "lucide-react";
+import { HeartPulse, AlertCircle, Calendar, Info, Home } from "lucide-react";
 import {
   useState,
   useEffect,
 } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import LanguageToggle from "@/components/ui/language-toggle";
 import { Medical } from "@/types";
 
 const ResultsPage = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [used, setUsed] = useState(0);
   const prescribedMedications = useLocation().state?.data;
 
@@ -130,10 +131,10 @@ const ResultsPage = () => {
                       {t("result.quantity")}: {med.quantity}
                     </p>
                   </div>
-                  <div className="bg-[#F5F7F9] px-4 py-2 rounded-lg">
+                  {/* <div className="bg-[#F5F7F9] px-4 py-2 rounded-lg">
                     <Clock className="inline-block mr-2" size={16} />
                     {med.frequency}
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className="mt-4 space-y-4">
@@ -146,10 +147,6 @@ const ResultsPage = () => {
                   <div>
                     <h4 className="font-semibold mb-2">{t("result.instructions")}</h4>
                     <ul className="space-y-2 text-left">
-                      <li key="zero" className="flex items-center text-gray-600">
-                          <span className="w-2 h-2 bg-[#FFC926] rounded-full mr-2"></span>
-                          {t("result.dispenseNote")}
-                      </li>
                       {med.instructions?.map((instruction, i) => (
                         <li key={i} className="flex items-center text-gray-600">
                           <span className="w-2 h-2 bg-[#FFC926] rounded-full mr-2"></span>
@@ -178,6 +175,17 @@ const ResultsPage = () => {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Back to Home Button */}
+      <div className="max-w-4xl mx-auto mt-8 mb-8 flex justify-center">
+        <button
+          onClick={() => navigate('/')}
+          className="flex items-center gap-2 px-6 py-3 bg-[#FF4B28] text-white rounded-lg hover:bg-[#E63E1E] transition-colors duration-200 shadow-md"
+        >
+          <Home size={20} />
+          <span>{t("result.backToHome")}</span>
+        </button>
       </div>
 
       {/* Emergency Contact */}

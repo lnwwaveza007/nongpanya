@@ -29,8 +29,11 @@ export const getMedicines = async () => {
 };
 
 export const getMedicalInfo = async (medId) => {
+  // Ensure medId is an integer
+  const medIdInt = parseInt(medId, 10);
+  
   const medInfo = await prisma.medicine_instructions.findMany({
-    where: { id: medId },
+    where: { id: medIdInt },
   });
   return medInfo;
 };
@@ -90,7 +93,7 @@ export const createRequest = async (formData, userId) => {
     if (formData.symptoms && formData.symptoms.length > 0) {
       const symptomData = formData.symptoms.map((symptomId) => ({
         request_code: formData.code,
-        symptom_id: symptomId,
+        symptom_id: parseInt(symptomId, 10),
       }));
 
       await prisma.request_symptoms.createMany({ data: symptomData });
@@ -119,7 +122,7 @@ export const createRequestMedicines = async (code, medicines) => {
       await prisma.request_medicines.create({
         data: {
           request_code: code,
-          medicine_id: medicine.id,
+          medicine_id: parseInt(medicine.id, 10),
         },
       });
     }
@@ -151,7 +154,7 @@ export const giveMedicine = async (weight, age, allergies, symptomIds = [], medi
   let allMedicineMatches = [];
 
   if (medicineIds.length > 0) {
-    allMedicineMatches = medicineIds.map((id) => ({ medicine_id: id }));
+    allMedicineMatches = medicineIds.map((id) => ({ medicine_id: parseInt(id, 10) }));
   }
   
   if (symptomIds.length > 0) {
@@ -162,8 +165,10 @@ export const giveMedicine = async (weight, age, allergies, symptomIds = [], medi
   }
 
   for (const match of allMedicineMatches) {
+    // Convert medicine_id to integer to ensure type compatibility
+    const medicineId = parseInt(match.medicine_id, 10);
     const medicine = await prisma.medicines.findUnique({
-      where: { id: match.medicine_id },
+      where: { id: medicineId },
       select: { name: true },
     });
 
@@ -175,21 +180,23 @@ export const giveMedicine = async (weight, age, allergies, symptomIds = [], medi
     }
 
     // Check if medicine has available stock
-    const availableStock = await checkMedicineStock(match.medicine_id);
+    const availableStock = await checkMedicineStock(medicineId);
     if (availableStock <= 0) {
       console.log(`Skipping ${medicineName} due to insufficient stock.`);
       continue;
     }
 
-    const dose = await doseCheck(match.medicine_id, weight, age);
-
     const alreadyAdded = pills.some(
-      (pill) => pill.medicine_id === match.medicine_id
+      (pill) => pill.medicine_id === medicineId
     );
 
     if (!alreadyAdded) {
-      pills.push({ medicine_id: match.medicine_id, amount: 1, dose });
+      pills.push({ medicine_id: medicineId, amount: 1 });
     }
+  }
+
+  if (pills.length === 0) {
+    throw new Error("No medicines available.");
   }
 
   await dropPills(pills.map(pill => pill.medicine_id));
@@ -203,20 +210,22 @@ export const giveMedicine = async (weight, age, allergies, symptomIds = [], medi
 };
 
 export const getPillData = async (pill) => {
+  // Ensure medicine_id is an integer
+  const medicineId = parseInt(pill.medicine_id, 10);
   const medicine = await prisma.medicines.findUnique({
-    where: { id: pill.medicine_id },
+    where: { id: medicineId },
   });
 
   const instructions = await prisma.medicine_instructions.findMany({
-    where: { medicine_id: pill.medicine_id },
+    where: { medicine_id: medicineId },
   });
 
   const pillsData = {
-    id: pill.medicine_id,
+    id: medicineId,
     name: medicine.name,
     quantity: pill.amount + " Pack",
-    dose: pill.dose?.dose_amount ? pill.dose.dose_amount + " " + medicine.type : null,
-    frequency: pill.dose?.dose_frequency ?? null,
+    // dose: pill.dose?.dose_amount ? pill.dose.dose_amount + " " + medicine.type : null,
+    // frequency: pill.dose?.dose_frequency ?? null,
     imageSize: { width: 150, height: 200 },
     imageUrl: medicine.image_url,
     instructions: instructions
@@ -231,96 +240,12 @@ export const getPillData = async (pill) => {
 
 //Match Symptoms with Medicine
 export const matchSymptoms = async (symptomId) => {
+  // Ensure symptom_id is an integer
+  const symptomIdInt = parseInt(symptomId, 10);
   return await prisma.medicine_symptoms.findMany({
-    where: { symptom_id: symptomId },
+    where: { symptom_id: symptomIdInt },
     orderBy: { effectiveness: "asc" },
     select: { medicine_id: true },
-  });
-};
-
-// Get Perfect Dose from weight
-export const doseCheck = async (medicineId, weight, age) => {
-  const result = await prisma.medicine_doses.findFirst({
-    where: {
-      medicine_id: medicineId,
-      AND: [
-        {
-          OR: [
-            // Weight-based rule (age fields must be null)
-            {
-              AND: [
-                {
-                  OR: [
-                    {
-                      AND: [
-                        { min_weight: { lte: weight } },
-                        { max_weight: { gte: weight } },
-                      ],
-                    },
-                    {
-                      AND: [
-                        { min_weight: { lte: weight } },
-                        { max_weight: null },
-                      ],
-                    },
-                    {
-                      AND: [
-                        { min_weight: null },
-                        { max_weight: { gte: weight } },
-                      ],
-                    },
-                  ],
-                },
-                { min_age: null },
-                { max_age: null },
-              ],
-            },
-            // Age-based rule (weight fields must be null)
-            {
-              AND: [
-                {
-                  OR: [
-                    {
-                      AND: [
-                        { min_age: { lte: age } },
-                        { max_age: { gte: age } },
-                      ],
-                    },
-                    {
-                      AND: [
-                        { min_age: { lte: age } },
-                        { max_age: null },
-                      ],
-                    },
-                    {
-                      AND: [
-                        { min_age: null },
-                        { max_age: { gte: age } },
-                      ],
-                    },
-                  ],
-                },
-                { min_weight: null },
-                { max_weight: null },
-              ],
-            },
-          ],
-        },
-      ],
-    },
-    select: {
-      dose_frequency: true,
-      dose_amount: true,
-    },
-  });
-
-  if (result) return result;
-
-  // Fallback: lowest available dose if no match found
-  return await prisma.medicine_doses.findFirst({
-    where: { medicine_id: medicineId },
-    orderBy: { dose_amount: 'asc' },
-    select: { dose_frequency: true, dose_amount: true },
   });
 };
 
