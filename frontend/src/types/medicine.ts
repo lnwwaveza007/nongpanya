@@ -18,8 +18,9 @@ export interface Medical {
   type: string;
   quantity: number;
   frequency: number;
-  instructions: unknown[];
-  warnings: unknown[];
+  description: string;
+  instructions: number[];
+  warnings: number[];
 }
 
 export interface MedicineStock {

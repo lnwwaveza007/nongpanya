@@ -24,3 +24,7 @@ export const getMedRequest = async (date: string) => {
 export const getAllMedicines = async () => {
     return await axiosInstance.get("/med");
 }
+
+export const getMedInfo = async (detailId: number) => {
+    return await axiosInstance.get(`/med/${detailId}/info`);
+}

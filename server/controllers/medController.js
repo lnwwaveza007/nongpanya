@@ -6,6 +6,7 @@ import {
   setReqStatus,
   getMedicines,
   createRequestMedicines,
+  getMedicalInfo,
 } from "../services/medServices.js";
 import * as code from "../utils/codeStore.js";
 import { getQuotaByUserId } from "../services/userServices.js";
@@ -142,4 +143,14 @@ export const submitRequestForm = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+export const getMedInfo = async (req, res, next) => {
+  const { medId } = req.params;
+  const medInfo = await getMedicalInfo(parseInt(medId));
+  return res.status(200).json({
+    success: true,
+    data: medInfo,
+    message: "Medicine info retrieved successfully",
+  });
 };

@@ -5,6 +5,6 @@ import { getConfig } from '../config/envConfig.js';
 const config = getConfig();
 
 export const dropPills = async (pillIds) => {
-  await axios.get(`${config.board.url}/motor?ids=${pillIds.join(',')}`);
+  // await axios.get(`${config.board.url}/motor?ids=${pillIds.join(',')}`);
   console.log(`Dropping pills with IDs: ${pillIds.join(', ')}`);
 };

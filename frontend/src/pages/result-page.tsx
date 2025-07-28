@@ -7,17 +7,7 @@ import {
 import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import LanguageToggle from "@/components/ui/language-toggle";
-
-interface Medical {
-  imageUrl: string;
-  name: string;
-  type: string;
-  quantity: number;
-  frequency: number;
-  instructions: string[];
-  description: string;
-  warnings: string[];
-}
+import { Medical } from "@/types";
 
 const ResultsPage = () => {
   const { t } = useTranslation();
@@ -32,10 +22,18 @@ const ResultsPage = () => {
     getUserQuotaAPI();
   }, []);
 
+  const resetDate = new Date(
+    new Date().setMonth(new Date().getMonth() + 1, 1)
+  ).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+
   const studentQuota = {
     maxPerMonth: 3,
     used: used,
-    resetDate: new Date(new Date().setMonth(new Date().getMonth() + 1)).setDate(1).toLocaleString() 
+    resetDate: resetDate
   };
 
   // const mockupMedications = [
@@ -45,9 +43,9 @@ const ResultsPage = () => {
   //     type: "Tablet",
   //     quantity: 1,
   //     frequency: 1,
-  //     instructions: ["Take 1 tablet daily"],
   //     description: "This is a description of the medication",
-  //     warnings: ["May cause drowsiness", "May cause nausea"],
+  //     instructions: [15, 16, 17, 18, 19],
+  //     warnings: [20, 21, 22, 23, 24, 25]
   //   },
   // ];
 
@@ -155,7 +153,7 @@ const ResultsPage = () => {
                       {med.instructions?.map((instruction, i) => (
                         <li key={i} className="flex items-center text-gray-600">
                           <span className="w-2 h-2 bg-[#FFC926] rounded-full mr-2"></span>
-                          {instruction}
+                          {t(`detail.${instruction}`)}
                         </li>
                       ))}
                     </ul>
@@ -170,7 +168,7 @@ const ResultsPage = () => {
                       {med.warnings?.map((warning, i) => (
                         <li key={i} className="flex items-start text-red-600">
                           <span className="w-1 h-1 bg-red-400 rounded-full mr-2"></span>
-                          {warning}
+                          {t(`detail.${warning}`)}
                         </li>
                       ))}
                     </ul>

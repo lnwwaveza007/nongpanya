@@ -28,6 +28,13 @@ export const getMedicines = async () => {
   return result;
 };
 
+export const getMedicalInfo = async (medId) => {
+  const medInfo = await prisma.medicine_instructions.findMany({
+    where: { id: medId },
+  });
+  return medInfo;
+};
+
 export const setReqStatus = async (code) => {
   return await prisma.requests.updateMany({
     where: { code },
