@@ -18,10 +18,12 @@ import { AxiosError } from "axios";
 
 import { useValidateCode } from "@/hooks/validateCode";
 import TermsCheckbox from "@/components/form/TermCheckBox";
-import { getSymptoms, getUser, getUserQuota, submitSymptoms } from "@/api";
+import { getSymptoms, getUser, getUserQuota, submitSymptoms, getAllMedicines } from "@/api";
 import { useTranslation } from "react-i18next";
 import LanguageToggle from "@/components/ui/language-toggle";
-import { FormDataset } from "@/types";
+import { FormDataset, Medicine } from "@/types";
+import TabSelector from "@/components/form/TabSelector";
+import MedicineSelector from "@/components/form/MedicineSelector";
 
 interface Symptom {
   id: string;
@@ -34,6 +36,9 @@ const NongpanyaVending = () => {
   const navigate = useNavigate();
   const [symptoms, setSymptoms] = useState<string[]>([]);
   const [symptomsList, setSymptomsList] = useState<Symptom[]>([]);
+  const [medicines, setMedicines] = useState<string[]>([]);
+  const [medicinesList, setMedicinesList] = useState<Medicine[]>([]);
+  const [activeTab, setActiveTab] = useState<"symptoms" | "medicines">("symptoms");
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
@@ -64,6 +69,7 @@ const NongpanyaVending = () => {
     try {
       const resUser = await getUser();
       const resSymp = await getSymptoms();
+      const resMed = await getAllMedicines();
 
       setName(resUser.data.data.fullname);
       setEmail(resUser.data.data.email);
@@ -72,6 +78,7 @@ const NongpanyaVending = () => {
       setWeight(resUser.data.data.weight || null);
       setAllergies(resUser.data.data.allergies || "");
       setSymptomsList(resSymp.data.data);
+      setMedicinesList(resMed.data.data);
     } catch (error) {
       return error;
     }
@@ -123,6 +130,20 @@ const NongpanyaVending = () => {
     }
   };
 
+  const handleMedicineToggle = (id: string) => {
+    if (medicines.includes(id)) {
+      setMedicines((prevMedicines) => {
+        const newMedicines = prevMedicines.filter((medicine) => medicine !== id);
+        return newMedicines;
+      });
+    } else {
+      setMedicines((prevMedicines) => {
+        const newMedicines = [...prevMedicines, id];
+        return newMedicines;
+      });
+    }
+  };
+
   const postAPI = async () => {
     if (!showTerms) {
       alert(t("form.pleaseAcceptTerms"));
@@ -140,9 +161,13 @@ const NongpanyaVending = () => {
         age: age,
         weight: weight,
         allergies: allergies,
-        symptoms: symptoms,
         additional_notes: note,
       };
+      if (activeTab === "symptoms") {
+        formData.symptoms = symptoms;
+      } else {
+        formData.medicines = medicines;
+      }
       const response = await submitSymptoms(formData);
       if (response.status === 201 && response.data.success) {
         navigate("/loading");
@@ -285,13 +310,31 @@ const NongpanyaVending = () => {
         />
       </div>
 
-      {/* Custom Checkbox Component */}
-      <CustomCheckbox
-        checkboxprops={{ label: t("form.symptoms") }}
-        symptomsList={symptomsList}
-        symptoms={symptoms}
-        handleSymptomToggle={handleSymptomToggle}
+      {/* Tab Selector */}
+      <TabSelector
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        symptomsCount={symptoms.length}
+        medicinesCount={medicines.length}
       />
+
+      {/* Tab Content */}
+      {activeTab === "symptoms" && (
+        <CustomCheckbox
+          checkboxprops={{ label: t("form.symptoms") }}
+          symptomsList={symptomsList}
+          symptoms={symptoms}
+          handleSymptomToggle={handleSymptomToggle}
+        />
+      )}
+
+      {activeTab === "medicines" && (
+        <MedicineSelector
+          medicinesList={medicinesList}
+          selectedMedicines={medicines}
+          onMedicineToggle={handleMedicineToggle}
+        />
+      )}
 
       {/* Note Textarea */}
       <div className="md:col-span-2 mt-5">

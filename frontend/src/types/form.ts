@@ -63,7 +63,8 @@ export interface FormDataset {
     age: number | null;
     weight: number | null;
     allergies: string | null;
-    symptoms: string[] | null;
+    symptoms?: string[] | null;
+    medicines?: string[] | null;
     additional_notes: string | null;
 }
 

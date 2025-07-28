@@ -30,6 +30,7 @@
         "allergies": "Allergies (if any)",
         "allergiesPlaceholder": "e.g., Penicillin, Aspirin",
         "symptoms": "Select Your Symptoms",
+        "medicines": "Select Medicines",
         "additionalNotes": "Additional Notes",
         "additionalNotesPlaceholder": "Any other information you'd like to share...",
         "termsAccept": "I accept the terms and conditions",

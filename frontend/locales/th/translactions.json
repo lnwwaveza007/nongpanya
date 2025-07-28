@@ -30,6 +30,7 @@
         "allergies": "อาการแพ้ (ถ้ามี)",
         "allergiesPlaceholder": "เช่น เพนิซิลลิน แอสไพริน",
         "symptoms": "เลือกอาการของคุณ",
+        "medicines": "เลือกยา",
         "additionalNotes": "หมายเหตุเพิ่มเติม",
         "additionalNotesPlaceholder": "ข้อมูลอื่นๆ ที่คุณต้องการแชร์...",
         "termsAccept": "ฉันยอมรับข้อกำหนดและเงื่อนไข",
