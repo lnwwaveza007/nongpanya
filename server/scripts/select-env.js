@@ -5,7 +5,6 @@ import { spawn } from 'child_process';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { existsSync } from 'fs';
-import mqttService from '../services/mqttService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -80,10 +79,7 @@ async function startServer() {
     if (rl && !rl.closed) {
       rl.close();
     }
-    
-    // Disconnect MQTT client using singleton service
-    mqttService.disconnect();
-    
+
     // Kill server process
     if (serverProcess && !serverProcess.killed) {
       console.log('\nStopping server process...');

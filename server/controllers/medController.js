@@ -1,4 +1,3 @@
-import mqttService from "../services/mqttService.js";
 import {
   createRequest,
   deleteRequest,
@@ -11,9 +10,6 @@ import {
 import * as code from "../utils/codeStore.js";
 import { getQuotaByUserId } from "../services/userServices.js";
 import { getAllMedicineStock } from "../services/medStockServices.js";
-
-// Initialize and connect MQTT client
-mqttService.initialize();
 
 export const getAllSymptoms = async (req, res, next) => {
   try {
@@ -115,11 +111,8 @@ export const submitRequestForm = async (req, res, next) => {
       message: "Submit form successfully",
     });
 
-    //Send Data To Vending Machine
-    mqttService.getClient().sendMessage(
-      "nongpanya/order",
-      JSON.stringify({ message: "order" })
-    );
+    // Log order processing start
+    console.log("📦 Processing medicine order for code:", formData.code);
 
     setImmediate(() => {
       setTimeout(async () => {
@@ -133,14 +126,16 @@ export const submitRequestForm = async (req, res, next) => {
             formData.medicines
           );
           await createRequestMedicines(formData.code, medRes);
-          //Send Complete To Vending Machine
-          mqttService.getClient().sendMessage("nongpanya/complete", JSON.stringify(medRes));
+          // Log successful completion
+          console.log("✅ Medicine dispensing completed for code:", formData.code);
+          console.log("💊 Dispensed medicines:", JSON.stringify(medRes, null, 2));
           await setReqStatus(formData.code);
           console.log("completed");
         } catch (asyncError) {
           await deleteRequest(formData.code);
           console.log("Error in async operation:", asyncError);
-          mqttService.getClient().sendMessage("nongpanya/complete", "error");
+          // Log error completion
+          console.log("❌ Medicine dispensing failed for code:", formData.code);
         }
       }, 1000);
     });
