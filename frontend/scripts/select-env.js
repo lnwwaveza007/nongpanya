@@ -5,9 +5,13 @@ import { spawn } from 'child_process';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { existsSync } from 'fs';
+import { platform } from 'os';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+// Detect if running on Windows
+const isWindows = platform() === 'win32';
 
 // Check if we're in the right directory
 const packageJsonPath = join(__dirname, '..', 'package.json');
@@ -73,8 +77,8 @@ function promptEnvironment() {
 async function startDev() {
   let devProcess = null;
   
-  // Setup signal handlers once
-  const cleanup = (signal) => {
+  // Setup signal handlers with Windows compatibility
+  const cleanup = async (signal) => {
     console.log(`\n${'-'.repeat(30)}`);
     console.log('  SHUTTING DOWN DEV SERVER...');
     console.log('-'.repeat(30));
@@ -84,14 +88,34 @@ async function startDev() {
     }
     
     if (devProcess && !devProcess.killed) {
-      devProcess.kill(signal || 'SIGTERM');
+      if (isWindows) {
+        // On Windows, use taskkill to forcefully terminate the process tree
+        try {
+          spawn('taskkill', ['/pid', devProcess.pid, '/T', '/F'], { stdio: 'ignore' });
+        } catch (error) {
+          // Fallback to regular kill
+          devProcess.kill('SIGTERM');
+        }
+      } else {
+        devProcess.kill(signal || 'SIGTERM');
+      }
+      
+      // Wait a bit for graceful shutdown
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
     
     process.exit(0);
   };
   
-  process.on('SIGINT', () => cleanup('SIGINT'));
-  process.on('SIGTERM', () => cleanup('SIGTERM'));
+  // Windows doesn't support SIGTERM properly, so we handle exit events differently
+  if (isWindows) {
+    process.on('SIGINT', () => cleanup('SIGINT'));
+    process.on('exit', () => cleanup());
+    process.on('beforeExit', () => cleanup());
+  } else {
+    process.on('SIGINT', () => cleanup('SIGINT'));
+    process.on('SIGTERM', () => cleanup('SIGTERM'));
+  }
   
   try {
     const selectedEnv = await promptEnvironment();
@@ -107,13 +131,16 @@ async function startDev() {
     }
     
     // Start the dev server with vite
-    devProcess = spawn('npx', ['vite'], {
+    const command = isWindows ? 'npx.cmd' : 'npx';
+    devProcess = spawn(command, ['vite'], {
       cwd: join(__dirname, '..'),
       stdio: 'inherit',
       env: {
         ...process.env,
         VITE_SELECTED_ENV: selectedEnv,
-      }
+      },
+      // On Windows, spawn the process in a new process group
+      ...(isWindows ? { detached: false } : {})
     });
     
     devProcess.on('error', (error) => {

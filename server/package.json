@@ -5,10 +5,14 @@
   "main": "server.js",
   "scripts": {
     "start": "SELECTED_ENV=PROD nodemon server",
+    "start:win": "set SELECTED_ENV=PROD && nodemon server",
     "dev": "node scripts/select-env.js",
     "dev:local": "SELECTED_ENV=LOCAL nodemon server",
+    "dev:local:win": "set SELECTED_ENV=LOCAL && nodemon server",
     "dev:dev": "SELECTED_ENV=DEV nodemon server",
+    "dev:dev:win": "set SELECTED_ENV=DEV && nodemon server",
     "dev:prod": "SELECTED_ENV=PROD nodemon server",
+    "dev:prod:win": "set SELECTED_ENV=PROD && nodemon server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
