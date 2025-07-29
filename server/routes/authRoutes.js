@@ -8,7 +8,7 @@ import { authorizeRoles } from "../middlewares/authorizeRole.js";
 const authRoute = Router();
 
 authRoute.post("/signin",localSignin);
-authRoute.post("/register", authorizeRoles(['admin','superadmin'], localRegister));
+authRoute.post("/register", authenticateToken, authorizeRoles('admin','superadmin'), localRegister);
 authRoute.get(
   "/microsoft",
   passport.authenticate("microsoft", {

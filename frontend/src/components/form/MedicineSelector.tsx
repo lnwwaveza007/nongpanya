@@ -16,6 +16,17 @@ const MedicineSelector: React.FC<MedicineSelectorProps> = ({
 }) => {
   const { t } = useTranslation();
   
+  const handleMedicineToggle = (medicineId: string) => {
+    const isCurrentlySelected = selectedMedicines.includes(medicineId);
+    
+    // If trying to select a new medicine and already have 2 selected, prevent selection
+    if (!isCurrentlySelected && selectedMedicines.length >= 2) {
+      return;
+    }
+    
+    onMedicineToggle(medicineId);
+  };
+  
   return (
     <div className="bg-white rounded-lg p-6 shadow-md border border-primary">
       <div className="flex items-center gap-2 mb-4">
@@ -29,12 +40,13 @@ const MedicineSelector: React.FC<MedicineSelectorProps> = ({
         {medicinesList.map((medicine) => {
           const isOutOfStock = medicine.total_stock === 0;
           const isSelected = selectedMedicines.includes(medicine.id.toString());
+          const canSelect = isSelected || selectedMedicines.length < 2;
           
           return (
             <div
               key={medicine.id}
               className={`border-2 rounded-lg p-4 transition-all duration-200 ${
-                isOutOfStock
+                isOutOfStock || !canSelect
                   ? "border-gray-200 bg-gray-50 opacity-60 cursor-not-allowed"
                   : `cursor-pointer hover:shadow-md ${
                       isSelected
@@ -42,24 +54,29 @@ const MedicineSelector: React.FC<MedicineSelectorProps> = ({
                         : "border-gray-200 hover:border-primary/50"
                     }`
               }`}
-              onClick={() => !isOutOfStock && onMedicineToggle(medicine.id.toString())}
+              onClick={() => (canSelect && !isOutOfStock) && handleMedicineToggle(medicine.id.toString())}
             >
               <div className="flex items-start gap-3">
                 <input
                   type="checkbox"
                   checked={isSelected}
-                  onChange={() => !isOutOfStock && onMedicineToggle(medicine.id.toString())}
-                  disabled={isOutOfStock}
+                  onChange={() => (canSelect && !isOutOfStock) && handleMedicineToggle(medicine.id.toString())}
+                  disabled={isOutOfStock || !canSelect}
                   className="mt-1 h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                 />
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
-                    <h4 className={`font-medium mb-1 ${isOutOfStock ? "text-gray-500" : "text-gray-900"}`}>
+                    <h4 className={`font-medium mb-1 ${(isOutOfStock || !canSelect) ? "text-gray-500" : "text-gray-900"}`}>
                       {medicine.name}
                     </h4>
                     {isOutOfStock && (
                       <span className="text-xs text-red-500 font-medium bg-red-50 px-2 py-1 rounded">
                         Out of Stock
+                      </span>
+                    )}
+                    {!isOutOfStock && !canSelect && !isSelected && (
+                      <span className="text-xs text-orange-500 font-medium bg-orange-50 px-2 py-1 rounded">
+                        Max 2 items
                       </span>
                     )}
                   </div>
@@ -68,12 +85,12 @@ const MedicineSelector: React.FC<MedicineSelectorProps> = ({
                       <img
                         src={medicine.image_url}
                         alt={medicine.name}
-                        className={`w-16 h-16 object-contain rounded border ${isOutOfStock ? "grayscale" : ""}`}
+                        className={`w-16 h-16 object-contain rounded border ${(isOutOfStock || !canSelect) ? "grayscale" : ""}`}
                       />
                     </div>
                   )}
                   {medicine.description && (
-                    <p className={`text-sm line-clamp-2 ${isOutOfStock ? "text-gray-400" : "text-gray-600"}`}>
+                    <p className={`text-sm line-clamp-2 ${(isOutOfStock || !canSelect) ? "text-gray-400" : "text-gray-600"}`}>
                       {t(`medicineDescription.${medicine.id}`)}
                     </p>
                   )}

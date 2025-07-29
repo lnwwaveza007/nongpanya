@@ -4,7 +4,7 @@ import { authorizeRoles } from "../middlewares/authorizeRole.js";
 
 const codeRoute = Router();
 
-codeRoute.get("/", authorizeRoles(['screen'], getCurrentCode));
-codeRoute.get("/validate", authorizeRoles(['screen'], validateCode));
+codeRoute.get("/", authorizeRoles('screen'), getCurrentCode);
+codeRoute.get("/validate", validateCode);
 
 export default codeRoute;

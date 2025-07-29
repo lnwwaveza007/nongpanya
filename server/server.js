@@ -33,7 +33,7 @@ app.use('/api/user', authenticateToken, userRoute);
 app.use('/api/med', authenticateToken, medRoute);
 // app.use('/api/med', medRoute);
 app.use('/api/auth', authRoute);
-app.use("/api/code", codeRoute);
+app.use("/api/code", authenticateToken, codeRoute);
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
