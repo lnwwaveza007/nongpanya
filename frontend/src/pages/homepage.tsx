@@ -283,7 +283,7 @@ const Homepage = () => {
 
                       {medicine.description && (
                         <p className="text-xs text-gray-600 line-clamp-3 mb-3">
-                          {t(`medicineDescription.${medicine.description}`)}
+                          {t(`medicineDescription.${medicine.id}`)}
                         </p>
                       )}
 

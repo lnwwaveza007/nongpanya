@@ -78,7 +78,7 @@ const MedicineDetailModal: React.FC<MedicineDetailModalProps> = ({
                 {t("medicineModal.description")}
               </h3>
               <p className="text-gray-700 leading-relaxed">
-                {t(`medicineDescription.${medicine.description}`)}
+                {t(`medicineDescription.${medicine.id}`)}
               </p>
             </div>
           )}
