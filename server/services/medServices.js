@@ -206,7 +206,8 @@ export const giveMedicine = async (weight, age, allergies, symptomIds = [], medi
   }
 
   if (pills.length === 0) {
-    throw new Error("No medicines available.");
+    console.log("No medicines available for the given symptoms/allergies");
+    return []; // Return empty array instead of throwing
   }
 
   await dropPills(pills.map(pill => pill.medicine_id));

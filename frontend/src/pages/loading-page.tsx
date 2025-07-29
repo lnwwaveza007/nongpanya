@@ -19,19 +19,89 @@ const LoadingScreen = () => {
     }
   });
 
+  // Handle WebSocket connection errors
   useEffect(() => {
-    const handleComplete = (data: unknown) => {
-      if (data === "error") {
-        alert('Error while sending data');
-        navigate('/');
-      } else {
-        try {
-          const messageJson = typeof data === 'string' ? JSON.parse(data) : data;
-          navigate('/result', { state: { data: messageJson } });
-        } catch (error) {
-          console.error('Error parsing message:', error);
+    if (error && !isConnected) {
+      console.error('WebSocket connection error:', error);
+      // Give some time for reconnection attempts
+      const timer = setTimeout(() => {
+        if (!isConnected) {
+          alert(t('loading.errors.connectionError'));
           navigate('/');
         }
+      }, 10000); // Wait 10 seconds before showing error
+
+      return () => clearTimeout(timer);
+    }
+  }, [error, isConnected, navigate, t]);
+
+  useEffect(() => {
+    const handleComplete = (data: unknown) => {
+      try {
+        // Handle explicit error responses
+        if (data === "error" || data === null || data === undefined) {
+          console.error('Received error response:', data);
+          alert(t('loading.errors.sendingData'));
+          navigate('/');
+          return;
+        }
+
+        // Handle error objects
+        if (typeof data === 'object' && data && 'error' in data) {
+          console.error('Received error object:', data);
+          const errorData = data as { error?: string };
+          const errorMsg = errorData.error || t('loading.errors.unknown');
+          alert(`${t('loading.errors.serverError')}: ${errorMsg}`);
+          navigate('/');
+          return;
+        }
+
+        // Handle empty responses
+        if (typeof data === 'string' && data.trim() === '') {
+          console.error('Received empty response');
+          alert(t('loading.errors.emptyResponse'));
+          navigate('/');
+          return;
+        }
+
+        // Parse and validate data
+        let messageJson;
+        if (typeof data === 'string') {
+          try {
+            messageJson = JSON.parse(data);
+          } catch (parseError) {
+            console.error('JSON parsing error:', parseError, 'Raw data:', data);
+            alert(t('loading.errors.invalidResponse'));
+            navigate('/');
+            return;
+          }
+        } else {
+          messageJson = data;
+        }
+
+        // Validate that we have valid data structure
+        if (!messageJson || typeof messageJson !== 'object') {
+          console.error('Invalid data structure:', messageJson);
+          alert(t('loading.errors.invalidData'));
+          navigate('/');
+          return;
+        }
+
+        // Check for medicine data or expected response structure
+        if (Array.isArray(messageJson) && messageJson.length === 0) {
+          console.warn('Received empty medicine list');
+          alert(t('loading.errors.noMedicines'));
+          navigate('/');
+          return;
+        }
+
+        // Success case
+        navigate('/result', { state: { data: messageJson } });
+        
+      } catch (error) {
+        console.error('Unexpected error in handleComplete:', error);
+        alert(t('loading.errors.unexpected'));
+        navigate('/');
       }
     };
 
@@ -40,7 +110,7 @@ const LoadingScreen = () => {
     return () => {
       unsubscribe();
     };
-  }, [navigate, subscribe]);
+  }, [navigate, subscribe, t]);
   
   // Primary: PANTONE 172 C (orange)
   const primaryColor = 'hsl(34, 100%, 56%)';

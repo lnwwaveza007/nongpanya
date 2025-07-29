@@ -94,7 +94,32 @@ const ResultsPage = () => {
       </div>
 
       <div className="max-w-4xl mx-auto space-y-6">
-        {prescribedMedications?.map((med : Medical, index: number) => (
+        {(!prescribedMedications || prescribedMedications.length === 0) ? (
+          <div className="bg-white rounded-xl shadow-lg p-8 border-l-4 border-yellow-400 text-center">
+            <div className="flex flex-col items-center space-y-4">
+              <AlertCircle className="w-16 h-16 text-yellow-500" />
+              <h3 className="text-xl font-semibold text-gray-800">
+                {t("result.noMedicines.title")}
+              </h3>
+              <p className="text-gray-600 max-w-md">
+                {t("result.noMedicines.message")}
+              </p>
+              <ul className="text-sm text-gray-500 space-y-1 max-w-lg">
+                <li>• {t("result.noMedicines.reasons.allergies")}</li>
+                <li>• {t("result.noMedicines.reasons.outOfStock")}</li>
+                <li>• {t("result.noMedicines.reasons.noMatch")}</li>
+              </ul>
+              <button
+                onClick={() => navigate('/')}
+                className="mt-4 bg-[#FF4B28] text-white px-6 py-2 rounded-lg hover:bg-[#E63E1E] transition-colors flex items-center gap-2"
+              >
+                <Home className="w-4 h-4" />
+                {t("result.noMedicines.backHome")}
+              </button>
+            </div>
+          </div>
+        ) : (
+          prescribedMedications?.map((med : Medical, index: number) => (
           <div
             key={index}
             className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-[#FF4B28]"
@@ -174,7 +199,8 @@ const ResultsPage = () => {
               </div>
             </div>
           </div>
-        ))}
+          ))
+        )}
       </div>
 
       {/* Back to Home Button */}
