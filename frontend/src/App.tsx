@@ -18,6 +18,7 @@ import roleBasedAuth from './hooks/roleBasedAuth';
 import ScreenAuth from './hooks/screenAuth';
 import DashboardPage from './pages/dashboard-page';
 import UserLogPage from './pages/user-log-page';
+import NotFoundPage from './pages/not-found-page';
 
 function App() {
   return (
@@ -48,12 +49,11 @@ function App() {
           })} 
         />
         {/* For Screen Only */}
-        <Route path='/screen' element={<ScreenPinPage />} />
-        <Route path='/screen/pin' element={<ScreenPinPage />} />
-        <Route path='/screen/welcome' element={<ScreenAuth><ScreenWelcomePage /></ScreenAuth>} />
-        <Route path='/screen/qrcode' element={<ScreenAuth><ScreenQRCodePage /></ScreenAuth>} />
-        <Route path='/screen/giving' element={<ScreenAuth><GivingScreen /></ScreenAuth>} />
-        <Route path='/screen/complete' element={<ScreenAuth><CompletionScreen /></ScreenAuth>} />
+        <Route path='/screen/welcome' element={<ScreenWelcomePage />} />
+        <Route path='/screen/qrcode' element={<ScreenQRCodePage />} />
+        <Route path='/screen/giving' element={<GivingScreen />} />
+        <Route path='/screen/complete' element={<CompletionScreen />} />
+        <Route path='*' element={<NotFoundPage />} />
       </Routes>
     </Router>
   );
