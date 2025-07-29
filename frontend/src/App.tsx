@@ -5,6 +5,7 @@ import ResultPage from './pages/result-page';
 import LoadingPage from './pages/loading-page';
 import ScreenWelcomePage from "./pages/screen/welcome";
 import ScreenQRCodePage from "./pages/screen/qrcode-page";
+import ScreenPinPage from "./pages/screen/pin-page";
 import GivingScreen from "./pages/screen/giving-page";
 import CompletionScreen from "./pages/screen/complete-page";
 import UnauthorizedPage from './pages/unauthorized-page';
@@ -14,6 +15,7 @@ import './index.css';
 import Redirect from './pages/auth-redirect';
 import authUser from './hooks/authUser';
 import roleBasedAuth from './hooks/roleBasedAuth';
+import ScreenAuth from './hooks/screenAuth';
 import DashboardPage from './pages/dashboard-page';
 import UserLogPage from './pages/user-log-page';
 
@@ -46,10 +48,12 @@ function App() {
           })} 
         />
         {/* For Screen Only */}
-        <Route path='/screen/welcome' element={<ScreenWelcomePage />} />
-        <Route path='/screen/qrcode' element={<ScreenQRCodePage />} />
-        <Route path='/screen/giving' element={<GivingScreen />} />
-        <Route path='/screen/complete' element={<CompletionScreen />} />
+        <Route path='/screen' element={<ScreenPinPage />} />
+        <Route path='/screen/pin' element={<ScreenPinPage />} />
+        <Route path='/screen/welcome' element={<ScreenAuth><ScreenWelcomePage /></ScreenAuth>} />
+        <Route path='/screen/qrcode' element={<ScreenAuth><ScreenQRCodePage /></ScreenAuth>} />
+        <Route path='/screen/giving' element={<ScreenAuth><GivingScreen /></ScreenAuth>} />
+        <Route path='/screen/complete' element={<ScreenAuth><CompletionScreen /></ScreenAuth>} />
       </Routes>
     </Router>
   );

@@ -13,3 +13,10 @@ export const redirectAuth = async(code: string) => {
         params: { code: code },
     });
 }
+
+export const localSignin = async(email: string, password: string) => {
+    return await axiosInstance.post("/auth/signin", {
+        email,
+        password
+    });
+}

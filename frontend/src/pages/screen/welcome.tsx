@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import LanguageToggle from '@/components/ui/language-toggle';
 
 const ScreenWelcomePage = () => {
   const { t } = useTranslation();
@@ -42,6 +43,11 @@ const ScreenWelcomePage = () => {
   return (
     <div className="w-[1000px] h-[590px] flex items-center justify-center p-4">
       <Card className="w-full h-full flex flex-col items-center justify-center p-8 text-center transition-all duration-300 hover:shadow-xl animate-fade-in border-[#FF4B28] relative overflow-hidden">
+        {/* Language Toggle - Top Left */}
+        <div className="absolute top-4 left-4">
+          <LanguageToggle variant="inline" size="sm" />
+        </div>
+        
         {/* Animated Robot Face Header */}
         <div className="text-center mb-8 animate-fade-in">
             <h1 className="text-4xl font-bold mt-4 animate-bounce"

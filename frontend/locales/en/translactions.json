@@ -60,7 +60,26 @@
         "welcome": {
             "title": "Nongpanya",
             "subtitle": "Your Friendly Medical Assistant",
-            "pressToStart": "Press to Start"
+            "pressToStart": "Press to Start",
+            "logout": "Logout"
+        },
+        "pin": {
+            "title": "Screen Access",
+            "subtitle": "Enter password for screen@mail.com",
+            "error": "Incorrect password. Please try again.",
+            "attempts": "attempts remaining",
+            "clear": "CLR",
+            "backspace": "⌫",
+            "enter": "Enter",
+            "authenticating": "Authenticating...",
+            "show": "Show",
+            "hide": "Hide",
+            "info": "This screen is for authorized personnel only",
+            "locked": {
+                "title": "System Locked",
+                "subtitle": "Please wait",
+                "message": "Too many failed attempts. Please wait."
+            }
         },
         "qrcode": {
             "title": "Scan QR Code",

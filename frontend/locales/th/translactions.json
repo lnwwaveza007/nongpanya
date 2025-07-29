@@ -60,7 +60,26 @@
         "welcome": {
             "title": "Nongpanya",
             "subtitle": "Your Friendly Medical Assistant",
-            "pressToStart": "กดเพื่อเริ่มต้น"
+            "pressToStart": "กดเพื่อเริ่มต้น",
+            "logout": "ออกจากระบบ"
+        },
+        "pin": {
+            "title": "เข้าสู่ระบบหน้าจอ",
+            "subtitle": "ป้อนรหัสผ่านสำหรับ screen@mail.com",
+            "error": "รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง",
+            "attempts": "ครั้งที่เหลือ",
+            "clear": "CLR",
+            "backspace": "⌫",
+            "enter": "ยืนยัน",
+            "authenticating": "กำลังตรวจสอบ...",
+            "show": "แสดง",
+            "hide": "ซ่อน",
+            "info": "หน้าจอนี้สำหรับเจ้าหน้าที่ที่ได้รับอนุญาตเท่านั้น",
+            "locked": {
+                "title": "ระบบถูกล็อค",
+                "subtitle": "กรุณารอ",
+                "message": "ป้อนรหัสผิดหลายครั้งเกินไป กรุณารอ"
+            }
         },
         "qrcode": {
             "title": "สแกน QR Code",
