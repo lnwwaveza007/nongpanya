@@ -16,6 +16,7 @@ import authUser from './hooks/authUser';
 import roleBasedAuth from './hooks/roleBasedAuth';
 import DashboardPage from './pages/dashboard-page';
 import UserLogPage from './pages/user-log-page';
+import NotFoundPage from './pages/not-found-page';
 
 function App() {
   return (
@@ -50,6 +51,8 @@ function App() {
         <Route path='/screen/qrcode' element={<ScreenQRCodePage />} />
         <Route path='/screen/giving' element={<GivingScreen />} />
         <Route path='/screen/complete' element={<CompletionScreen />} />
+        <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path='*' element={<NotFoundPage />} />
       </Routes>
     </Router>
   );
