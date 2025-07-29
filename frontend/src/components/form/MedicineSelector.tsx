@@ -74,7 +74,7 @@ const MedicineSelector: React.FC<MedicineSelectorProps> = ({
                   )}
                   {medicine.description && (
                     <p className={`text-sm line-clamp-2 ${isOutOfStock ? "text-gray-400" : "text-gray-600"}`}>
-                      {t(`medicineDescription.${medicine.description}`)}
+                      {t(`medicineDescription.${medicine.id}`)}
                     </p>
                   )}
                 </div>
