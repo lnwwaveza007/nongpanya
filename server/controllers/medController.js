@@ -1,5 +1,3 @@
-import dotenv from "dotenv";
-import { MqttHandler } from "../utils/mqtt_handler.js";
 import {
   createRequest,
   deleteRequest,
@@ -7,13 +5,13 @@ import {
   giveMedicine,
   setReqStatus,
   getMedicines,
+  createRequestMedicines,
+  getMedicalInfo,
 } from "../services/medServices.js";
 import * as code from "../utils/codeStore.js";
 import { getQuotaByUserId } from "../services/userServices.js";
 import { getAllMedicineStock } from "../services/medStockServices.js";
-
-dotenv.config();
-const mqttClient = new MqttHandler();
+import websocketService from "../services/websocketService.js";
 
 export const getAllSymptoms = async (req, res, next) => {
   try {
@@ -96,7 +94,7 @@ export const submitRequestForm = async (req, res, next) => {
     }
 
     //Check quota
-    if ((await getQuotaByUserId(userId)) >= 5) {
+    if ((await getQuotaByUserId(userId)) >= 3) {
       res.status(403).json({
         success: false,
         message: "Limit Reach",
@@ -115,12 +113,15 @@ export const submitRequestForm = async (req, res, next) => {
       message: "Submit form successfully",
     });
 
-    //Send Data To Vending Machine
-    mqttClient.connect();
-    mqttClient.sendMessage(
-      "nongpanya/order",
-      JSON.stringify({ message: "order" })
-    );
+    // Send order processing notification via WebSocket
+    websocketService.broadcastToClients({
+      type: 'order',
+      data: {
+        success: true,
+        code: formData.code,
+        message: 'Medicine order is being processed'
+      }
+    });
 
     setImmediate(() => {
       setTimeout(async () => {
@@ -133,18 +134,42 @@ export const submitRequestForm = async (req, res, next) => {
             formData.symptoms,
             formData.medicines
           );
-          await createRequestMedicines(formData.code, medRes.medicines);
-          //Send Complete To Vending Machine
-          mqttClient.sendMessage("nongpanya/complete", JSON.stringify(medRes));
+          await createRequestMedicines(formData.code, medRes);
+          // Log successful completion
+          console.log("Medicine dispensing completed for code:", formData.code);
           await setReqStatus(formData.code);
-          console.log("completed");
+          console.log("Order completed successfully");
+          
+          // Send completion notification via WebSocket
+          websocketService.broadcastToClients({
+            type: 'complete',
+            data: medRes
+          });
         } catch (asyncError) {
           await deleteRequest(formData.code);
-          mqttClient.sendMessage("nongpanya/complete", "error");
+          console.log("Error in async operation:", asyncError);
+          // Log error completion
+          console.log("Medicine dispensing failed for code:", formData.code);
+          
+          // Send error notification via WebSocket
+          websocketService.broadcastToClients({
+            type: 'complete',
+            data: "error"
+          });
         }
       }, 1000);
     });
   } catch (error) {
     next(error);
   }
+};
+
+export const getMedInfo = async (req, res, next) => {
+  const { medId } = req.params;
+  const medInfo = await getMedicalInfo(parseInt(medId));
+  return res.status(200).json({
+    success: true,
+    data: medInfo,
+    message: "Medicine info retrieved successfully",
+  });
 };

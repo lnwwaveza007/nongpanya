@@ -1,6 +1,12 @@
 import React from 'react';
-import { Card } from '../ui/card';
-import { X, User, Mail, Weight, AlertCircle, Clock, CheckCircle2 } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { User, Mail, Weight, AlertCircle, Clock, CheckCircle2 } from 'lucide-react';
+import MedicineImage from "@/components/ui/medicine-image";
 
 interface UserLogDetailModalProps {
   isOpen: boolean;
@@ -19,8 +25,8 @@ interface UserLogDetailModalProps {
     medicines: Array<{
       id: number;
       name: string;
-      image_url: string;
-      description: string;
+      image_url: string | null;
+      description: string | null;
     }>;
     symptoms: Array<{
       id: number;
@@ -44,29 +50,22 @@ const UserLogDetailModal: React.FC<UserLogDetailModalProps> = ({ isOpen, onClose
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <Card className="w-full h-full max-w-3xl bg-white rounded-lg shadow-xl overflow-y-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b">
-          <div className="flex items-center gap-4">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="text-xl font-bold text-[#FF4B28] flex items-center gap-4">
             <div className="bg-orange-100 p-3 rounded-full">
               <User className="text-orange-600" size={24} />
             </div>
             <div>
-              <h2 className="text-2xl font-semibold text-gray-800">Request Details</h2>
-              <p className="text-sm text-gray-500">Code: {log.code}</p>
+              <span>Request Details</span>
+              <p className="text-sm text-gray-500 font-normal">Code: {log.code}</p>
             </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 bg-white border border-gray-200 rounded-md px-2 py-1"
-          >
-            <X size={24} />
-          </button>
-        </div>
+          </DialogTitle>
+        </DialogHeader>
 
         {/* Content */}
-        <div className="p-6 space-y-6">
+        <div className="space-y-6">
           {/* User Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-4">
@@ -138,14 +137,16 @@ const UserLogDetailModal: React.FC<UserLogDetailModalProps> = ({ isOpen, onClose
               {log.medicines.map((medicine) => (
                 <div key={medicine.id} className="bg-blue-50 p-4 rounded-lg">
                   <div className="flex items-start gap-3">
-                    <img
-                      src={medicine.image_url}
-                      alt={medicine.name}
-                      className="w-16 h-16 object-contain rounded-lg border bg-white"
-                    />
+                    <div className="flex-shrink-0">
+                      <MedicineImage
+                        medicine={medicine}
+                        size="md"
+                        className="border bg-white"
+                      />
+                    </div>
                     <div>
                       <div className="font-medium text-blue-700">{medicine.name}</div>
-                      <div className="text-sm text-blue-600 mt-1">{medicine.description}</div>
+                      <div className="text-sm text-blue-600 mt-1">{medicine.description || "No description available"}</div>
                     </div>
                   </div>
                 </div>
@@ -173,8 +174,8 @@ const UserLogDetailModal: React.FC<UserLogDetailModalProps> = ({ isOpen, onClose
             )}
           </div>
         </div>
-      </Card>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

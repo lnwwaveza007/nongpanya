@@ -17,8 +17,7 @@ export const useValidateCode = (code: string | null) => {
         }
       } catch (error) {
         console.log(error);
-        alert("Invalid or expired code. Redirecting to the homepage.");
-          navigate("/");
+        navigate("/");
       }
     };
     validateCodeAPI();

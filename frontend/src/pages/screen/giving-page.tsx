@@ -1,14 +1,15 @@
 import { Card } from '@/components/ui/card';
 import { useEffect, useState } from 'react';
-import mqtt from "mqtt";
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useWebSocket } from '@/hooks/useWebSocket';
 
 const GivingScreen = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [currentEmoji, setCurrentEmoji] = useState(0);
   const [stars, setStars] = useState(Array(7).fill(true));
+  const { subscribe, unsubscribe } = useWebSocket();
   
   const waitingEmojis = [
     "(っ˘ڡ˘ς)",
@@ -40,31 +41,17 @@ const GivingScreen = () => {
     return () => clearInterval(starInterval);
   }, []);
 
-useEffect(() => {
-  const clientRef = mqtt.connect(import.meta.env.VITE_MQTT_ENDPOINT, {
-    username: import.meta.env.VITE_MQTT_USERNAME,
-    password: import.meta.env.VITE_MQTT_PASSWORD,
-  });
-
-  clientRef.on("connect", () => {
-    console.log("connected");
-    clientRef.subscribe("nongpanya/complete");
-  });
-
-  clientRef.on("message", (_, payload) => {
-    const message = payload.toString();
-    if (message === "error") {
-      navigate("/screen/qrcode");
-    } else {
+  useEffect(() => {
+    const handleComplete = () => {
       navigate("/screen/complete");
-    }
-  });
+    };
 
-  return () => {
-    console.log("disconnecting");
-    clientRef.end();
-  };
-}, [navigate]);
+    subscribe('complete', handleComplete);
+
+    return () => {
+      unsubscribe('complete');
+    };
+  }, [navigate, subscribe, unsubscribe]);
 
 
   const primaryColor = 'hsl(34, 100%, 56%)';

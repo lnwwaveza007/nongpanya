@@ -10,8 +10,7 @@ interface TermsCheckboxProps {
 const TermsCheckbox: React.FC<TermsCheckboxProps> = ({ checked, onChange }) => {
   return (
     <Card 
-      className=" mx-auto mt-6 p-6 transition-all duration-300 hover:shadow-xl"
-      style={{ borderColor: '#FF4B28' }}
+      className=" mx-auto mt-6 p-6 transition-all duration-300 hover:shadow-xl border-primary"
     >
       <div className="flex items-start gap-4">
         <div className="flex items-center h-5 mt-1">

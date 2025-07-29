@@ -8,6 +8,10 @@ export const getUserQuota = async () => {
     return await axiosInstance.get("/user/quota");
 }
 
+export const getUserHistory = async () => {
+    return await axiosInstance.get("/user/req/history");
+}
+
 export const getUserLogs = async (startDate: string, endDate?: string) => {
     const params = new URLSearchParams();
     params.append('startDate', startDate);

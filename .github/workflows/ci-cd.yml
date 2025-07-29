@@ -1,0 +1,128 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+    
+jobs:
+  deploy:
+    runs-on: [self-hosted]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check current container status
+        run: |
+          echo "Current running containers:"
+          docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+          
+          # Check if specific containers are running
+          echo "Checking if required containers are running..."
+          
+          if docker ps --format "{{.Names}}" | grep -q "nongpanya-mqtt-client"; then
+            echo "✅ MQTT Client container is running"
+          else
+            echo "❌ MQTT Client container is not running"
+          fi
+          
+          if docker ps --format "{{.Names}}" | grep -q "nongpanya-mqtt"; then
+            echo "✅ MQTT Broker (Mosquitto) container is running"
+          else
+            echo "❌ MQTT Broker (Mosquitto) container is not running"
+          fi
+          
+          if docker ps --format "{{.Names}}" | grep -q "nongpanya-mysql"; then
+            echo "✅ MySQL container is running"
+          else
+            echo "❌ MySQL container is not running"
+          fi
+
+      - name: Git pull latest
+        run: |
+          cd /home/adminnpy/nongpanya/web
+          git pull origin main
+
+      - name: Stop existing containers
+        working-directory: /home/adminnpy/nongpanya/web
+        run: |
+          echo "Stopping existing containers..."
+          docker compose down
+
+      - name: Start Docker Compose
+        working-directory: /home/adminnpy/nongpanya/web
+        run: |
+          echo "Starting containers with Docker Compose..."
+          docker compose up -d --build
+
+      - name: Wait for containers to start
+        run: |
+          echo "Waiting for containers to fully start..."
+          sleep 45
+
+      - name: Verify container status
+        run: |
+          echo "Verifying all containers are running..."
+          
+          # Check if all required containers are running
+          REQUIRED_CONTAINERS=("nongpanya-mqtt-client" "nongpanya-mqtt" "nongpanya-mysql")
+          ALL_RUNNING=true
+          
+          for container in "${REQUIRED_CONTAINERS[@]}"; do
+            if docker ps --format "{{.Names}}" | grep -q "$container"; then
+              STATUS=$(docker ps --format "{{.Status}}" --filter "name=$container")
+              echo "✅ $container is running - Status: $STATUS"
+            else
+              echo "❌ $container is NOT running"
+              ALL_RUNNING=false
+            fi
+          done
+          
+          # Show all running containers
+          echo ""
+          echo "All running containers:"
+          docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+          
+          # Exit with error if any required container is not running
+          if [ "$ALL_RUNNING" = false ]; then
+            echo "❌ Some required containers are not running. Deployment failed."
+            exit 1
+          else
+            echo "✅ All required containers are running successfully!"
+          fi
+
+      - name: Health check services
+        run: |
+          echo "Performing health checks on services..."
+          
+          # Check MQTT Client (port 30080)
+          if curl -f http://localhost:30080 > /dev/null 2>&1; then
+            echo "✅ MQTT Client web interface is accessible on port 30080"
+          else
+            echo "❌ MQTT Client web interface is not accessible on port 30080"
+          fi
+          
+          # Check MQTT Broker (port 1883)
+          if nc -z localhost 1883; then
+            echo "✅ MQTT Broker is listening on port 1883"
+          else
+            echo "❌ MQTT Broker is not listening on port 1883"
+          fi
+          
+          # Check MySQL (port 3306)
+          if nc -z localhost 3306; then
+            echo "✅ MySQL is listening on port 3306"
+          else
+            echo "❌ MySQL is not listening on port 3306"
+          fi
+
+      - name: Deployment summary
+        run: |
+          echo "=== DEPLOYMENT SUMMARY ==="
+          echo "Deployment completed at: $(date)"
+          echo ""
+          echo "Container Status:"
+          docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+          echo ""
+          echo "System Resources:"
+          docker stats --no-stream --format "table {{.Container}}\t{{.CPUPerc}}\t{{.MemUsage}}\t{{.NetIO}}" 

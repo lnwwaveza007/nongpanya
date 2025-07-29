@@ -30,6 +30,7 @@
         "allergies": "Allergies (if any)",
         "allergiesPlaceholder": "e.g., Penicillin, Aspirin",
         "symptoms": "Select Your Symptoms",
+        "medicines": "Select Medicines",
         "additionalNotes": "Additional Notes",
         "additionalNotesPlaceholder": "Any other information you'd like to share...",
         "termsAccept": "I accept the terms and conditions",
@@ -51,9 +52,9 @@
         "instructions": "Instructions:",
         "warnings": "Warnings:",
         "representativeImage": "Representative image",
-        "dispenseNote": "We dispense 2 doses, take half in the first round.",
         "emergencyTitle": "In case of emergency:",
-        "emergencyContact": "Contact HCU: 1234 or Visit nearest hospital"
+        "emergencyContact": "Contact HCU: 1234 or Visit nearest hospital",
+        "backToHome": "Back to Home"
     },
     "screen": {
         "welcome": {
@@ -79,6 +80,65 @@
         "title": "Processing...",
         "subtitle": "Please wait while we analyze your symptoms"
     },
+    "homepage": {
+        "dashboard": "Dashboard",
+        "signOut": "Sign Out",
+        "monthlyQuota": "Monthly Quota",
+        "used": "Used",
+        "remaining": "Remaining",
+        "limit": "Monthly Limit",
+        "resetsOn": "Resets on",
+        "recentHistory": "Recent Request History",
+        "noHistory": "No requests found",
+        "code": "Code",
+        "symptoms": "Symptoms",
+        "medicines": "Medicines",
+        "status": "Status",
+        "date": "Date",
+        "actions": "Actions",
+        "view": "View",
+        "viewAllHistory": "View All History",
+        "back": "Back",
+        "searchPlaceholder": "Search by code...",
+        "all": "All",
+        "completed": "Completed",
+        "pending": "Pending",
+        "dateRange": "Date Range",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "clearDates": "Clear Dates",
+        "notes": "Notes",
+        "allergies": "Allergies",
+        "availableMedicines": {
+            "title": "Available Medicines in Vending Machine",
+            "noMedicines": "No medicines currently available",
+            "available": "Available",
+            "outOfStock": "Out of Stock",
+            "clickForDetails": "Click for details",
+            "guidelines": {
+                "title": "Medicine Safety Guidelines",
+                "point1": "These medicines are for mild symptoms and short-term use only",
+                "point2": "Always read the medicine information carefully before use",
+                "point3": "Do not exceed the recommended dosage or duration",
+                "point4": "Consult a healthcare professional if symptoms persist or worsen"
+            },
+            "notice": {
+                "title": "Important Medical Notice",
+                "description": "The medicines shown here are available in our vending machine for common mild symptoms. This system is not a substitute for professional medical advice. For serious conditions, allergic reactions, or if symptoms persist, please seek immediate medical attention."
+            }
+        }
+    },
+    "medicineModal": {
+        "title": "Medicine Information",
+        "available": "Available",
+        "description": "Description",
+        "generalGuidelines": {
+            "title": "General Usage Guidelines",
+            "point1": "Take as directed on the package or as advised by a healthcare professional",
+            "point2": "Do not exceed the recommended dosage",
+            "point3": "Store in a cool, dry place away from direct sunlight"
+        }
+    },
     "userLog": {
         "title": "User Log",
         "subtitle": "View user activity and submissions"
@@ -93,5 +153,36 @@
         "backShoulderMuscleJointPain": "Back/Shoulder/Muscle/Joint Pain",
         "musclePain": "Muscle Pain",
         "tremors": "Tremors (Parkinson's Disease)"
+    },
+    "detail": {
+        "1": "Take on an empty stomach approximately 1–2 hours before or after meals.",
+        "2": "Can be taken 2 hours before or after other medications.",
+        "3": "Can be mixed with water in an appropriate ratio for children to take.",
+        "4": "Drink water after taking the medication.",
+        "5": "Do not take this medicine at the same time as other medications.",
+        "6": "May cause black stools, which is harmless as the black color is from the medicine.",
+        "7": "May cause bloating, flatulence, or abdominal discomfort in some individuals, which is a normal effect of the medicine absorbing toxins in the body.",
+        "8": "If diarrhea does not improve within 2-3 days after taking the medicine, consult a doctor.",
+        "9": "Pregnant or breastfeeding women, those recovering from surgery, or individuals with gastrointestinal diseases should consult a doctor or pharmacist before use.",
+        "10": "Avoid consuming dairy products, syrups, alcohol, or fermented foods after taking the medicine.",
+        "11": "Not suitable for individuals exposed to severe toxic substances such as strong acids or alkalis, as it may be difficult to neutralize the toxins.",
+        "12": "Overuse may lead to constipation.",
+        "13": "Overuse may cause excessive thirst.",
+        "14": "In severe cases, overuse may result in intestinal blockage.",
+        "15": "Paracetamol can be taken before or after meals.",
+        "16": "Dosage should be appropriate to body weight.",
+        "17": "Take at least 4-6 hours apart, and do not exceed 8 tablets (4,000 mg) per day in the 500 mg form.",
+        "18": "Drink water after taking the medication.",
+        "19": "If you forget a dose, take it as soon as you remember without doubling the dose for the next intake.",
+        "20": "If the fever does not subside within 3 days of use, consult a doctor for further diagnosis.",
+        "21": "Do not take the medication continuously for more than 5 days. If symptoms persist, consult a doctor for further diagnosis.",
+        "22": "Avoid using this medication with other products containing paracetamol, as it may lead to overdose.",
+        "23": "If an allergic reaction occurs, such as rash, itching, swelling of the face, eyelids, or lips, hives, dizziness, or difficulty breathing, seek immediate medical attention.",
+        "24": "Individuals who regularly consume alcohol or have liver and kidney diseases should consult a doctor or pharmacist before use.",
+        "25": "Do not take the medication if you do not have the listed symptoms.",
+        "26": "Overdose (more than 150 mg/kg of body weight) may cause nausea.",
+        "27": "Overdose may lead to vomiting.",
+        "28": "Overdose may cause drowsiness and low blood pressure.",
+        "29": "Overdose may impair liver and kidney function."
     }
 }

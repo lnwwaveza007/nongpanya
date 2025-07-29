@@ -7,10 +7,13 @@ import ScreenWelcomePage from "./pages/screen/welcome";
 import ScreenQRCodePage from "./pages/screen/qrcode-page";
 import GivingScreen from "./pages/screen/giving-page";
 import CompletionScreen from "./pages/screen/complete-page";
+import UnauthorizedPage from './pages/unauthorized-page';
+import Homepage from './pages/homepage';
 import './App.css';
 import './index.css';
 import Redirect from './pages/auth-redirect';
 import authUser from './hooks/authUser';
+import roleBasedAuth from './hooks/roleBasedAuth';
 import DashboardPage from './pages/dashboard-page';
 import UserLogPage from './pages/user-log-page';
 
@@ -19,18 +22,34 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<LoginPage />} />
+        <Route path="/homepage" element={authUser(<Homepage />)} />
         <Route path="/form" element={authUser(<NongpanyaVending />)} />
         <Route path="/result" element={authUser(<ResultPage />)} />
-        <Route path='/loading' element={<LoadingPage />} />
+        <Route path='/loading' element={authUser(<LoadingPage />)} />
         <Route path='/auth' element={<Redirect />} />
-        <Route path='/dashboard' element={<DashboardPage />} />
-        <Route path='/user-log' element={<UserLogPage />} />
+        <Route path='/unauthorized' element={<UnauthorizedPage />} />
+        {/* Role-based protected routes */}
+        <Route 
+          path='/dashboard' 
+          element={roleBasedAuth(<DashboardPage />, { 
+            // requiredRole: 'admin',
+            allowedRoles: ['admin', 'superadmin'],
+            fallbackPath: '/unauthorized'
+          })} 
+        />
+        <Route 
+          path='/user-log' 
+          element={roleBasedAuth(<UserLogPage />, { 
+            // requiredRole: 'admin',
+            allowedRoles: ['admin', 'superadmin'],
+            fallbackPath: '/unauthorized'
+          })} 
+        />
         {/* For Screen Only */}
         <Route path='/screen/welcome' element={<ScreenWelcomePage />} />
         <Route path='/screen/qrcode' element={<ScreenQRCodePage />} />
         <Route path='/screen/giving' element={<GivingScreen />} />
         <Route path='/screen/complete' element={<CompletionScreen />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
       </Routes>
     </Router>
   );

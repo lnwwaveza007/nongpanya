@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -23,6 +32,7 @@ a {
   color: #646cff;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #535bf2;
 }
@@ -33,7 +43,9 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
-  background-color: rgb(249 250 251 / var(--tw-bg-opacity, 1)) /* #f9fafb */;
+  background-color: rgb(249 250 251 / var(--tw-bg-opacity, 1))
+    /* #f9fafb */
+  ;
 }
 
 h1 {
@@ -52,9 +64,11 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
+
 button:hover {
   border-color: #646cff;
 }
+
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
@@ -65,15 +79,17 @@ button:focus-visible {
     color: #213547;
     background-color: #ffffff;
   }
+
   a:hover {
     color: #747bff;
   }
+
   button {
     background-color: #f9f9f9;
   }
 }
 
-@layer base { 
+@layer base {
   :root {
     --background: 0 0% 100%;
     --foreground: 240 10% 3.9%;
@@ -81,26 +97,39 @@ button:focus-visible {
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
-    --primary: 34 100% 56%; /* PANTONE 172 C */
+    --primary: 8 100% 58%;
+    /* #FF4B28 */
     --primary-foreground: 0 0% 98%;
-    --secondary: 48 100% 57%; /* PANTONE 123 C */
+    --secondary: 48 100% 57%;
+    /* PANTONE 123 C */
     --secondary-foreground: 240 5.9% 10%;
-    --muted: 0 0% 57%; /* PANTONE 415 C */
+    --muted: 0 0% 57%;
+    /* PANTONE 415 C */
     --muted-foreground: 240 3.8% 46.1%;
-    --accent: 0 0% 57%; /* PANTONE 415 C */
+    --accent: 0 0% 57%;
+    /* PANTONE 415 C */
     --accent-foreground: 240 5.9% 10%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 57%; /* PANTONE 415 C */
-    --input: 0 0% 57%; /* PANTONE 415 C */
-    --ring: 34 100% 56%; /* PANTONE 172 C */
-    --chart-1: 34 100% 56%; /* PANTONE 172 C */
-    --chart-2: 48 100% 57%; /* PANTONE 123 C */
-    --chart-3: 0 0% 57%; /* PANTONE 415 C */
-    --chart-4: 48 100% 57%; /* PANTONE 123 C */
-    --chart-5: 34 100% 56%; /* PANTONE 172 C */
+    --border: 0 0% 57%;
+    /* PANTONE 415 C */
+    --input: 0 0% 57%;
+    /* PANTONE 415 C */
+    --ring: 34 100% 56%;
+    /* PANTONE 172 C */
+    --chart-1: 34 100% 56%;
+    /* PANTONE 172 C */
+    --chart-2: 48 100% 57%;
+    /* PANTONE 123 C */
+    --chart-3: 0 0% 57%;
+    /* PANTONE 415 C */
+    --chart-4: 48 100% 57%;
+    /* PANTONE 123 C */
+    --chart-5: 34 100% 56%;
+    /* PANTONE 172 C */
     --radius: 0.5rem;
   }
+
   .dark {
     --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
@@ -108,24 +137,36 @@ button:focus-visible {
     --card-foreground: 0 0% 98%;
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 34 100% 56%; /* PANTONE 172 C */
+    --primary: 8 100% 58%;
+    /* #FF4B28 */
     --primary-foreground: 0 0% 98%;
-    --secondary: 48 100% 57%; /* PANTONE 123 C */
+    --secondary: 48 100% 57%;
+    /* PANTONE 123 C */
     --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 57%; /* PANTONE 415 C */
+    --muted: 0 0% 57%;
+    /* PANTONE 415 C */
     --muted-foreground: 240 5% 64.9%;
-    --accent: 0 0% 57%; /* PANTONE 415 C */
+    --accent: 0 0% 57%;
+    /* PANTONE 415 C */
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 57%; /* PANTONE 415 C */
-    --input: 0 0% 57%; /* PANTONE 415 C */
-    --ring: 34 100% 56%; /* PANTONE 172 C */
-    --chart-1: 34 100% 56%; /* PANTONE 172 C */
-    --chart-2: 48 100% 57%; /* PANTONE 123 C */
-    --chart-3: 0 0% 57%; /* PANTONE 415 C */
-    --chart-4: 48 100% 57%; /* PANTONE 123 C */
-    --chart-5: 34 100% 56%; /* PANTONE 172 C */
+    --border: 0 0% 57%;
+    /* PANTONE 415 C */
+    --input: 0 0% 57%;
+    /* PANTONE 415 C */
+    --ring: 34 100% 56%;
+    /* PANTONE 172 C */
+    --chart-1: 34 100% 56%;
+    /* PANTONE 172 C */
+    --chart-2: 48 100% 57%;
+    /* PANTONE 123 C */
+    --chart-3: 0 0% 57%;
+    /* PANTONE 415 C */
+    --chart-4: 48 100% 57%;
+    /* PANTONE 123 C */
+    --chart-5: 34 100% 56%;
+    /* PANTONE 172 C */
   }
 }
 
@@ -150,6 +191,7 @@ input[type="checkbox"]:checked {
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
   }

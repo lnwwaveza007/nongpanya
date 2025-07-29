@@ -4,6 +4,8 @@ import {
   AlertCircle,
   Weight,
   UserCog,
+  HeartPulse,
+  Calendar,
   // Toilet,
   // BicepsFlexed
 } from "lucide-react";
@@ -16,9 +18,12 @@ import { AxiosError } from "axios";
 
 import { useValidateCode } from "@/hooks/validateCode";
 import TermsCheckbox from "@/components/form/TermCheckBox";
-import { getSymptoms, getUser, submitSymptoms } from "@/api";
+import { getSymptoms, getUser, getUserQuota, submitSymptoms, getAllMedicines } from "@/api";
 import { useTranslation } from "react-i18next";
 import LanguageToggle from "@/components/ui/language-toggle";
+import { FormDataset, Medicine } from "@/types";
+import TabSelector from "@/components/form/TabSelector";
+import MedicineSelector from "@/components/form/MedicineSelector";
 
 interface Symptom {
   id: string;
@@ -26,18 +31,14 @@ interface Symptom {
   name: string;
 }
 
-interface UserInt {
-  id: string;
-  fullname: string;
-  email: string;
-}
-
 const NongpanyaVending = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [symptoms, setSymptoms] = useState<string[]>([]);
-  const [user, setUser] = useState<UserInt>();
   const [symptomsList, setSymptomsList] = useState<Symptom[]>([]);
+  const [medicines, setMedicines] = useState<string[]>([]);
+  const [medicinesList, setMedicinesList] = useState<Medicine[]>([]);
+  const [activeTab, setActiveTab] = useState<"symptoms" | "medicines">("symptoms");
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
@@ -49,16 +50,35 @@ const NongpanyaVending = () => {
   const [showTerms, setShowTerms] = useState<boolean>(false);
   const getSearchParams = new URLSearchParams(window.location.search);
   const code = getSearchParams.get("code");
+  const [quota, setQuota] = useState<number>(0);
 
   useValidateCode(code);
+
+    const getQuota = async () => {
+      const response = await getUserQuota();
+      if (response.status === 200 && response.data.success) {
+        setQuota(response.data.data);
+      }
+    };
+
+  useEffect(() => {
+    getQuota();
+  });
 
   const fetchFrom = async () => {
     try {
       const resUser = await getUser();
       const resSymp = await getSymptoms();
+      const resMed = await getAllMedicines();
 
-      setUser(resUser.data.data);
+      setName(resUser.data.data.fullname);
+      setEmail(resUser.data.data.email);
+      setPhone(resUser.data.data.phone || "");
+      setAge(resUser.data.data.age || null);
+      setWeight(resUser.data.data.weight || null);
+      setAllergies(resUser.data.data.allergies || "");
       setSymptomsList(resSymp.data.data);
+      setMedicinesList(resMed.data.data);
     } catch (error) {
       return error;
     }
@@ -110,6 +130,20 @@ const NongpanyaVending = () => {
     }
   };
 
+  const handleMedicineToggle = (id: string) => {
+    if (medicines.includes(id)) {
+      setMedicines((prevMedicines) => {
+        const newMedicines = prevMedicines.filter((medicine) => medicine !== id);
+        return newMedicines;
+      });
+    } else {
+      setMedicines((prevMedicines) => {
+        const newMedicines = [...prevMedicines, id];
+        return newMedicines;
+      });
+    }
+  };
+
   const postAPI = async () => {
     if (!showTerms) {
       alert(t("form.pleaseAcceptTerms"));
@@ -119,16 +153,21 @@ const NongpanyaVending = () => {
     if (showModal) return;
     setShowModal(true);
     try {
-      const formData = new FormData();
-      formData.append('code', code || '');
-      formData.append('name', name);
-      formData.append('email', email);
-      formData.append('phone', phone);
-      formData.append('age', age?.toString() || '');
-      formData.append('weight', weight?.toString() || '');
-      formData.append('allergies', allergies);
-      formData.append('symptoms', JSON.stringify(symptoms));
-      formData.append('additional_notes', note);
+      const formData: FormDataset = {
+        code: code?.toString() || "",
+        name: name,
+        email: email,
+        phone: phone,
+        age: age,
+        weight: weight,
+        allergies: allergies,
+        additional_notes: note,
+      };
+      if (activeTab === "symptoms") {
+        formData.symptoms = symptoms;
+      } else {
+        formData.medicines = medicines;
+      }
       const response = await submitSymptoms(formData);
       if (response.status === 201 && response.data.success) {
         navigate("/loading");
@@ -151,6 +190,12 @@ const NongpanyaVending = () => {
       }
       setShowModal(false);
     }
+  };
+
+  const studentQuota = {
+    used: quota,
+    maxPerMonth: 3,
+    resetDate: new Date(new Date(new Date().setMonth(new Date().getMonth() + 1)).setDate(1)).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
   };
 
   return (
@@ -176,6 +221,32 @@ const NongpanyaVending = () => {
         </p>
       </div>
 
+     {/* Quota Card */}
+     <div className="max-w-md mx-auto mb-8 bg-white rounded-xl shadow-lg p-6 border-2 border-primary">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-[#FF4B28]">{t("result.monthlyQuota")}</h2>
+          <HeartPulse className="text-[#FF4B28]" />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="text-center p-3 bg-[#F5F7F9] rounded-lg">
+            <p className="text-sm text-gray-600">{t("result.used")}</p>
+            <p className="text-2xl font-bold text-[#FF4B28]">
+              {studentQuota.used}/{studentQuota.maxPerMonth}
+            </p>
+          </div>
+          <div className="text-center p-3 bg-[#F5F7F9] rounded-lg">
+            <p className="text-sm text-gray-600">{t("result.remaining")}</p>
+            <p className="text-2xl font-bold text-[#FFC926]">
+              {studentQuota.maxPerMonth - studentQuota.used}
+            </p>
+          </div>
+        </div>
+        <div className="mt-4 flex items-center text-sm text-gray-600">
+          <Calendar className="w-4 h-4 mr-2" />
+          <span>{t("result.resetsOn")} {studentQuota.resetDate}</span>
+        </div>
+      </div> 
+
       {/* Warning Message */}
       <div className="max-w-4xl mx-auto mb-6 p-4 bg-yellow-100 rounded-lg flex items-center gap-2">
         <AlertCircle className="text-yellow-600" />
@@ -190,7 +261,7 @@ const NongpanyaVending = () => {
           type="text"
           name="name"
           placeholder={t("form.name")}
-          value={user?.fullname}
+          value={name}
           // value="Nongpanya Nim"
           onChange={handleInputChange}
           readOnly={true}
@@ -200,7 +271,7 @@ const NongpanyaVending = () => {
           type="email"
           name="email"
           placeholder={t("form.email")}
-          value={user?.email}
+          value={email}
           // value="nongpanya@nim.com"
           onChange={handleInputChange}
           readOnly={true}
@@ -212,7 +283,6 @@ const NongpanyaVending = () => {
           placeholder={t("form.phone")}
           value={phone}
           onChange={handleInputChange}
-          readOnly={true}
         />
         <CustomInput
           icon={<UserCog size={20} />}
@@ -240,13 +310,31 @@ const NongpanyaVending = () => {
         />
       </div>
 
-      {/* Custom Checkbox Component */}
-      <CustomCheckbox
-        checkboxprops={{ label: t("form.symptoms") }}
-        symptomsList={symptomsList}
-        symptoms={symptoms}
-        handleSymptomToggle={handleSymptomToggle}
+      {/* Tab Selector */}
+      <TabSelector
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        symptomsCount={symptoms.length}
+        medicinesCount={medicines.length}
       />
+
+      {/* Tab Content */}
+      {activeTab === "symptoms" && (
+        <CustomCheckbox
+          checkboxprops={{ label: t("form.symptoms") }}
+          symptomsList={symptomsList}
+          symptoms={symptoms}
+          handleSymptomToggle={handleSymptomToggle}
+        />
+      )}
+
+      {activeTab === "medicines" && (
+        <MedicineSelector
+          medicinesList={medicinesList}
+          selectedMedicines={medicines}
+          onMedicineToggle={handleMedicineToggle}
+        />
+      )}
 
       {/* Note Textarea */}
       <div className="md:col-span-2 mt-5">
