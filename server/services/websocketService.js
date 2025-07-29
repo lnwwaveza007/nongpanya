@@ -6,7 +6,7 @@ import { createServer } from "http";
 import { createServer as createHttpsServer } from "https";
 import { readFileSync } from "fs";
 import { getCurrentEnvironment } from "../config/envConfig.js";
-import { getConfig } from '../config/envConfig.js';
+import { getConfig } from "../config/envConfig.js";
 
 // Get environment-specific configuration
 const config = getConfig();
@@ -32,29 +32,8 @@ class WebSocketService {
 
     while (retries < maxRetries) {
       try {
-        // Create server (HTTP for dev, HTTPS for production)
-        if (isProduction) {
-          // Try to load SSL certificates for production
-          try {
-            const serverOptions = {
-              cert: readFileSync("/etc/nginx/cert/fullchain.pem"),
-              key: readFileSync("/etc/nginx/cert/privkey.pem"),
-            };
-            this.server = createHttpsServer(serverOptions);
-            console.log("WebSocket server using HTTPS/WSS");
-          } catch (sslError) {
-            console.warn(
-              "SSL certificates not found, falling back to HTTP:",
-              sslError.message
-            );
-            this.server = createServer();
-            console.log("WebSocket server using HTTP/WS (SSL fallback)");
-          }
-        } else {
-          // Development: use HTTP
-          this.server = createServer();
-          console.log("WebSocket server using HTTP/WS (development)");
-        }
+        this.server = createServer();
+        console.log("WebSocket server using HTTP/WS (development)");
 
         this.wss = new WebSocketServer({
           server: this.server,
@@ -65,25 +44,31 @@ class WebSocketService {
             const allowedOrigins = config.cors.origins || [];
             // Allow requests without origin (from tools like Postman)
             if (!info.origin) {
-              console.log('WebSocket connection allowed (no origin header)');
+              console.log("WebSocket connection allowed (no origin header)");
               done(true);
               return;
             }
-            
+
             // Check if origin is in allowed list
-            const isAllowed = allowedOrigins.some(allowedOrigin => {
+            const isAllowed = allowedOrigins.some((allowedOrigin) => {
               // Support exact match and subdomain matching
-              return origin === allowedOrigin || 
-                     origin.endsWith('.' + allowedOrigin.replace(/^https?:\/\//, '')) ||
-                     allowedOrigin.includes(origin.replace(/^https?:\/\//, ''));
+              return (
+                origin === allowedOrigin ||
+                origin.endsWith(
+                  "." + allowedOrigin.replace(/^https?:\/\//, "")
+                ) ||
+                allowedOrigin.includes(origin.replace(/^https?:\/\//, ""))
+              );
             });
-            
+
             if (isAllowed) {
-              console.log(`WebSocket connection allowed from origin: ${origin}`);
+              console.log(
+                `WebSocket connection allowed from origin: ${origin}`
+              );
               done(true);
             } else {
               console.log(`WebSocket connection denied from origin: ${origin}`);
-              done(false, 403, 'Forbidden: Origin not allowed');
+              done(false, 403, "Forbidden: Origin not allowed");
             }
           },
         });
