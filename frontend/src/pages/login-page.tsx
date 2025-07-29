@@ -12,9 +12,6 @@ import { getUser } from "@/api/user";
 const LoginPage = () => {
   const { t } = useTranslation();
 
-  const params = new URLSearchParams(window.location.search);
-  const code = params.get("code");
-
   useEffect(() => {
     const verifyAuth = async () => {
       try {
@@ -30,9 +27,12 @@ const LoginPage = () => {
             console.error('Failed to fetch user data:', userError);
           }
           
+          // Get the current URL parameters fresh inside the effect
+          const currentParams = new URLSearchParams(window.location.search);
+          const currentCode = currentParams.get("code");
           // If user has a code, redirect to form page, otherwise redirect to homepage
-          if (code) {
-            window.location.href = `/form?code=${code}`;
+          if (currentCode && currentCode.trim() !== '') {
+            window.location.href = `/form?code=${currentCode}`;
           } else {
             window.location.href = "/homepage";
           }
@@ -44,7 +44,7 @@ const LoginPage = () => {
     
     // Check auth status when component loads
     verifyAuth();
-  }, [code]);
+  }, []); // Remove code dependency to prevent unnecessary re-runs
 
   const primaryColor = "hsl(34, 100%, 56%)";
   const secondaryColor = "hsl(48, 100%, 57%)";
