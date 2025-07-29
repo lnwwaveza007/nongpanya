@@ -3,10 +3,11 @@
 
 import { WebSocketServer, WebSocket } from "ws";
 import { createServer } from "http";
-import { createServer as createHttpsServer } from "https";
-import { readFileSync } from "fs";
 import { getCurrentEnvironment } from "../config/envConfig.js";
 import { getConfig } from "../config/envConfig.js";
+import jwt from "jsonwebtoken";
+import { parse } from "url";
+import { findUserById } from "./userServices.js";
 
 // Get environment-specific configuration
 const config = getConfig();
@@ -15,9 +16,63 @@ class WebSocketService {
   constructor() {
     this.wss = null;
     this.server = null;
-    this.clients = new Set();
+    this.clients = new Map(); // Changed to Map to store client info
     this.isInitialized = false;
     this.currentPort = null;
+  }
+
+  /**
+   * Authenticate WebSocket connection using JWT token
+   * @param {Object} request - HTTP request object
+   * @returns {Promise<Object|null>} - User object if authenticated, null otherwise
+   */
+  async authenticateWebSocketConnection(request) {
+    try {
+      const { query } = parse(request.url, true);
+      let token = query.token;
+
+      // If no token in query, try to get from headers
+      if (!token && request.headers.authorization) {
+        token = request.headers.authorization.split(" ")[1];
+      }
+
+      // If no token in authorization header, try cookie
+      if (!token && request.headers.cookie) {
+        const cookies = request.headers.cookie.split(';').reduce((acc, cookie) => {
+          const [key, value] = cookie.trim().split('=');
+          acc[key] = value;
+          return acc;
+        }, {});
+        token = cookies.token;
+      }
+
+      if (!token) {
+        console.log("WebSocket authentication failed: No token provided");
+        return null;
+      }
+
+      // Verify JWT token
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      
+      // Optional: Verify user still exists in database
+      const user = await findUserById(decoded.id);
+      if (!user) {
+        console.log("WebSocket authentication failed: User not found");
+        return null;
+      }
+
+      console.log(`WebSocket authentication successful for user: ${decoded.email}`);
+      return {
+        id: decoded.id,
+        email: decoded.email,
+        fullname: decoded.fullname,
+        role: decoded.role,
+        token: token
+      };
+    } catch (error) {
+      console.log("WebSocket authentication failed:", error.message);
+      return null;
+    }
   }
 
   async initialize(port = 3002, maxRetries = 5) {
@@ -37,7 +92,7 @@ class WebSocketService {
 
         this.wss = new WebSocketServer({
           server: this.server,
-          verifyClient: (info, done) => {
+          verifyClient: async (info, done) => {
             const origin = info.origin || "unknown";
             console.log(`Incoming WebSocket request from origin: ${origin}`);
 
@@ -45,6 +100,17 @@ class WebSocketService {
             // Allow requests without origin (from tools like Postman)
             if (!info.origin) {
               console.log("WebSocket connection allowed (no origin header)");
+              
+              // Still require authentication even without origin
+              const user = await this.authenticateWebSocketConnection(info.req);
+              if (!user) {
+                console.log("WebSocket connection denied: Authentication failed");
+                done(false, 401, "Unauthorized: Authentication required");
+                return;
+              }
+              
+              // Store user info in request for later use
+              info.req.user = user;
               done(true);
               return;
             }
@@ -62,9 +128,17 @@ class WebSocketService {
             });
 
             if (isAllowed) {
-              console.log(
-                `WebSocket connection allowed from origin: ${origin}`
-              );
+              // Authenticate the user
+              const user = await this.authenticateWebSocketConnection(info.req);
+              if (!user) {
+                console.log(`WebSocket connection denied from origin: ${origin} - Authentication failed`);
+                done(false, 401, "Unauthorized: Authentication required");
+                return;
+              }
+              
+              // Store user info in request for later use
+              info.req.user = user;
+              console.log(`WebSocket connection allowed from origin: ${origin} for user: ${user.email}`);
               done(true);
             } else {
               console.log(`WebSocket connection denied from origin: ${origin}`);
@@ -75,35 +149,53 @@ class WebSocketService {
 
         // Set up WebSocket connection handling
         this.wss.on("connection", (ws, req) => {
+          const user = req.user; // Get authenticated user from verifyClient
           console.log(
-            "New WebSocket client connected from:",
-            req.socket.remoteAddress
+            `New authenticated WebSocket client connected: ${user.email} (${user.role}) from ${req.socket.remoteAddress}`
           );
-          this.clients.add(ws);
+          
+          // Store client with user information
+          this.clients.set(ws, {
+            user: user,
+            connectedAt: new Date(),
+            lastActivity: new Date()
+          });
 
           ws.on("message", (message) => {
             try {
               const data = JSON.parse(message.toString());
-              this.handleClientMessage(ws, data);
+              this.handleClientMessage(ws, data, user);
             } catch (error) {
               console.error("Error parsing WebSocket message:", error);
+              this.sendToClient(ws, {
+                type: "error",
+                data: { message: "Invalid message format" },
+              });
             }
           });
 
           ws.on("close", () => {
-            console.log("WebSocket client disconnected");
+            console.log(`WebSocket client disconnected: ${user.email}`);
             this.clients.delete(ws);
           });
 
           ws.on("error", (error) => {
-            console.error("WebSocket client error:", error);
+            console.error(`WebSocket client error for ${user.email}:`, error);
             this.clients.delete(ws);
           });
 
-          // Send connection confirmation
+          // Send connection confirmation with user info
           this.sendToClient(ws, {
             type: "connected",
-            data: { message: "WebSocket connection established" },
+            data: { 
+              message: "WebSocket connection established",
+              user: {
+                id: user.id,
+                email: user.email,
+                fullname: user.fullname,
+                role: user.role
+              }
+            },
           });
         });
 
@@ -163,19 +255,75 @@ class WebSocketService {
     }
   }
 
-  handleClientMessage(ws, message) {
-    console.log("Received message from client:", message);
+  handleClientMessage(ws, message, user) {
+    console.log(`Received message from ${user.email} (${user.role}):`, message);
 
-    // Handle different message types from clients if needed
+    // Update last activity timestamp
+    const clientInfo = this.clients.get(ws);
+    if (clientInfo) {
+      clientInfo.lastActivity = new Date();
+    }
+
+    // Handle different message types from clients
     switch (message.type) {
       case "ping":
         this.sendToClient(ws, { type: "pong", data: "pong" });
         break;
       case "subscribe":
         // Handle subscription requests if needed
+        // You can implement role-based subscriptions here
+        if (this.isAuthorizedForSubscription(user, message.data?.channel)) {
+          this.sendToClient(ws, { 
+            type: "subscribed", 
+            data: { channel: message.data?.channel } 
+          });
+        } else {
+          this.sendToClient(ws, { 
+            type: "error", 
+            data: { message: "Unauthorized subscription" } 
+          });
+        }
+        break;
+      case "authenticate":
+        // Re-authentication request
+        this.sendToClient(ws, { 
+          type: "auth_status", 
+          data: { 
+            authenticated: true,
+            user: {
+              id: user.id,
+              email: user.email,
+              role: user.role
+            }
+          } 
+        });
         break;
       default:
         console.log("Unknown message type:", message.type);
+        this.sendToClient(ws, { 
+          type: "error", 
+          data: { message: "Unknown message type" } 
+        });
+    }
+  }
+
+  /**
+   * Check if user is authorized for specific subscription
+   * @param {Object} user - User object
+   * @param {string} channel - Channel name
+   * @returns {boolean} - Authorization status
+   */
+  isAuthorizedForSubscription(user, channel) {
+    // Implement role-based authorization logic here
+    switch (channel) {
+      case "admin":
+        return ["admin", "superadmin"].includes(user.role);
+      case "screen":
+        return ["screen", "admin", "superadmin"].includes(user.role);
+      case "general":
+        return true; // All authenticated users can subscribe to general channel
+      default:
+        return false;
     }
   }
 
@@ -185,21 +333,90 @@ class WebSocketService {
     }
   }
 
-  broadcastToClients(message) {
-    console.log(`Broadcasting to ${this.clients.size} clients:`, message);
+  broadcastToClients(message, options = {}) {
+    const { roleFilter, userFilter, excludeUser } = options;
+    let targetClients = 0;
+    
+    console.log(`Broadcasting to clients with filters:`, {
+      totalClients: this.clients.size,
+      roleFilter,
+      userFilter,
+      excludeUser
+    });
 
-    this.clients.forEach((client) => {
+    this.clients.forEach((clientInfo, client) => {
       if (client.readyState === WebSocket.OPEN) {
+        const user = clientInfo.user;
+        
+        // Apply role filter
+        if (roleFilter && !roleFilter.includes(user.role)) {
+          return;
+        }
+        
+        // Apply user filter
+        if (userFilter && userFilter !== user.id) {
+          return;
+        }
+        
+        // Exclude specific user
+        if (excludeUser && excludeUser === user.id) {
+          return;
+        }
+        
         try {
           client.send(JSON.stringify(message));
+          targetClients++;
         } catch (error) {
-          console.error("Error sending message to client:", error);
+          console.error(`Error sending message to ${user.email}:`, error);
           this.clients.delete(client);
         }
       } else {
         this.clients.delete(client);
       }
     });
+    
+    console.log(`Message broadcast to ${targetClients} clients`);
+  }
+
+  /**
+   * Broadcast to clients with specific roles
+   * @param {Object} message - Message to broadcast
+   * @param {Array} roles - Array of roles to broadcast to
+   */
+  broadcastToRoles(message, roles) {
+    this.broadcastToClients(message, { roleFilter: roles });
+  }
+
+  /**
+   * Send message to specific user
+   * @param {Object} message - Message to send
+   * @param {string} userId - Target user ID
+   */
+  sendToUser(message, userId) {
+    this.broadcastToClients(message, { userFilter: userId });
+  }
+
+  /**
+   * Get connected clients information
+   * @returns {Array} - Array of client information
+   */
+  getConnectedClientsInfo() {
+    const clientsInfo = [];
+    this.clients.forEach((clientInfo, client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        clientsInfo.push({
+          user: {
+            id: clientInfo.user.id,
+            email: clientInfo.user.email,
+            role: clientInfo.user.role,
+            fullname: clientInfo.user.fullname
+          },
+          connectedAt: clientInfo.connectedAt,
+          lastActivity: clientInfo.lastActivity
+        });
+      }
+    });
+    return clientsInfo;
   }
 
   getConnectedClientsCount() {
@@ -220,6 +437,30 @@ class WebSocketService {
     this.clients.clear();
     this.isInitialized = false;
     console.log("WebSocket service closed");
+  }
+
+  /**
+   * Clean up inactive connections
+   * @param {number} maxInactiveMinutes - Maximum inactive time in minutes
+   */
+  cleanupInactiveConnections(maxInactiveMinutes = 30) {
+    const now = new Date();
+    const maxInactiveMs = maxInactiveMinutes * 60 * 1000;
+    let cleanedCount = 0;
+
+    this.clients.forEach((clientInfo, client) => {
+      const inactiveTime = now - clientInfo.lastActivity;
+      if (inactiveTime > maxInactiveMs) {
+        console.log(`Closing inactive connection for user: ${clientInfo.user.email}`);
+        client.close(1000, "Connection inactive");
+        this.clients.delete(client);
+        cleanedCount++;
+      }
+    });
+
+    if (cleanedCount > 0) {
+      console.log(`Cleaned up ${cleanedCount} inactive connections`);
+    }
   }
 }
 

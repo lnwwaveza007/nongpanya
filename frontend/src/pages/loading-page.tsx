@@ -2,12 +2,22 @@ import { Card } from '@/components/ui/card';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useWebSocket } from '@/hooks/useWebSocket';
+import { useAuthenticatedWebSocket } from '@/hooks/useAuthenticatedWebSocket';
 
 const LoadingScreen = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { subscribe, unsubscribe } = useWebSocket();
+  const { subscribe, isConnected, isAuthenticated, error } = useAuthenticatedWebSocket({
+    autoConnect: true,
+    // onConnectionChange: (connected, authenticated) => {
+    //   console.log('WebSocket status:', { connected, authenticated });
+    // },
+    onAuthError: (error) => {
+      console.warn('WebSocket authentication issue (user is already logged in):', error);
+      // Since user is already authenticated via HTTP, this might be a WebSocket-specific issue
+      // Let's not show an alert unless it's persistent
+    }
+  });
 
   useEffect(() => {
     const handleComplete = (data: unknown) => {
@@ -25,12 +35,12 @@ const LoadingScreen = () => {
       }
     };
 
-    subscribe('complete', handleComplete);
+    const unsubscribe = subscribe('complete', handleComplete);
 
     return () => {
-      unsubscribe('complete');
+      unsubscribe();
     };
-  }, [navigate, subscribe, unsubscribe]);
+  }, [navigate, subscribe]);
   
   // Primary: PANTONE 172 C (orange)
   const primaryColor = 'hsl(34, 100%, 56%)';
@@ -53,6 +63,14 @@ const LoadingScreen = () => {
             {t("loading.title")}
           </h1>
           <p className="text-muted-foreground mt-2">{t("loading.subtitle")}</p>
+          
+          {/* Optional: Show connection status for debugging */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="text-xs text-gray-500 mt-2">
+              WebSocket: {isConnected ? '🟢' : '🔴'} | Auth: {isAuthenticated ? '✅' : '❌'}
+              {error && <div className="text-red-500">Error: {error.message}</div>}
+            </div>
+          )}
         </div>
 
         {/* Animated Pills */}
