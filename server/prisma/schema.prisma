@@ -150,6 +150,7 @@ enum users_role {
   user
   admin
   superadmin
+  screen
 }
 
 enum users_auth_provider {

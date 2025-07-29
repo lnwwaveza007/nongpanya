@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import { getCode } from "../utils/codeStore.js";
+import { shouldGetPermanentToken } from "../utils/tokenUtils.js";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
@@ -11,6 +12,41 @@ import {
 
 dotenv.config();
 
+/**
+ * Creates JWT token with appropriate expiration based on user role
+ * @param {Object} payload - Token payload
+ * @param {string} role - User role
+ * @returns {string} - JWT token
+ */
+const createTokenForRole = (payload, role) => {
+  const jwtOptions = shouldGetPermanentToken(role) 
+    ? {} // No expiration for superadmin (permanent token)
+    : { expiresIn: "3h" };
+  
+  return jwt.sign(payload, process.env.JWT_SECRET, jwtOptions);
+};
+
+/**
+ * Sets cookie with appropriate options based on user role
+ * @param {Object} res - Express response object
+ * @param {string} token - JWT token
+ * @param {string} role - User role
+ */
+const setCookieForRole = (res, token, role) => {
+  const cookieOptions = {
+    httpOnly: true,
+    secure: true,
+  };
+  
+  // Set cookie maxAge based on user role
+  if (!shouldGetPermanentToken(role)) {
+    cookieOptions.maxAge = 3 * 60 * 60 * 1000; // 3 hours for regular users
+  }
+  // For superadmin, no maxAge means session cookie (permanent until browser closes)
+  
+  res.cookie("token", token, cookieOptions);
+};
+
 export const signin = async (req, res, next) => {
   try {
     const userData = req.user;
@@ -21,32 +57,27 @@ export const signin = async (req, res, next) => {
 
     const user = await findUserById(userData.id);
     
-    const token = jwt.sign(
-      {
-        id: user.id,
-        email: user.email,
-        fullname: user.fullname,
-        role: user.role,
-      },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "3h",
-      }
-    );
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: true,
-      maxAge: 3 * 60 * 60 * 1000,
-    });
+    // Create token with appropriate expiration for user role
+    const tokenPayload = {
+      id: user.id,
+      email: user.email,
+      fullname: user.fullname,
+      role: user.role,
+    };
+    
+    const token = createTokenForRole(tokenPayload, user.role);
+    setCookieForRole(res, token, user.role);
 
     return res.status(200).json({
       success: true,
       data: {
         id: user.id,
         code: getCode(),
+        permanentToken: shouldGetPermanentToken(user.role),
       },
-      message: "Signed in successfully",
+      message: shouldGetPermanentToken(user.role) 
+        ? "Signed in successfully with permanent token" 
+        : "Signed in successfully",
     });
   } catch (error) {
     next(error);
@@ -82,24 +113,16 @@ export const localSignin = async (req, res, next) => {
       });
     }
 
-    const token = jwt.sign(
-      {
-        id: user.id,
-        email: email,
-        fullname: user.fullname,
-        role: user.role,
-      },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "3h",
-      }
-    );
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: true,
-      maxAge: 3 * 60 * 60 * 1000,
-    });
+    // Create token with appropriate expiration for user role
+    const tokenPayload = {
+      id: user.id,
+      email: email,
+      fullname: user.fullname,
+      role: user.role,
+    };
+    
+    const token = createTokenForRole(tokenPayload, user.role);
+    setCookieForRole(res, token, user.role);
 
     return res.status(200).json({
       success: true,
@@ -109,8 +132,11 @@ export const localSignin = async (req, res, next) => {
         token: token,
         fullname: user.fullname,
         role: user.role,
+        permanentToken: shouldGetPermanentToken(user.role),
       },
-      message: "Signed in successfully",
+      message: shouldGetPermanentToken(user.role) 
+        ? "Signed in successfully with permanent token" 
+        : "Signed in successfully",
     });
   } catch (error) {
     next(error);
@@ -145,20 +171,16 @@ export const localRegister = async (req, res, next) => {
       auth_provider: "local",
     });
 
-    // Issue JWT
-    const token = jwt.sign(
-      { id: newUser.id, email: email, fullname: fullname, role: role },
-      process.env.JWT_SECRET,
-      {
-        expiresIn: "3h",
-      }
-    );
-
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: true,
-      maxAge: 3 * 60 * 60 * 1000,
-    });
+    // Create token with appropriate expiration for user role
+    const tokenPayload = {
+      id: newUser.id,
+      email: email,
+      fullname: fullname,
+      role: role,
+    };
+    
+    const token = createTokenForRole(tokenPayload, role);
+    setCookieForRole(res, token, role);
 
     return res.status(201).json({
       success: true,
@@ -167,8 +189,11 @@ export const localRegister = async (req, res, next) => {
         email: newUser.email,
         fullname: fullname,
         role: role,
+        permanentToken: shouldGetPermanentToken(role),
       },
-      message: "Registration successful",
+      message: shouldGetPermanentToken(role) 
+        ? "Registration successful with permanent token" 
+        : "Registration successful",
     });
   } catch (error) {
     next(error);

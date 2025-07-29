@@ -3,7 +3,7 @@ CREATE TABLE users (
     id CHAR(11) PRIMARY KEY NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     fullname VARCHAR(255),
-    role ENUM('user', 'admin', 'superadmin') DEFAULT 'user',
+    role ENUM('user', 'admin', 'superadmin', 'screen') DEFAULT 'user',
     password VARCHAR(255),
     age INT,
     weight INT,
