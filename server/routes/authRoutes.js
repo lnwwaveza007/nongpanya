@@ -3,11 +3,12 @@ import { localRegister, localSignin, signin, signout } from "../controllers/auth
 import passport from "../middlewares/microsoftMiddleware.js";
 import "../middlewares/microsoftMiddleware.js"
 import authenticateToken from "../middlewares/authenticateToken.js";
+import { authorizeRoles } from "../middlewares/authorizeRole.js";
 
 const authRoute = Router();
 
 authRoute.post("/signin",localSignin);
-authRoute.post("/register",localRegister);
+authRoute.post("/register", authorizeRoles(['admin','superadmin'], localRegister));
 authRoute.get(
   "/microsoft",
   passport.authenticate("microsoft", {

@@ -1,9 +1,10 @@
 import { Router } from "express";
 import { getCurrentCode, validateCode } from "../controllers/codeController.js";
+import { authorizeRoles } from "../middlewares/authorizeRole.js";
 
 const codeRoute = Router();
 
-codeRoute.get("/", getCurrentCode);
-codeRoute.get("/validate", validateCode);
+codeRoute.get("/", authorizeRoles(['screen'], getCurrentCode));
+codeRoute.get("/validate", authorizeRoles(['screen'], validateCode));
 
 export default codeRoute;
