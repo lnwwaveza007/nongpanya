@@ -7,7 +7,7 @@
     "start": "SELECTED_ENV=PROD nodemon server",
     "dev": "node scripts/select-env.js",
     "dev:local": "SELECTED_ENV=LOCAL nodemon server",
-    "dev:dev": "SELECTED_ENV=DEV nodemon server", 
+    "dev:dev": "SELECTED_ENV=DEV nodemon server",
     "dev:prod": "SELECTED_ENV=PROD nodemon server",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -24,11 +24,11 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
-    "mqtt": "^5.10.3",
     "nodemon": "^3.1.9",
     "passport": "^0.7.0",
     "passport-microsoft": "^2.1.0",
-    "uuid": "^11.1.0"
+    "uuid": "^11.1.0",
+    "ws": "^8.18.3"
   },
   "devDependencies": {
     "prisma": "^6.9.0"

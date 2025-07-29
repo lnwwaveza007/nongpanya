@@ -1,7 +1,7 @@
 import prisma from "../config/prismaClient.js";
 import { cleanMedicineName } from "../utils/formatter.js";
 import { dropPills } from "./boardServices.js";
-import { removeStock } from "./medStockServices.js";
+import { checkMedicineStock, removeStock } from "./medStockServices.js";
 
 export const getSymptoms = async () => {
   const symptoms = await prisma.symptoms.findMany();
@@ -28,6 +28,16 @@ export const getMedicines = async () => {
   return result;
 };
 
+export const getMedicalInfo = async (medId) => {
+  // Ensure medId is an integer
+  const medIdInt = parseInt(medId, 10);
+  
+  const medInfo = await prisma.medicine_instructions.findMany({
+    where: { id: medIdInt },
+  });
+  return medInfo;
+};
+
 export const setReqStatus = async (code) => {
   return await prisma.requests.updateMany({
     where: { code },
@@ -41,21 +51,32 @@ export const createRequest = async (formData, userId) => {
     if (!userId) {
       throw new Error("User ID is required.");
     }
-    // Validate form data
-    if (!formData.age || isNaN(formData.age)) {
-      throw new Error("Valid age is required.");
-    }
-    if (!formData.weight || isNaN(formData.weight)) {
-      throw new Error("Valid weight is required.");
-    }
     if (!formData.code) {
       throw new Error("Request code is required.");
+    }
+
+    // Check if user exists
+    const userExists = await prisma.users.findUnique({
+      where: { id: userId }
+    });
+    
+    if (!userExists) {
+      throw new Error(`User with ID ${userId} not found.`);
+    }
+
+    // Check if request code already exists
+    const existingRequest = await prisma.requests.findUnique({
+      where: { code: formData.code }
+    });
+    
+    if (existingRequest) {
+      throw new Error(`Request with code ${formData.code} already exists.`);
     }
 
     // Update user information
     await prisma.users.update({
       where: { id: userId },
-      data: { age: formData.age, weight: formData.weight, allergies: formData.allergies ? formData.allergies : null },
+      data: { phone: formData.phone, age: formData.age, weight: formData.weight, allergies: formData.allergies ? formData.allergies : null },
     });
 
     // Create the request in the database   
@@ -63,15 +84,16 @@ export const createRequest = async (formData, userId) => {
       data: {
         code: formData.code,
         user_id: userId,
-        weight: formData.weight,
+        weight: formData.weight || 0,
         additional_notes: formData.additional_notes ? formData.additional_notes : null,
         allergies: formData.allergies ? formData.allergies : null,
       },
     });
+
     if (formData.symptoms && formData.symptoms.length > 0) {
       const symptomData = formData.symptoms.map((symptomId) => ({
         request_code: formData.code,
-        symptom_id: symptomId,
+        symptom_id: parseInt(symptomId, 10),
       }));
 
       await prisma.request_symptoms.createMany({ data: symptomData });
@@ -85,11 +107,22 @@ export const createRequest = async (formData, userId) => {
 
 export const createRequestMedicines = async (code, medicines) => {
   try {
+    // Validate that medicines is an array and not empty
+    if (!Array.isArray(medicines)) {
+      console.warn(`medicines parameter is not an array: ${typeof medicines}`, medicines);
+      return { success: false, message: "Invalid medicines parameter" };
+    }
+    
+    if (medicines.length === 0) {
+      console.log("No medicines to create request for");
+      return { success: false, message: "No medicines provided" };
+    }
+
     for (const medicine of medicines) {
       await prisma.request_medicines.create({
         data: {
           request_code: code,
-          medicine_id: medicine.id,
+          medicine_id: parseInt(medicine.id, 10),
         },
       });
     }
@@ -121,8 +154,10 @@ export const giveMedicine = async (weight, age, allergies, symptomIds = [], medi
   let allMedicineMatches = [];
 
   if (medicineIds.length > 0) {
-    allMedicineMatches = medicineIds.map((id) => ({ medicine_id: id }));
-  } else if (symptomIds.length > 0) {
+    allMedicineMatches = medicineIds.map((id) => ({ medicine_id: parseInt(id, 10) }));
+  }
+  
+  if (symptomIds.length > 0) {
     for (const symptomId of symptomIds) {
       const matches = await matchSymptoms(symptomId);
       allMedicineMatches.push(...matches);
@@ -130,8 +165,10 @@ export const giveMedicine = async (weight, age, allergies, symptomIds = [], medi
   }
 
   for (const match of allMedicineMatches) {
+    // Convert medicine_id to integer to ensure type compatibility
+    const medicineId = parseInt(match.medicine_id, 10);
     const medicine = await prisma.medicines.findUnique({
-      where: { id: match.medicine_id },
+      where: { id: medicineId },
       select: { name: true },
     });
 
@@ -142,146 +179,73 @@ export const giveMedicine = async (weight, age, allergies, symptomIds = [], medi
       continue;
     }
 
-    const dose = await doseCheck(match.medicine_id, weight, age);
+    // Check if medicine has available stock
+    const availableStock = await checkMedicineStock(medicineId);
+    if (availableStock <= 0) {
+      console.log(`Skipping ${medicineName} due to insufficient stock.`);
+      continue;
+    }
 
     const alreadyAdded = pills.some(
-      (p) => p.medicine_id === match.medicine_id
+      (pill) => pill.medicine_id === medicineId
     );
 
     if (!alreadyAdded) {
-      pills.push({ medicine_id: match.medicine_id, amount: 1, dose });
+      pills.push({ medicine_id: medicineId, amount: 1 });
     }
   }
 
+  if (pills.length === 0) {
+    throw new Error("No medicines available.");
+  }
+
+  await dropPills(pills.map(pill => pill.medicine_id));
   for (const pill of pills) {
-    await dropPills(pill.medicine_id, pill.amount);
     await removeStock(pill.medicine_id, pill.amount);
-    const data = await getPillsData(pill);
+    const data = await getPillData(pill);
     pillsOutcome.push(data);
   }
 
   return pillsOutcome;
 };
 
-export const getPillsData = async (pills) => {
+export const getPillData = async (pill) => {
+  // Ensure medicine_id is an integer
+  const medicineId = parseInt(pill.medicine_id, 10);
   const medicine = await prisma.medicines.findUnique({
-    where: { id: pills.medicine_id },
+    where: { id: medicineId },
   });
 
   const instructions = await prisma.medicine_instructions.findMany({
-    where: { medicine_id: pills.medicine_id },
+    where: { medicine_id: medicineId },
   });
 
   const pillsData = {
-    id: pills.medicine_id,
+    id: medicineId,
     name: medicine.name,
-    quantity: pills.amount + " Pack",
-    dose: pills.dose?.dose_amount ? pills.dose.dose_amount + " " + medicine.type : null,
-    frequency: pills.dose?.dose_frequency ?? null,
+    quantity: pill.amount + " Pack",
+    // dose: pill.dose?.dose_amount ? pill.dose.dose_amount + " " + medicine.type : null,
+    // frequency: pill.dose?.dose_frequency ?? null,
     imageSize: { width: 150, height: 200 },
     imageUrl: medicine.image_url,
     instructions: instructions
       .filter((e) => e.type === "Instruction")
-      .map((e) => e.content),
+      .map((e) => e.id),
     warnings: instructions
       .filter((e) => e.type === "Warning")
-      .map((e) => e.content),
+      .map((e) => e.id),
   };
   return pillsData;
 };
 
 //Match Symptoms with Medicine
 export const matchSymptoms = async (symptomId) => {
+  // Ensure symptom_id is an integer
+  const symptomIdInt = parseInt(symptomId, 10);
   return await prisma.medicine_symptoms.findMany({
-    where: { symptom_id: symptomId },
+    where: { symptom_id: symptomIdInt },
     orderBy: { effectiveness: "asc" },
     select: { medicine_id: true },
-  });
-};
-
-// Get Perfect Dose from weight
-export const doseCheck = async (medicineId, weight, age) => {
-  const result = await prisma.medicine_doses.findFirst({
-    where: {
-      medicine_id: medicineId,
-      AND: [
-        {
-          OR: [
-            // Weight-based rule (age fields must be null)
-            {
-              AND: [
-                {
-                  OR: [
-                    {
-                      AND: [
-                        { min_weight: { lte: weight } },
-                        { max_weight: { gte: weight } },
-                      ],
-                    },
-                    {
-                      AND: [
-                        { min_weight: { lte: weight } },
-                        { max_weight: null },
-                      ],
-                    },
-                    {
-                      AND: [
-                        { min_weight: null },
-                        { max_weight: { gte: weight } },
-                      ],
-                    },
-                  ],
-                },
-                { min_age: null },
-                { max_age: null },
-              ],
-            },
-            // Age-based rule (weight fields must be null)
-            {
-              AND: [
-                {
-                  OR: [
-                    {
-                      AND: [
-                        { min_age: { lte: age } },
-                        { max_age: { gte: age } },
-                      ],
-                    },
-                    {
-                      AND: [
-                        { min_age: { lte: age } },
-                        { max_age: null },
-                      ],
-                    },
-                    {
-                      AND: [
-                        { min_age: null },
-                        { max_age: { gte: age } },
-                      ],
-                    },
-                  ],
-                },
-                { min_weight: null },
-                { max_weight: null },
-              ],
-            },
-          ],
-        },
-      ],
-    },
-    select: {
-      dose_frequency: true,
-      dose_amount: true,
-    },
-  });
-
-  if (result) return result;
-
-  // Fallback: lowest available dose if no match found
-  return await prisma.medicine_doses.findFirst({
-    where: { medicine_id: medicineId },
-    orderBy: { dose_amount: 'asc' },
-    select: { dose_frequency: true, dose_amount: true },
   });
 };
 

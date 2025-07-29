@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
 import EditStockModal from "../components/form/EditStockModal";
 import AddStockModal from "../components/form/AddStockModal";
@@ -11,6 +11,7 @@ import { getMedRanking, getMedRequest, getMedStock } from "@/api/med";
 import { MedRanking, MedRequest } from "@/types";
 import { useTranslation } from "react-i18next";
 import LanguageToggle from "@/components/ui/language-toggle";
+import MedicineImage from "@/components/ui/medicine-image";
 
 interface Medicine {
   id: number;
@@ -147,7 +148,13 @@ export default function DashboardPage() {
                 {medicineStock.map((med, idx) => (
                   <tr key={idx} className="border-b border-orange-100 last:border-0 hover:bg-orange-50">
                     <td className="px-4 py-2">{med.id}</td>
-                    <td className="px-4 py-2"><img src={med.image_url} alt="med" className="w-12 h-12 object-contain" /></td>
+                    <td className="px-4 py-2">
+                      <MedicineImage
+                        medicine={med}
+                        size="sm"
+                        className="object-contain"
+                      />
+                    </td>
                     <td className="px-4 py-2">{med.name}</td>
                     <td className={`px-4 py-2 font-semibold ${med.valid_stock === 0 ? "text-red-500" : "text-green-600"}`}>{med.valid_stock}/30</td>
                     <td className="flex items-center gap-2 px-4 py-2">
@@ -202,7 +209,7 @@ export default function DashboardPage() {
                   }}
                 />
                 <Bar dataKey="total" isAnimationActive fill="rgb(249 115 22)">
-                  {topDispensed.map((entry, index) => (
+                  {topDispensed.map((_, index) => (
                     <Cell key={`cell-${index}`} fill={`hsl(${index * 60}, 70%, 50%)`} />
                   ))}
                 </Bar>

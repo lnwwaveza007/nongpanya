@@ -7,7 +7,7 @@
 - **JWT** – User authentication
 - **CORS** – Cross-origin access support
 - **Nodemon** – Hot reload during development
-- **MQTT** – IoT messaging protocol
+- **WebSocket** – Real-time communication
 - **Passport** – OAuth authentication (e.g., Microsoft)
 
 ## Getting Started
@@ -25,12 +25,7 @@ npm install
 ### 3. Set up environment variables
 Create a .env file in the root directory:
 ```bash
-# MQTT (for ESP-based IoT device communication)
-VITE_MQTT_ENDPOINT=wss://example-mqtt.com/mqtt #ws://example-mqtt.com/mqtt
-VITE_MQTT_USERNAME=mqtt_user
-VITE_MQTT_PASSWORD=mqtt_password
-
-# ESP32 Board Endpoint (for direct HTTP requests)
+# ESP32 Board Endpoint (for direct HTTP requests if needed)
 BOARD_URL=http://0.0.0.0
 
 # Microsoft OAuth2 Configuration (for login with Microsoft account)

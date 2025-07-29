@@ -4,17 +4,54 @@ import { Sparkles } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import LanguageToggle from "@/components/ui/language-toggle";
 
+import { config } from '../config';
+import { useEffect } from "react";
+import { auth } from "@/api/auth";
+import { getUser } from "@/api/user";
+
 const LoginPage = () => {
   const { t } = useTranslation();
 
-  // Primary: PANTONE 172 C (orange)
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get("code");
+
+  useEffect(() => {
+    const verifyAuth = async () => {
+      try {
+        const response = await auth();
+        if (response.data.success) {
+          // Fetch and store user data for role-based access control
+          try {
+            const userResponse = await getUser();
+            if (userResponse.data && userResponse.data.data) {
+              localStorage.setItem('user', JSON.stringify(userResponse.data.data));
+            }
+          } catch (userError) {
+            console.error('Failed to fetch user data:', userError);
+          }
+          
+          // If user has a code, redirect to form page, otherwise redirect to homepage
+          if (code) {
+            window.location.href = `/form?code=${code}`;
+          } else {
+            window.location.href = "/homepage";
+          }
+        }
+      } catch (error) {
+        console.error('Auth verification failed:', error);
+      }
+    };
+    
+    // Check auth status when component loads
+    verifyAuth();
+  }, [code]);
+
   const primaryColor = "hsl(34, 100%, 56%)";
-  // Secondary: PANTONE 123 C (yellow)
   const secondaryColor = "hsl(48, 100%, 57%)";
 
   const handleLogin = () => {
     window.location.href = `${
-      import.meta.env.VITE_API_URL
+      config.api.url
     }/auth/microsoft`;
   };
 

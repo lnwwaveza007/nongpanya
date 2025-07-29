@@ -13,7 +13,7 @@ interface InputProps {
 }
 
 const CustomInput = (InputProps: InputProps) => (
-  <Card className="p-4 rounded-lg bg-white hover:bg-gray-50 transition-all flex items-center gap-2" style={{ borderColor: '#FF4B28' }}>
+  <Card className="p-4 rounded-lg bg-white hover:bg-gray-50 transition-all flex items-center gap-2 border-primary">
     <div className="text-gray-400">
       {InputProps.icon}
     </div>
@@ -30,7 +30,7 @@ const CustomInput = (InputProps: InputProps) => (
 );
 
 const CustomTextArea = ({ name, placeholder, value, onChange }: Omit<InputProps, 'type' | 'icon'>) => (
-  <Card className="p-4 rounded-lg bg-white hover:bg-gray-50 transition-all" style={{ borderColor: '#FF4B28' }}>
+  <Card className="p-4 rounded-lg bg-white hover:bg-gray-50 transition-all border-primary">
     <textarea
       id={name}
       name={name}

@@ -8,20 +8,18 @@ dotenv.config();
  * Supports LOCAL, DEV, and PROD environments with different configurations
  */
 
-const DEFAULT_ENV = 'LOCAL';
+const DEFAULT_ENV = 'DEV';
 const SELECTED_ENV = process.env.SELECTED_ENV || DEFAULT_ENV;
 
 // CORS Origins configuration for each environment
 const CORS_ORIGINS = {
-  LOCAL: ['http://localhost:3001', 'http://localhost:5173'],
+  LOCAL: ['http://localhost:3001'],
   DEV: [
     'http://localhost:3001', 
-    'http://localhost:5173',
-    'https://nongpanya-dev.sit.kmutt.ac.th'
+    'https://nongpanya.sit.kmutt.ac.th'
   ],
   PROD: [
     'https://nongpanya.sit.kmutt.ac.th',
-    'https://nongpanya-website2.scnd.space'
   ]
 };
 
@@ -70,19 +68,11 @@ export function getConfig() {
   const config = {
     environment: SELECTED_ENV,
     port: getEnvVar('PORT', null, true) || DEFAULT_PORTS[SELECTED_ENV],
-    nodeEnv: getEnvVar('NODE_ENV', null, true),
+    websocketPort: getEnvVar('WEBSOCKET_PORT', '3002'),
     
     // Database configuration
     database: {
       url: getEnvVar('DATABASE_URL'),
-    },
-    
-    // MQTT configuration
-    mqtt: {
-      endpoint: getEnvVar('VITE_MQTT_ENDPOINT'),
-      username: getEnvVar('VITE_MQTT_USERNAME'),
-      password: getEnvVar('VITE_MQTT_PASSWORD'),
-      clientId: getEnvVar('VITE_MQTT_CLIENT_ID', 'mqttx_66130500012'),
     },
     
     // Board/Hardware configuration
@@ -115,7 +105,7 @@ export function getConfig() {
     
     // CORS configuration
     cors: {
-      origins: CORS_ORIGINS[SELECTED_ENV] || CORS_ORIGINS.LOCAL,
+      origins: CORS_ORIGINS[SELECTED_ENV] || CORS_ORIGINS.PROD,
     },
     
     // Logging configuration
@@ -180,11 +170,6 @@ function validateConfig(config) {
     missingVars.push('JWT_SECRET');
   }
   
-  // Warn about missing MQTT configuration (might not be critical for all environments)
-  if (!config.mqtt.endpoint) {
-    console.warn(`⚠️  Missing MQTT configuration: ${SELECTED_ENV}_VITE_MQTT_ENDPOINT`);
-  }
-  
   // Warn about missing Microsoft OAuth (might not be needed in all setups)
   if (!config.microsoft.clientId) {
     console.warn(`⚠️  Missing Microsoft OAuth configuration: MICROSOFT_CLIENT_ID`);
@@ -192,11 +177,6 @@ function validateConfig(config) {
   
   if (!config.microsoft.callbackUrl) {
     console.warn(`⚠️  Missing Microsoft OAuth callback URL: ${SELECTED_ENV}_MICROSOFT_CALLBACK_URL`);
-  }
-  
-  // Warn about missing global configurations
-  if (!config.nodeEnv) {
-    console.warn(`⚠️  Missing NODE_ENV configuration`);
   }
   
   if (missingVars.length > 0) {
@@ -219,7 +199,6 @@ export function displayConfig() {
   console.log(`Node Environment: ${config.nodeEnv || 'Not set'}`);
   console.log(`Port: ${config.port}`);
   console.log(`Database: ${config.database.url ? '✓ Configured' : '❌ Missing'}`);
-  console.log(`MQTT: ${config.mqtt.endpoint ? '✓ Configured' : '❌ Missing'}`);
   console.log(`Microsoft OAuth: ${config.microsoft.clientId ? '✓ Configured' : '❌ Missing'}`);
   console.log(`Microsoft Callback: ${config.microsoft.callbackUrl ? '✓ Configured' : '❌ Missing'}`);
   console.log(`JWT: ${config.jwt.secret ? '✓ Configured' : '❌ Missing'}`);

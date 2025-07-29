@@ -1,6 +1,7 @@
 import axios from "axios";
+import { config } from "../config";
 
 export const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: config.api.url,
   withCredentials: true,
 });

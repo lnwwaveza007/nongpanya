@@ -1,25 +1,17 @@
 import { getUserQuota } from "@/api";
-import { HeartPulse, AlertCircle, Clock, Calendar, Info } from "lucide-react";
+import { HeartPulse, AlertCircle, Calendar, Info, Home } from "lucide-react";
 import {
   useState,
   useEffect,
 } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import LanguageToggle from "@/components/ui/language-toggle";
-
-interface Medical {
-  imageUrl: string;
-  name: string;
-  type: string;
-  quantity: number;
-  frequency: number;
-  instructions: string[];
-  warnings: string[];
-}
+import { Medical } from "@/types";
 
 const ResultsPage = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [used, setUsed] = useState(0);
   const prescribedMedications = useLocation().state?.data;
 
@@ -31,11 +23,32 @@ const ResultsPage = () => {
     getUserQuotaAPI();
   }, []);
 
+  const resetDate = new Date(
+    new Date().setMonth(new Date().getMonth() + 1, 1)
+  ).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+
   const studentQuota = {
-    maxPerMonth: 5,
+    maxPerMonth: 3,
     used: used,
-    resetDate: "1 Feb 2025",
+    resetDate: resetDate
   };
+
+  // const mockupMedications = [
+  //   {
+  //     imageUrl: "https://hdmall.co.th/blog/wp-content/uploads/2024/07/paracetamol.jpg",
+  //     name: "Medication 1",
+  //     type: "Tablet",
+  //     quantity: 1,
+  //     frequency: 1,
+  //     description: "This is a description of the medication",
+  //     instructions: [15, 16, 17, 18, 19],
+  //     warnings: [20, 21, 22, 23, 24, 25]
+  //   },
+  // ];
 
   return (
     <div className="min-h-screen p-8">
@@ -118,24 +131,26 @@ const ResultsPage = () => {
                       {t("result.quantity")}: {med.quantity}
                     </p>
                   </div>
-                  <div className="bg-[#F5F7F9] px-4 py-2 rounded-lg">
+                  {/* <div className="bg-[#F5F7F9] px-4 py-2 rounded-lg">
                     <Clock className="inline-block mr-2" size={16} />
                     {med.frequency}
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className="mt-4 space-y-4">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p>{med.description}</p>
+                    </div>
+                  </div>
+
                   <div>
                     <h4 className="font-semibold mb-2">{t("result.instructions")}</h4>
                     <ul className="space-y-2 text-left">
-                      <li key="zero" className="flex items-center text-gray-600">
-                          <span className="w-2 h-2 bg-[#FFC926] rounded-full mr-2"></span>
-                          {t("result.dispenseNote")}
-                      </li>
                       {med.instructions?.map((instruction, i) => (
                         <li key={i} className="flex items-center text-gray-600">
                           <span className="w-2 h-2 bg-[#FFC926] rounded-full mr-2"></span>
-                          {instruction}
+                          {t(`detail.${instruction}`)}
                         </li>
                       ))}
                     </ul>
@@ -150,7 +165,7 @@ const ResultsPage = () => {
                       {med.warnings?.map((warning, i) => (
                         <li key={i} className="flex items-start text-red-600">
                           <span className="w-1 h-1 bg-red-400 rounded-full mr-2"></span>
-                          {warning}
+                          {t(`detail.${warning}`)}
                         </li>
                       ))}
                     </ul>
@@ -160,6 +175,17 @@ const ResultsPage = () => {
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Back to Home Button */}
+      <div className="max-w-4xl mx-auto mt-8 mb-8 flex justify-center">
+        <button
+          onClick={() => navigate('/')}
+          className="flex items-center gap-2 px-6 py-3 bg-[#FF4B28] text-white rounded-lg hover:bg-[#E63E1E] transition-colors duration-200 shadow-md"
+        >
+          <Home size={20} />
+          <span>{t("result.backToHome")}</span>
+        </button>
       </div>
 
       {/* Emergency Contact */}

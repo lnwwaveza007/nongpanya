@@ -2,10 +2,11 @@ import { Card } from '@/components/ui/card';
 import { Smartphone } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import mqtt from 'mqtt';
 import { useNavigate } from 'react-router-dom';
 import { getCode } from '@/api';
 import { useTranslation } from 'react-i18next';
+import { config } from '../../config';
+import { useWebSocket } from '@/hooks/useWebSocket';
 
 const QRCodeScreen = () => {
   const { t } = useTranslation();
@@ -13,46 +14,39 @@ const QRCodeScreen = () => {
   const [code, setCode] = useState<string>('');
   const genQrCode = useRef(false);
   const [isHovering, setIsHovering] = useState(false);
+  const { subscribe, unsubscribe } = useWebSocket();
   const face = '(｡♥‿♥｡)';
 
   useEffect(() => {
-    const client = mqtt.connect(import.meta.env.VITE_MQTT_ENDPOINT, {
-      username: import.meta.env.VITE_MQTT_USERNAME,
-      password: import.meta.env.VITE_MQTT_PASSWORD,
-    });
-    client.on("connect", () => {
-      console.log("connected");
-      client.subscribe("nongpanya/order");
-    });
-
-    client.on("message", (_) => {
+    const handleOrder = () => {
       navigate('/screen/giving');
-    });
+    };
+
+    subscribe('order', handleOrder);
 
     return () => {
-      console.log("disconnecting");
-      client.end();
+      unsubscribe('order');
     };
-  }, [navigate]);
+  }, [navigate, subscribe, unsubscribe]);
 
-  const getCodeAPI = async () => {
-    if (code !== '') return;
-    try {
+  useEffect(() => {
+    const getCodeAPI = async () => {
+      if (code !== '') return;
+      try {
         const res = await getCode(); 
         setCode(res.data.code);
         console.log(res.data.code);
-    } catch (error) {
+      } catch (error) {
         console.error(error);
-    }
-  }
+      }
+    };
 
-  useEffect(() => {
     if (!genQrCode.current) {
-        console.log('Generating code...');
-        genQrCode.current = true;
-        getCodeAPI();
+      console.log('Generating code...');
+      genQrCode.current = true;
+      getCodeAPI();
     }
-  }, []);
+  }, [code]);
 
   return (
     <div className="w-[1000px] h-[590px] flex items-center justify-center p-4">
@@ -74,7 +68,7 @@ const QRCodeScreen = () => {
             onMouseEnter={() => setIsHovering(true)}
             onMouseLeave={() => setIsHovering(false)}
           >
-            <QRCodeSVG value={`${import.meta.env.VITE_URL}/form?code=${code}`} size={200} fgColor='#ff9e1f' />
+            <QRCodeSVG value={`${config.app.url}/form?code=${code}`} size={200} fgColor='#ff9e1f' />
           </div>
           
           <div className="flex flex-col items-center gap-4">

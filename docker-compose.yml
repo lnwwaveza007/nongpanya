@@ -2,24 +2,39 @@ version: '3.8'
 
 services:
   frontend:
-    image: nginx:alpine
+    image: nongpanya-client
+    container_name: nongpanya-client
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - ./frontend/dist:/var/www
       - /etc/ssl/custom:/etc/nginx/cert
       - ./config/nginx.conf:/etc/nginx/conf.d/default.conf  # Volume for Nginx configuration
     restart: unless-stopped
+    networks:
+      - nongpanya-net
 
   server:
+    image: nongpanya-server
+    container_name: nongpanya-server
     build:
       context: ./server
-      dockerfile: Dockerfile
+      dockerfile: dockerfile
     environment:
-      - NODE_ENV=production
+      - SELECTED_ENV=PROD
+    command: sh -c "npx prisma generate && npm start"
     env_file:
       - ./server/.env
     ports:
       - "3000:3000"
     restart: unless-stopped
+    networks:
+      - nongpanya-net
+
+networks:
+  nongpanya-net:
+    name: nongpanya-net
+    driver: bridge

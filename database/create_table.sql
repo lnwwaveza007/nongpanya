@@ -7,6 +7,7 @@ CREATE TABLE users (
     password VARCHAR(255),
     age INT,
     weight INT,
+    phone VARCHAR(20),
     allergies TEXT,
     auth_provider ENUM('local', 'microsoft') DEFAULT 'local',
     created_at TIMESTAMP DEFAULT NOW(),
@@ -38,17 +39,17 @@ CREATE TABLE symptoms (
     description TEXT
 );
 
-CREATE TABLE medicine_doses (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    medicine_id INT,
-    min_weight INT,        -- in kg (nullable if not used)
-    max_weight INT,        -- in kg
-    min_age INT,           -- in months or years (specify unit)
-    max_age INT,           -- in months or years
-    dose_amount INT,       -- number of tablets
-    dose_frequency VARCHAR(50),
-    FOREIGN KEY (medicine_id) REFERENCES medicines(id) ON DELETE CASCADE ON UPDATE CASCADE
-);
+# CREATE TABLE medicine_doses (
+#     id INT AUTO_INCREMENT PRIMARY KEY,
+#     medicine_id INT,
+#     min_weight INT,        -- in kg (nullable if not used)
+#     max_weight INT,        -- in kg
+#     min_age INT,           -- in months or years (specify unit)
+#     max_age INT,           -- in months or years
+#     dose_amount INT,       -- number of tablets
+#     dose_frequency VARCHAR(50),
+#     FOREIGN KEY (medicine_id) REFERENCES medicines(id) ON DELETE CASCADE ON UPDATE CASCADE
+# );
 
 CREATE TABLE medicine_stocks (
     id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
