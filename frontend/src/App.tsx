@@ -13,6 +13,7 @@ import Redirect from './pages/auth-redirect';
 import authUser from './hooks/authUser';
 import DashboardPage from './pages/dashboard-page';
 import UserLogPage from './pages/user-log-page';
+import NotFoundPage from './pages/not-found-page';
 
 function App() {
   return (
@@ -31,6 +32,8 @@ function App() {
         <Route path='/screen/giving' element={<GivingScreen />} />
         <Route path='/screen/complete' element={<CompletionScreen />} />
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path='*' element={<NotFoundPage />} />
+
       </Routes>
     </Router>
   );
