@@ -1,11 +1,15 @@
 // WebSocket server service for handling browser connections
 // Provides real-time communication between server and clients
 
-import { WebSocketServer, WebSocket } from 'ws';
-import { createServer } from 'http';
-import { createServer as createHttpsServer } from 'https';
-import { readFileSync } from 'fs';
-import { getCurrentEnvironment } from '../config/envConfig.js';
+import { WebSocketServer, WebSocket } from "ws";
+import { createServer } from "http";
+import { createServer as createHttpsServer } from "https";
+import { readFileSync } from "fs";
+import { getCurrentEnvironment } from "../config/envConfig.js";
+import { getConfig } from './envConfig.js';
+
+// Get environment-specific configuration
+const config = getConfig();
 
 class WebSocketService {
   constructor() {
@@ -18,13 +22,13 @@ class WebSocketService {
 
   async initialize(port = 3002, maxRetries = 5) {
     if (this.isInitialized) {
-      console.log('WebSocket service already initialized');
+      console.log("WebSocket service already initialized");
       return;
     }
 
     let currentPort = port;
     let retries = 0;
-    const isProduction = getCurrentEnvironment() === 'PROD';
+    const isProduction = getCurrentEnvironment() === "PROD";
 
     while (retries < maxRetries) {
       try {
@@ -33,64 +37,84 @@ class WebSocketService {
           // Try to load SSL certificates for production
           try {
             const serverOptions = {
-              cert: readFileSync('/etc/nginx/cert/fullchain.pem'),
-              key: readFileSync('/etc/nginx/cert/privkey.pem')
+              cert: readFileSync("/etc/nginx/cert/fullchain.pem"),
+              key: readFileSync("/etc/nginx/cert/privkey.pem"),
             };
             this.server = createHttpsServer(serverOptions);
-            console.log('WebSocket server using HTTPS/WSS');
+            console.log("WebSocket server using HTTPS/WSS");
           } catch (sslError) {
-            console.warn('SSL certificates not found, falling back to HTTP:', sslError.message);
+            console.warn(
+              "SSL certificates not found, falling back to HTTP:",
+              sslError.message
+            );
             this.server = createServer();
-            console.log('WebSocket server using HTTP/WS (SSL fallback)');
+            console.log("WebSocket server using HTTP/WS (SSL fallback)");
           }
         } else {
           // Development: use HTTP
           this.server = createServer();
-          console.log('WebSocket server using HTTP/WS (development)');
+          console.log("WebSocket server using HTTP/WS (development)");
         }
-        
-        this.wss = new WebSocketServer({ server: this.server });
+
+        this.wss = new WebSocketServer({
+          server: this.server,
+          verifyClient: (info, done) => {
+            const origin = info.origin || "unknown";
+            console.log(`Incoming WebSocket request from origin: ${origin}`);
+
+            const allowedOrigins = config.cors.origins || [];
+            if (allowedOrigins.includes(origin)) {
+              done(true);
+            } else {
+              console.warn(`WebSocket connection rejected from origin: ${origin}`);
+              done(false, 403, 'Forbidden');
+            }
+          },
+        });
 
         // Set up WebSocket connection handling
-        this.wss.on('connection', (ws, req) => {
-          console.log('New WebSocket client connected from:', req.socket.remoteAddress);
+        this.wss.on("connection", (ws, req) => {
+          console.log(
+            "New WebSocket client connected from:",
+            req.socket.remoteAddress
+          );
           this.clients.add(ws);
 
-          ws.on('message', (message) => {
+          ws.on("message", (message) => {
             try {
               const data = JSON.parse(message.toString());
               this.handleClientMessage(ws, data);
             } catch (error) {
-              console.error('Error parsing WebSocket message:', error);
+              console.error("Error parsing WebSocket message:", error);
             }
           });
 
-          ws.on('close', () => {
-            console.log('WebSocket client disconnected');
+          ws.on("close", () => {
+            console.log("WebSocket client disconnected");
             this.clients.delete(ws);
           });
 
-          ws.on('error', (error) => {
-            console.error('WebSocket client error:', error);
+          ws.on("error", (error) => {
+            console.error("WebSocket client error:", error);
             this.clients.delete(ws);
           });
 
           // Send connection confirmation
           this.sendToClient(ws, {
-            type: 'connected',
-            data: { message: 'WebSocket connection established' }
+            type: "connected",
+            data: { message: "WebSocket connection established" },
           });
         });
 
         // Set up error handling for the WebSocket server
-        this.wss.on('error', (error) => {
-          console.error('WebSocket server error:', error);
+        this.wss.on("error", (error) => {
+          console.error("WebSocket server error:", error);
         });
 
         // Start the server with promise-based approach
         await new Promise((resolve, reject) => {
-          this.server.on('error', (error) => {
-            if (error.code === 'EADDRINUSE') {
+          this.server.on("error", (error) => {
+            if (error.code === "EADDRINUSE") {
               reject(new Error(`Port ${currentPort} is already in use`));
             } else {
               reject(error);
@@ -107,10 +131,11 @@ class WebSocketService {
 
         // If we get here, the server started successfully
         break;
-
       } catch (error) {
-        console.warn(`Failed to start WebSocket server on port ${currentPort}: ${error.message}`);
-        
+        console.warn(
+          `Failed to start WebSocket server on port ${currentPort}: ${error.message}`
+        );
+
         // Clean up failed attempt
         if (this.server) {
           this.server.close();
@@ -125,7 +150,11 @@ class WebSocketService {
         currentPort++;
 
         if (retries >= maxRetries) {
-          throw new Error(`Failed to start WebSocket server after ${maxRetries} attempts. Ports ${port} to ${currentPort - 1} are in use.`);
+          throw new Error(
+            `Failed to start WebSocket server after ${maxRetries} attempts. Ports ${port} to ${
+              currentPort - 1
+            } are in use.`
+          );
         }
 
         console.log(`Retrying with port ${currentPort}...`);
@@ -134,18 +163,18 @@ class WebSocketService {
   }
 
   handleClientMessage(ws, message) {
-    console.log('Received message from client:', message);
-    
+    console.log("Received message from client:", message);
+
     // Handle different message types from clients if needed
     switch (message.type) {
-      case 'ping':
-        this.sendToClient(ws, { type: 'pong', data: 'pong' });
+      case "ping":
+        this.sendToClient(ws, { type: "pong", data: "pong" });
         break;
-      case 'subscribe':
+      case "subscribe":
         // Handle subscription requests if needed
         break;
       default:
-        console.log('Unknown message type:', message.type);
+        console.log("Unknown message type:", message.type);
     }
   }
 
@@ -157,13 +186,13 @@ class WebSocketService {
 
   broadcastToClients(message) {
     console.log(`Broadcasting to ${this.clients.size} clients:`, message);
-    
-    this.clients.forEach(client => {
+
+    this.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
         try {
           client.send(JSON.stringify(message));
         } catch (error) {
-          console.error('Error sending message to client:', error);
+          console.error("Error sending message to client:", error);
           this.clients.delete(client);
         }
       } else {
@@ -189,7 +218,7 @@ class WebSocketService {
     }
     this.clients.clear();
     this.isInitialized = false;
-    console.log('WebSocket service closed');
+    console.log("WebSocket service closed");
   }
 }
 

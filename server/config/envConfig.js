@@ -13,15 +13,13 @@ const SELECTED_ENV = process.env.SELECTED_ENV || DEFAULT_ENV;
 
 // CORS Origins configuration for each environment
 const CORS_ORIGINS = {
-  LOCAL: ['http://localhost:3001', 'http://localhost:5173'],
+  LOCAL: ['http://localhost:3001'],
   DEV: [
     'http://localhost:3001', 
-    'http://localhost:5173',
-    'https://nongpanya-dev.sit.kmutt.ac.th'
+    'https://nongpanya.sit.kmutt.ac.th'
   ],
   PROD: [
     'https://nongpanya.sit.kmutt.ac.th',
-    'https://nongpanya-website2.scnd.space'
   ]
 };
 
@@ -107,7 +105,7 @@ export function getConfig() {
     
     // CORS configuration
     cors: {
-      origins: CORS_ORIGINS[SELECTED_ENV] || CORS_ORIGINS.LOCAL,
+      origins: CORS_ORIGINS[SELECTED_ENV] || CORS_ORIGINS.PROD,
     },
     
     // Logging configuration
