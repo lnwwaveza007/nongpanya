@@ -16,7 +16,7 @@ const isWindows = platform() === 'win32';
 // Check if we're in the right directory
 const packageJsonPath = join(__dirname, '..', 'package.json');
 if (!existsSync(packageJsonPath)) {
-  console.error('❌ Error: package.json not found. Make sure you\'re running this from the frontend directory.');
+  console.error('Error: package.json not found. Make sure you\'re running this from the frontend directory.');
   process.exit(1);
 }
 
@@ -59,7 +59,7 @@ function promptEnvironment() {
         const env = environments[answer.trim()];
         if (env) {
           if (env === 'EXIT') {
-            console.log('\n👋 Goodbye!');
+            console.log('\nGoodbye!');
             rl.close();
             process.exit(0);
           }
@@ -130,18 +130,18 @@ async function startDev() {
       throw new Error(`Invalid environment: ${selectedEnv}`);
     }
     
-    // Start the dev server with vite
-    const command = isWindows ? 'npx.cmd' : 'npx';
-    devProcess = spawn(command, ['vite'], {
+    // Always use the local vite binary for both platforms
+    const vitePath = join(__dirname, '..', 'node_modules', '.bin', isWindows ? 'vite.cmd' : 'vite');
+    let options = {
       cwd: join(__dirname, '..'),
       stdio: 'inherit',
       env: {
         ...process.env,
         VITE_SELECTED_ENV: selectedEnv,
       },
-      // On Windows, spawn the process in a new process group
-      ...(isWindows ? { detached: false } : {})
-    });
+      ...(isWindows ? { detached: false, shell: true } : {})
+    };
+    devProcess = spawn(vitePath, [], options);
     
     devProcess.on('error', (error) => {
       console.error('\n[ERROR] Failed to start dev server process:', error.message);

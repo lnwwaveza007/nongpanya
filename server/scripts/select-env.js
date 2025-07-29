@@ -134,18 +134,18 @@ async function startServer() {
       throw new Error(`Invalid environment: ${selectedEnv}`);
     }
     
-    // Start the server with nodemon
-    const command = isWindows ? 'npx.cmd' : 'npx';
-    serverProcess = spawn(command, ['nodemon', 'server.js'], {
+    // Always use the local nodemon binary for both platforms
+    const nodemonPath = join(__dirname, '..', 'node_modules', '.bin', isWindows ? 'nodemon.cmd' : 'nodemon');
+    let options = {
       cwd: join(__dirname, '..'),
       stdio: 'inherit',
       env: {
         ...process.env,
         SELECTED_ENV: selectedEnv,
       },
-      // On Windows, spawn the process in a new process group
-      ...(isWindows ? { detached: false } : {})
-    });
+      ...(isWindows ? { detached: false, shell: true } : {})
+    };
+    serverProcess = spawn(nodemonPath, ['server.js'], options);
     
     serverProcess.on('error', (error) => {
       console.error('\n[ERROR] Failed to start server process:', error.message);
