@@ -82,6 +82,7 @@ class WebSocketService {
               console.log(`WebSocket connection allowed from origin: ${origin}`);
               done(true);
             } else {
+              console.log(`WebSocket connection denied from origin: ${origin}`);
               done(false, 403, 'Forbidden: Origin not allowed');
             }
           },

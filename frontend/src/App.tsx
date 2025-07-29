@@ -25,7 +25,7 @@ function App() {
         <Route path="/homepage" element={authUser(<Homepage />)} />
         <Route path="/form" element={authUser(<NongpanyaVending />)} />
         <Route path="/result" element={authUser(<ResultPage />)} />
-        <Route path='/loading' element={<LoadingPage />} />
+        <Route path='/loading' element={authUser(<LoadingPage />)} />
         <Route path='/auth' element={<Redirect />} />
         <Route path='/unauthorized' element={<UnauthorizedPage />} />
         {/* Role-based protected routes */}

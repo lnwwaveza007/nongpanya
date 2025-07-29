@@ -16,7 +16,7 @@ const environmentConfigs = {
       url: "http://localhost:3000/api"
     },
     app: {
-      url: "http://localhost:5173"
+      url: "http://localhost:3001"
     }
   },
   DEV: {
@@ -27,7 +27,7 @@ const environmentConfigs = {
       url: "http://localhost:3000/api"
     },
     app: {
-      url: "http://localhost:5173"
+      url: "http://localhost:3001"
     }
   },
   PROD: {
