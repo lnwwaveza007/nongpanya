@@ -56,13 +56,14 @@ export const useAuth = () => {
     return user.role === role;
   };
 
-  const hasMinimumRole = (role: 'user' | 'admin' | 'superadmin'): boolean => {
+  const hasMinimumRole = (role: 'user' | 'admin' | 'superadmin' | 'screen'): boolean => {
     if (!user) return false;
     
     const roleHierarchy = {
       user: 0,
       admin: 1,
-      superadmin: 2
+      superadmin: 2,
+      screen: 0
     };
     
     const userRoleLevel = roleHierarchy[user.role];
