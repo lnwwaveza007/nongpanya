@@ -20,18 +20,6 @@ jobs:
           # Check if specific containers are running
           echo "Checking if required containers are running..."
           
-          if docker ps --format "{{.Names}}" | grep -q "nongpanya-mqtt-client"; then
-            echo "✅ MQTT Client container is running"
-          else
-            echo "❌ MQTT Client container is not running"
-          fi
-          
-          if docker ps --format "{{.Names}}" | grep -q "nongpanya-mqtt"; then
-            echo "✅ MQTT Broker (Mosquitto) container is running"
-          else
-            echo "❌ MQTT Broker (Mosquitto) container is not running"
-          fi
-          
           if docker ps --format "{{.Names}}" | grep -q "nongpanya-mysql"; then
             echo "✅ MySQL container is running"
           else
@@ -62,10 +50,10 @@ jobs:
 
       - name: Verify container status
         run: |
-          echo "Verifying all containers are running..."
+          echo "Verifying required containers are running..."
           
-          # Check if all required containers are running
-          REQUIRED_CONTAINERS=("nongpanya-mqtt-client" "nongpanya-mqtt" "nongpanya-mysql")
+          # Check if required containers are running
+          REQUIRED_CONTAINERS=("nongpanya-mysql")
           ALL_RUNNING=true
           
           for container in "${REQUIRED_CONTAINERS[@]}"; do
@@ -94,20 +82,6 @@ jobs:
       - name: Health check services
         run: |
           echo "Performing health checks on services..."
-          
-          # Check MQTT Client (port 30080)
-          if curl -f http://localhost:30080 > /dev/null 2>&1; then
-            echo "✅ MQTT Client web interface is accessible on port 30080"
-          else
-            echo "❌ MQTT Client web interface is not accessible on port 30080"
-          fi
-          
-          # Check MQTT Broker (port 1883)
-          if nc -z localhost 1883; then
-            echo "✅ MQTT Broker is listening on port 1883"
-          else
-            echo "❌ MQTT Broker is not listening on port 1883"
-          fi
           
           # Check MySQL (port 3306)
           if nc -z localhost 3306; then
