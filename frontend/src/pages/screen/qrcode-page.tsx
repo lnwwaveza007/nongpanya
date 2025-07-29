@@ -31,21 +31,37 @@ const QRCodeScreen = () => {
 
   useEffect(() => {
     const getCodeAPI = async () => {
-      if (code !== '') return;
       try {
         const res = await getCode(); 
-        setCode(res.data.code);
-        console.log(res.data.code);
+        const newCode = res.data.code;
+        
+        // If code has changed, refresh the page
+        if (code !== '' && code !== newCode) {
+          window.location.reload();
+          return;
+        }
+        
+        setCode(newCode);
+        console.log('Current code:', newCode);
       } catch (error) {
         console.error(error);
       }
     };
 
+    // Initial code fetch
     if (!genQrCode.current) {
-      console.log('Generating code...');
       genQrCode.current = true;
       getCodeAPI();
     }
+
+    // Set up interval to check for code changes every 5 seconds
+    const interval = setInterval(() => {
+      if (genQrCode.current) {
+        getCodeAPI();
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, [code]);
 
   return (
