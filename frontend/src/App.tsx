@@ -49,11 +49,12 @@ function App() {
           })} 
         />
         {/* For Screen Only */}
+        <Route path='/screen' element={<ScreenPinPage />} />
+        <Route path='/screen/pin' element={<ScreenPinPage />} />
         <Route path='/screen/welcome' element={<ScreenAuth><ScreenWelcomePage /></ScreenAuth>} />
         <Route path='/screen/qrcode' element={<ScreenAuth><ScreenQRCodePage /></ScreenAuth>} />
         <Route path='/screen/giving' element={<ScreenAuth><GivingScreen /></ScreenAuth>} />
         <Route path='/screen/complete' element={<ScreenAuth><CompletionScreen /></ScreenAuth>} />
-        <Route path='/screen/pin' element={<ScreenAuth><ScreenPinPage /></ScreenAuth>} />
         {/* Fallback for 404 Not Found */}
         <Route path='*' element={<NotFoundPage />} />
       </Routes>
