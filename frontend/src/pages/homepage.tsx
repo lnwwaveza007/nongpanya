@@ -58,17 +58,22 @@ const Homepage = () => {
       }
 
       // Fetch user history
-      const historyResponse = await getUserHistory();
-      if (historyResponse.data.success) {
-        // Sort by date and take latest 5
-        const sortedLogs = historyResponse.data.data
-          .sort(
-            (a: UserLog, b: UserLog) =>
-              new Date(b.created_at).getTime() -
-              new Date(a.created_at).getTime()
-          )
-          .slice(0, 5);
-        setUserLogs(sortedLogs);
+      try {
+        const historyResponse = await getUserHistory();
+        if (historyResponse.data.success) {
+          // Sort by date and take latest 5
+          const sortedLogs = historyResponse.data.data
+            .sort(
+              (a: UserLog, b: UserLog) =>
+                new Date(b.created_at).getTime() -
+                new Date(a.created_at).getTime()
+            )
+            .slice(0, 5);
+          setUserLogs(sortedLogs);
+        }
+      } catch (error) {
+        console.warn("Failed to fetch user history:", error);
+        // Keep userLogs as empty array (default state)
       }
 
       // Fetch available medicines with stock information
@@ -278,7 +283,7 @@ const Homepage = () => {
 
                       {medicine.description && (
                         <p className="text-xs text-gray-600 line-clamp-3 mb-3">
-                          {medicine.description}
+                          {t(`medicineDescription.${medicine.description}`)}
                         </p>
                       )}
 

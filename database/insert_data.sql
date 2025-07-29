@@ -16,6 +16,14 @@ VALUES
 ('Ponstan 500 mg','https://i.ibb.co/Cp035t9X/ponstan.png','Tablet','Mefenamic Acid 500 mg is used to relieve menstrual pain and other moderate pain such as toothache.',500),
 ('Mini First Aid Kit','https://i.ibb.co/Hfz652xF/firstAid.jpg', 'Pack','A basic small wound cleaning kit includes iodine, alcohol, and adhesive bandages.',0);
 
+INSERT INTO medicine_descriptions (medicine_id, description)
+VALUES
+(1, 'Activated Charcoal 260 mg is used to treat diarrhea, bloating, and to absorb toxins in the digestive system.'),
+(2, 'Paracetamol 500 mg is used to reduce fever and relieve general pain such as headaches. Suitable for adults and children aged 12 years and above.'),
+(3, 'Orphenadrine 35 mg and Paracetamol 450 mg are used to relieve muscle pain in areas such as the neck, legs, and back caused by muscle tension or spasms.'),
+(4, 'Mefenamic Acid 500 mg is used to relieve menstrual pain and other moderate pain such as toothache.'),
+(5, 'A basic small wound cleaning kit includes iodine, alcohol, and adhesive bandages.');
+
 INSERT INTO medicine_instructions (medicine_id, content, type)
 VALUES
 -- Activated Charcoal
