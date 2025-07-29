@@ -13,7 +13,7 @@ const SELECTED_ENV = process.env.SELECTED_ENV || DEFAULT_ENV;
 
 // CORS Origins configuration for each environment
 const CORS_ORIGINS = {
-  LOCAL: ['http://localhost:3001'],
+  LOCAL: ['http://localhost:3001', 'https://nongpanya.sit.kmutt.ac.th'],
   DEV: [
     'http://localhost:3001', 
     'https://nongpanya.sit.kmutt.ac.th'
@@ -172,39 +172,19 @@ function validateConfig(config) {
   
   // Warn about missing Microsoft OAuth (might not be needed in all setups)
   if (!config.microsoft.clientId) {
-    console.warn(`⚠️  Missing Microsoft OAuth configuration: MICROSOFT_CLIENT_ID`);
+    console.warn(`Missing Microsoft OAuth configuration: MICROSOFT_CLIENT_ID`);
   }
   
   if (!config.microsoft.callbackUrl) {
-    console.warn(`⚠️  Missing Microsoft OAuth callback URL: ${SELECTED_ENV}_MICROSOFT_CALLBACK_URL`);
+    console.warn(`Missing Microsoft OAuth callback URL: ${SELECTED_ENV}_MICROSOFT_CALLBACK_URL`);
   }
   
   if (missingVars.length > 0) {
-    console.error(`❌ Missing critical environment variables for ${SELECTED_ENV}:`, missingVars);
+    console.error(`Missing critical environment variables for ${SELECTED_ENV}:`, missingVars);
     if (isProduction()) {
       throw new Error(`Missing critical environment variables: ${missingVars.join(', ')}`);
     }
   }
-}
-
-/**
- * Display current configuration (without sensitive data)
- */
-export function displayConfig() {
-  const config = getConfig();
-  
-  console.log('\n' + '='.repeat(50));
-  console.log(`         ENVIRONMENT: ${config.environment}`);
-  console.log('='.repeat(50));
-  console.log(`Node Environment: ${config.nodeEnv || 'Not set'}`);
-  console.log(`Port: ${config.port}`);
-  console.log(`Database: ${config.database.url ? '✓ Configured' : '❌ Missing'}`);
-  console.log(`Microsoft OAuth: ${config.microsoft.clientId ? '✓ Configured' : '❌ Missing'}`);
-  console.log(`Microsoft Callback: ${config.microsoft.callbackUrl ? '✓ Configured' : '❌ Missing'}`);
-  console.log(`JWT: ${config.jwt.secret ? '✓ Configured' : '❌ Missing'}`);
-  console.log(`CORS Origins: ${config.cors.origins.join(', ')}`);
-  console.log('='.repeat(50));
-  console.log('');
 }
 
 // Export default configuration getter

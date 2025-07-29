@@ -32,7 +32,7 @@ const environmentConfigs = {
   },
   PROD: {
     websocket: {
-      endpoint: "wss://nongpanya.sit.kmutt.ac.th/ws"
+      endpoint: "wss://nongpanya.sit.kmutt.ac.th/ws/"
     },
     api: {
       url: "https://nongpanya.sit.kmutt.ac.th/api"
