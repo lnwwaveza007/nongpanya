@@ -5,9 +5,13 @@ import { spawn } from 'child_process';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { existsSync } from 'fs';
+import { platform } from 'os';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+// Detect if running on Windows
+const isWindows = platform() === 'win32';
 
 // Check if we're in the right directory
 const serverPath = join(__dirname, '..', 'server.js');
@@ -73,7 +77,7 @@ function promptEnvironment() {
 async function startServer() {
   let serverProcess = null;
   
-  // Setup signal handlers once
+  // Setup signal handlers with Windows compatibility
   const cleanup = async (signal) => {    
     // Close readline interface
     if (rl && !rl.closed) {
@@ -83,7 +87,18 @@ async function startServer() {
     // Kill server process
     if (serverProcess && !serverProcess.killed) {
       console.log('\nStopping server process...');
-      serverProcess.kill(signal || 'SIGTERM');
+      
+      if (isWindows) {
+        // On Windows, use taskkill to forcefully terminate the process tree
+        try {
+          spawn('taskkill', ['/pid', serverProcess.pid, '/T', '/F'], { stdio: 'ignore' });
+        } catch (error) {
+          // Fallback to regular kill
+          serverProcess.kill('SIGTERM');
+        }
+      } else {
+        serverProcess.kill(signal || 'SIGTERM');
+      }
       
       // Wait a bit for graceful shutdown
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -96,8 +111,15 @@ async function startServer() {
     process.exit(0);
   };
   
-  process.on('SIGINT', () => cleanup('SIGINT'));
-  process.on('SIGTERM', () => cleanup('SIGTERM'));
+  // Windows doesn't support SIGTERM properly, so we handle exit events differently
+  if (isWindows) {
+    process.on('SIGINT', () => cleanup('SIGINT'));
+    process.on('exit', () => cleanup());
+    process.on('beforeExit', () => cleanup());
+  } else {
+    process.on('SIGINT', () => cleanup('SIGINT'));
+    process.on('SIGTERM', () => cleanup('SIGTERM'));
+  }
   
   try {
     const selectedEnv = await promptEnvironment();
@@ -113,13 +135,16 @@ async function startServer() {
     }
     
     // Start the server with nodemon
-    serverProcess = spawn('npx', ['nodemon', 'server.js'], {
+    const command = isWindows ? 'npx.cmd' : 'npx';
+    serverProcess = spawn(command, ['nodemon', 'server.js'], {
       cwd: join(__dirname, '..'),
       stdio: 'inherit',
       env: {
         ...process.env,
         SELECTED_ENV: selectedEnv,
-      }
+      },
+      // On Windows, spawn the process in a new process group
+      ...(isWindows ? { detached: false } : {})
     });
     
     serverProcess.on('error', (error) => {
