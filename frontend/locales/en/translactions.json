@@ -49,6 +49,7 @@
         "quantity": "Quantity",
         "instructions": "Instructions:",
         "warnings": "Warnings:",
+        "sideEffects": "Side Effects:",
         "representativeImage": "Representative image",
         "emergencyTitle": "In case of emergency:",
         "emergencyContact": "Contact HCU: 1234 or Visit nearest hospital",
@@ -170,6 +171,7 @@
         "title": "Medicine Information",
         "available": "Available",
         "description": "Description",
+        "loading": "Loading medicine information...",
         "generalGuidelines": {
             "title": "General Usage Guidelines",
             "point1": "Take as directed on the package or as advised by a healthcare professional",
