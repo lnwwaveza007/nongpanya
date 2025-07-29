@@ -6,7 +6,7 @@ import { createServer } from "http";
 import { createServer as createHttpsServer } from "https";
 import { readFileSync } from "fs";
 import { getCurrentEnvironment } from "../config/envConfig.js";
-import { getConfig } from './envConfig.js';
+import { getConfig } from '../config/envConfig.js';
 
 // Get environment-specific configuration
 const config = getConfig();
@@ -63,11 +63,26 @@ class WebSocketService {
             console.log(`Incoming WebSocket request from origin: ${origin}`);
 
             const allowedOrigins = config.cors.origins || [];
-            if (allowedOrigins.includes(origin)) {
+            // Allow requests without origin (from tools like Postman)
+            if (!info.origin) {
+              console.log('WebSocket connection allowed (no origin header)');
+              done(true);
+              return;
+            }
+            
+            // Check if origin is in allowed list
+            const isAllowed = allowedOrigins.some(allowedOrigin => {
+              // Support exact match and subdomain matching
+              return origin === allowedOrigin || 
+                     origin.endsWith('.' + allowedOrigin.replace(/^https?:\/\//, '')) ||
+                     allowedOrigin.includes(origin.replace(/^https?:\/\//, ''));
+            });
+            
+            if (isAllowed) {
+              console.log(`WebSocket connection allowed from origin: ${origin}`);
               done(true);
             } else {
-              console.warn(`WebSocket connection rejected from origin: ${origin}`);
-              done(false, 403, 'Forbidden');
+              done(false, 403, 'Forbidden: Origin not allowed');
             }
           },
         });
