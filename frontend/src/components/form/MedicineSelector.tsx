@@ -60,7 +60,7 @@ const MedicineSelector: React.FC<MedicineSelectorProps> = ({
                 <input
                   type="checkbox"
                   checked={isSelected}
-                  onChange={() => (canSelect && !isOutOfStock) && handleMedicineToggle(medicine.id.toString())}
+                  readOnly
                   disabled={isOutOfStock || !canSelect}
                   className="mt-1 h-4 w-4 text-primary border-gray-300 rounded focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
                 />
