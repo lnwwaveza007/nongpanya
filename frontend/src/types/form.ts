@@ -60,8 +60,6 @@ export interface FormDataset {
     name: string | null;
     email: string | null;
     phone: string | null;
-    age: number | null;
-    weight: number | null;
     allergies: string | null;
     symptoms?: string[] | null;
     medicines?: string[] | null;

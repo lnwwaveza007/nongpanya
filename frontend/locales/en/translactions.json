@@ -25,8 +25,6 @@
         "name": "Your Name",
         "email": "Your Email",
         "phone": "Your Phone",
-        "age": "Your Age",
-        "weight": "Your Weight (kg)",
         "allergies": "Allergies (if any)",
         "allergiesPlaceholder": "e.g., Penicillin, Aspirin",
         "symptoms": "Select Your Symptoms",

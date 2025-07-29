@@ -161,7 +161,6 @@ export const getMedicineRequestHistoryByDate = async (startDate, endDate) => {
     user_id: req.user_id,
     fullname: req.users.fullname,
     email: req.users.email,
-    weight: req.weight,
     additional_notes: req.additional_notes,
     allergies: req.allergies,
     status: req.status,
@@ -208,13 +207,13 @@ export const getMedicineRequestHistoryByUserId = async (userId) => {
             select: {
               id: true,
               name: true,
+              description: true,
             },
           },
         },
       },
       users: {
         select: {
-          id: true,
           fullname: true,
           email: true,
         },
@@ -227,7 +226,6 @@ export const getMedicineRequestHistoryByUserId = async (userId) => {
     user_id: req.user_id,
     fullname: req.users.fullname,
     email: req.users.email,
-    weight: req.weight,
     additional_notes: req.additional_notes,
     allergies: req.allergies,
     status: req.status,

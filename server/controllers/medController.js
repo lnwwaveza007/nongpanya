@@ -71,8 +71,6 @@ export const giveMedicineController = async (req, res, next) => {
     .status(200)
     .json(
       await giveMedicine(
-        formData.weight,
-        formData.age,
         formData.allergies,
         formData.symptoms,
         formData.medicines
@@ -129,8 +127,6 @@ export const submitRequestForm = async (req, res, next) => {
         try {
           // Medicine dispensing
           const medRes = await giveMedicine(
-            formData.weight,
-            formData.age,
             formData.allergies,
             formData.symptoms,
             formData.medicines

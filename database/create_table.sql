@@ -5,8 +5,6 @@ CREATE TABLE users (
     fullname VARCHAR(255),
     role ENUM('user', 'admin', 'superadmin', 'screen') DEFAULT 'user',
     password VARCHAR(255),
-    age INT,
-    weight INT,
     phone VARCHAR(20),
     allergies TEXT,
     auth_provider ENUM('local', 'microsoft') DEFAULT 'local',
@@ -82,7 +80,6 @@ CREATE TABLE medicine_symptoms (
 CREATE TABLE requests (
     code CHAR(10) PRIMARY KEY NOT NULL,
     user_id CHAR(11) NOT NULL,
-    weight DECIMAL(5,2),
     additional_notes TEXT,
     allergies TEXT,
     status ENUM('pending', 'completed') DEFAULT 'pending',

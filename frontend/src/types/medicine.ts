@@ -80,7 +80,6 @@ export interface UserLog {
   user_id: string;
   fullname: string;
   email: string;
-  weight: string;
   additional_notes: string;
   allergies: string;
   status: string;

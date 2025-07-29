@@ -5,7 +5,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { User, Mail, Weight, AlertCircle, Clock, CheckCircle2 } from 'lucide-react';
+import { User, Mail, AlertCircle, Clock, CheckCircle2 } from 'lucide-react';
 import MedicineImage from "@/components/ui/medicine-image";
 
 interface UserLogDetailModalProps {
@@ -16,7 +16,6 @@ interface UserLogDetailModalProps {
     user_id: string;
     fullname: string;
     email: string;
-    weight: string;
     additional_notes: string;
     allergies: string;
     status: string;
@@ -81,13 +80,6 @@ const UserLogDetailModal: React.FC<UserLogDetailModalProps> = ({ isOpen, onClose
                 <div>
                   <div className="text-sm text-gray-500">Email</div>
                   <div className="font-medium">{log.email}</div>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <Weight className="text-gray-400" size={20} />
-                <div>
-                  <div className="text-sm text-gray-500">Weight</div>
-                  <div className="font-medium">{log.weight} kg</div>
                 </div>
               </div>
             </div>

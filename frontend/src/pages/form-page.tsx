@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   Pill,
   AlertCircle,
-  Weight,
-  UserCog,
   HeartPulse,
   Calendar,
   // Toilet,
@@ -42,8 +40,6 @@ const NongpanyaVending = () => {
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
-  const [age, setAge] = useState<number | null>(null);
-  const [weight, setWeight] = useState<number | null>(null);
   const [allergies, setAllergies] = useState<string>("");
   const [note, setNote] = useState<string>("");
   const [showModal, setShowModal] = useState<boolean>(false);
@@ -74,8 +70,6 @@ const NongpanyaVending = () => {
       setName(resUser.data.data.fullname);
       setEmail(resUser.data.data.email);
       setPhone(resUser.data.data.phone || "");
-      setAge(resUser.data.data.age || null);
-      setWeight(resUser.data.data.weight || null);
       setAllergies(resUser.data.data.allergies || "");
       setSymptomsList(resSymp.data.data);
       setMedicinesList(resMed.data.data);
@@ -98,12 +92,6 @@ const NongpanyaVending = () => {
     }
     if (e.target.name === "phone") {
       setPhone(e.target.value);
-    }
-    if (e.target.name === "age") {
-      setAge(parseInt(e.target.value));
-    }
-    if (e.target.name === "weight") {
-      setWeight(parseInt(e.target.value));
     }
     if (e.target.name === "allergies") {
       setAllergies(e.target.value);
@@ -158,8 +146,6 @@ const NongpanyaVending = () => {
         name: name,
         email: email,
         phone: phone,
-        age: age,
-        weight: weight,
         allergies: allergies,
         additional_notes: note,
       };
@@ -282,22 +268,6 @@ const NongpanyaVending = () => {
           name="phone"
           placeholder={t("form.phone")}
           value={phone}
-          onChange={handleInputChange}
-        />
-        <CustomInput
-          icon={<UserCog size={20} />}
-          type="number"
-          name="age"
-          placeholder={t("form.age")}
-          value={age ?? ''}
-          onChange={handleInputChange}
-        />
-        <CustomInput
-          icon={<Weight size={20} />}
-          type="number"
-          name="weight"
-          placeholder={t("form.weight")}
-          value={weight ?? ''}
           onChange={handleInputChange}
         />
         <CustomInput

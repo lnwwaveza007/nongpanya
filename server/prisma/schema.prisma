@@ -92,7 +92,6 @@ model request_symptoms {
 model requests {
   code              String              @id @db.Char(10)
   user_id           String              @db.Char(11)
-  weight            Decimal?            @db.Decimal(5, 2)
   additional_notes  String?             @db.Text
   allergies         String?             @db.Text
   status            requests_status?    @default(pending)
@@ -120,8 +119,6 @@ model users {
   role          users_role?          @default(user)
   password      String?              @db.VarChar(255)
   phone         String?              @db.VarChar(20)
-  age           Int?
-  weight        Int?
   allergies     String?              @db.Text
   auth_provider users_auth_provider? @default(local)
   created_at    DateTime?            @default(now()) @db.Timestamp(0)

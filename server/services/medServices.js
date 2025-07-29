@@ -86,7 +86,7 @@ export const createRequest = async (formData, userId) => {
     // Update user information
     await prisma.users.update({
       where: { id: userId },
-      data: { phone: formData.phone, age: formData.age, weight: formData.weight, allergies: formData.allergies ? formData.allergies : null },
+      data: { phone: formData.phone, allergies: formData.allergies ? formData.allergies : null },
     });
 
     // Create the request in the database   
@@ -94,7 +94,6 @@ export const createRequest = async (formData, userId) => {
       data: {
         code: formData.code,
         user_id: userId,
-        weight: formData.weight || 0,
         additional_notes: formData.additional_notes ? formData.additional_notes : null,
         allergies: formData.allergies ? formData.allergies : null,
       },
@@ -153,7 +152,7 @@ export const deleteRequest = async (code) => {
   }
 };
 
-export const giveMedicine = async (weight, age, allergies, symptomIds = [], medicineIds = []) => {
+export const giveMedicine = async (allergies, symptomIds = [], medicineIds = []) => {
   const pills = [];
   const pillsOutcome = [];
 

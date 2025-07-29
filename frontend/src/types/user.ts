@@ -4,7 +4,6 @@ export interface User {
   fullname: string;
   email: string;
   role: 'user' | 'admin' | 'superadmin' | 'screen';
-  weight?: string;
   allergies?: string;
   additional_notes?: string;
   created_at: string;
