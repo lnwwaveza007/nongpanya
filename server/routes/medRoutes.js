@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAllSymptoms, giveMedicineController, submitRequestForm, getAllMedicines, getMedicineStock, getMedInfo } from "../controllers/medController.js";
+import { getAllSymptoms, giveMedicineController, submitRequestForm, getAllMedicines, getMedicineStock, getMedInfo, getMedDescriptions } from "../controllers/medController.js";
 import { getMedicineRequestTimeSeries, getMedicineRequestHistory, getMedicineRank } from "../controllers/medRequestController.js";
 import { authorizeRoles } from "../middlewares/authorizeRole.js";
 
@@ -7,6 +7,7 @@ const medRoute = Router();
 
 medRoute.get("/", getAllMedicines);
 medRoute.get("/:medId/info", getMedInfo);
+medRoute.get("/:medId/descriptions", getMedDescriptions);
 medRoute.get("/symptoms", getAllSymptoms);
 medRoute.post("/form", submitRequestForm);
 medRoute.post("/form/test", giveMedicineController);

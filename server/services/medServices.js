@@ -33,9 +33,19 @@ export const getMedicalInfo = async (medId) => {
   const medIdInt = parseInt(medId, 10);
   
   const medInfo = await prisma.medicine_instructions.findMany({
-    where: { id: medIdInt },
+    where: { medicine_id: medIdInt },
   });
   return medInfo;
+};
+
+export const getMedicineDescriptions = async (medId) => {
+  // Ensure medId is an integer
+  const medIdInt = parseInt(medId, 10);
+  
+  const descriptions = await prisma.medicine_descriptions.findMany({
+    where: { medicine_id: medIdInt },
+  });
+  return descriptions;
 };
 
 export const setReqStatus = async (code) => {
@@ -220,6 +230,10 @@ export const getPillData = async (pill) => {
     where: { medicine_id: medicineId },
   });
 
+  const descriptions = await prisma.medicine_descriptions.findMany({
+    where: { medicine_id: medicineId },
+  });
+
   const pillsData = {
     id: medicineId,
     name: medicine.name,
@@ -234,6 +248,7 @@ export const getPillData = async (pill) => {
     warnings: instructions
       .filter((e) => e.type === "Warning")
       .map((e) => e.id),
+    descriptions: descriptions.map((e) => e.id),
   };
   return pillsData;
 };
