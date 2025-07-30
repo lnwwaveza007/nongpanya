@@ -129,8 +129,8 @@ const ScreenPinPage = () => {
         w-12 h-12 text-lg font-bold rounded-full border-2 
         transition-all duration-200 hover:scale-105
         ${isLocked || isLoading
-          ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed' 
-          : 'bg-white text-[#FF4B28] border-[#FF4B28] hover:bg-[#FF4B28] hover:text-white'
+          ? 'bg-gray-100 text-gray-400 border-2 border-gray-200 cursor-not-allowed' 
+          : 'bg-white text-[#FF4B28] border-2 border-[#FF4B28] hover:bg-[#FF4B28] hover:text-white'
         }
       `}
     >
@@ -140,7 +140,7 @@ const ScreenPinPage = () => {
 
   return (
     <div className="w-[1000px] h-[590px] flex items-center justify-center p-2 bg-gray-50">
-      <Card className="w-full h-full flex flex-col items-center justify-center p-4 text-center border-[#FF4B28] relative">
+      <Card className="w-full h-full flex flex-col items-center justify-center p-4 text-center border-2 border-[#FF4B28] relative">
         {/* Language Toggle - Top Left */}
         <div className="absolute top-4 left-4">
           <LanguageToggle variant="inline" size="sm" />

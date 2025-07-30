@@ -18,7 +18,7 @@ const CompletionScreen = () => {
 
   return (
     <div className="w-[1000px] h-[590px] flex items-center justify-center p-4">
-      <Card className="flex justify-center items-center flex-col w-full h-full p-8 text-center space-y-8 transition-all duration-300 hover:shadow-xl animate-fade-in border-[#FF4B28]">
+      <Card className="flex justify-center items-center flex-col w-full h-full p-8 text-center space-y-8 transition-all duration-300 hover:shadow-xl animate-fade-in border-2 border-[#FF4B28]">
         {/* Main Content */}
         <div className="text-center space-y-6">
           {/* Happy Emoji */}

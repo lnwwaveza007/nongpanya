@@ -66,7 +66,7 @@ const QRCodeScreen = () => {
 
   return (
     <div className="w-[1000px] h-[590px] flex items-center justify-center p-4">
-      <Card className="w-full h-full flex flex-col items-center justify-center p-8 text-center transition-all duration-300 hover:shadow-xl animate-fade-in border-[#FF4B28] relative">
+      <Card className="w-full h-full flex flex-col items-center justify-center p-8 text-center transition-all duration-300 hover:shadow-xl animate-fade-in border-2 border-[#FF4B28] relative">
         {/* Header */}
         <div className="text-center mb-2 animate-fade-in">
           <h1 className="text-4xl font-bold mt-4" style={{ color: '#FF4B28' }}>

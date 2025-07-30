@@ -23,7 +23,7 @@ const ModalBox = (props: ModalBoxProps) => {
     return (
         <Dialog open={props.isOpen}>
             {props.state !== 'success' && (
-            <DialogContent className="w-[80%] flex flex-col items-center justify-center py-12 rounded-md border-[#FF4B28] [&>button]:hidden">
+            <DialogContent className="w-[80%] flex flex-col items-center justify-center py-12 rounded-md border-2 border-[#FF4B28] [&>button]:hidden">
                 <div className="text-6xl mb-4 text-[#FF4B28] transition-all duration-300 ease-in-out">
                     {emojis[emojiIndex]}
                 </div>
@@ -32,7 +32,7 @@ const ModalBox = (props: ModalBoxProps) => {
                     {[...Array(3)].map((_, i) => (
                         <div
                             key={i}
-                            className="w-6 h-12 bg-gradient-to-r from-primary to-secondary rounded-full animate-pulse"
+                            className="w-6 h-12 bg-primary rounded-full animate-pulse"
                             style={{ animationDelay: `${i * 0.3}s` }}
                         ></div>
                     ))}

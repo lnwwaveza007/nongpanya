@@ -59,7 +59,7 @@ const GivingScreen = () => {
 
   return (
     <div className="w-[1000px] h-[590px] flex items-center justify-center p-4">
-      <Card className="flex justify-center items-center flex-col w-full h-full p-8 text-center space-y-8 transition-all duration-300 hover:shadow-xl animate-fade-in border-[#FF4B28]">
+      <Card className="flex justify-center items-center flex-col w-full h-full p-8 text-center space-y-8 transition-all duration-300 hover:shadow-xl animate-fade-in border-2 border-[#FF4B28]">
         <div className="text-center">
           <div 
             className="text-6xl font-bold transition-all duration-700 hover:scale-110 cursor-pointer mb-4"
@@ -79,7 +79,7 @@ const GivingScreen = () => {
           {[...Array(3)].map((_, i) => (
             <div
               key={i}
-              className="w-6 h-12 bg-gradient-to-r from-primary to-secondary rounded-full animate-pulse"
+              className="w-6 h-12 bg-primary rounded-full animate-pulse"
               style={{ animationDelay: `${i * 0.3}s` }}
             />
           ))}

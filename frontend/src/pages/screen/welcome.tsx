@@ -42,7 +42,7 @@ const ScreenWelcomePage = () => {
 
   return (
     <div className="w-[1000px] h-[590px] flex items-center justify-center p-4">
-      <Card className="w-full h-full flex flex-col items-center justify-center p-8 text-center transition-all duration-300 hover:shadow-xl animate-fade-in border-[#FF4B28] relative overflow-hidden">
+      <Card className="w-full h-full flex flex-col items-center justify-center p-8 text-center transition-all duration-300 hover:shadow-xl animate-fade-in border-2 border-[#FF4B28] relative overflow-hidden">
         {/* Language Toggle - Top Left */}
         <div className="absolute top-4 left-4">
           <LanguageToggle variant="inline" size="sm" />

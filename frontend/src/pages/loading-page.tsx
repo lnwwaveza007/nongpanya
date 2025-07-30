@@ -120,7 +120,7 @@ const LoadingScreen = () => {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
       {/* Main Card Container */}
-      <Card className="w-full max-w-md p-8 text-center space-y-8 transition-all duration-300 hover:shadow-xl animate-fade-in border-[#FF4B28] relative">
+      <Card className="w-full max-w-md p-8 text-center space-y-8 transition-all duration-300 hover:shadow-xl animate-fade-in border-2 border-[#FF4B28] relative">
         {/* Animated Face */}
         <div className="text-center">
           <div 
@@ -148,7 +148,7 @@ const LoadingScreen = () => {
           {[...Array(3)].map((_, i) => (
             <div
               key={i}
-              className="w-6 h-12 bg-gradient-to-r from-primary to-secondary rounded-full animate-pulse"
+              className="w-6 h-12 bg-primary rounded-full animate-pulse"
               style={{ animationDelay: `${i * 0.3}s` }}
             ></div>
           ))}

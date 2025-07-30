@@ -61,7 +61,7 @@ const LoginPage = () => {
       <LanguageToggle variant="floating" />
       
       {/* Main Card Container */}
-      <Card className="w-full max-w-md p-8 text-center space-y-8 transition-all duration-300 hover:shadow-xl animate-fade-in border-[#FF4B28]">
+      <Card className="w-full max-w-md p-8 text-center space-y-8 transition-all duration-300 hover:shadow-xl animate-fade-in border-2 border-[#FF4B28]">
         {/* Animated Face */}
         <div className="text-center">
           <div

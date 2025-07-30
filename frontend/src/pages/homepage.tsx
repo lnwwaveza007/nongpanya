@@ -174,7 +174,7 @@ const Homepage = () => {
                 <Button
                   onClick={() => navigate("/dashboard")}
                   variant="outline"
-                  className="flex items-center gap-2 border-[#FF4B28] text-[#FF4B28] hover:bg-[#FF4B28] hover:text-white w-full sm:w-auto"
+                  className="flex items-center gap-2 border-2 border-[#FF4B28] text-[#FF4B28] hover:bg-[#FF4B28] hover:text-white w-full sm:w-auto"
                 >
                   <LayoutDashboard size={20} />
                   <span className="hidden sm:inline">
@@ -188,7 +188,7 @@ const Homepage = () => {
               <Button
                 onClick={handleSignOut}
                 variant="outline"
-                className="flex items-center gap-2 border-[#FF4B28] text-[#FF4B28] hover:bg-[#FF4B28] hover:text-white w-full sm:w-auto"
+                className="flex items-center gap-2 border-2 border-[#FF4B28] text-[#FF4B28] hover:bg-[#FF4B28] hover:text-white w-full sm:w-auto"
               >
                 <LogOut size={20} />
                 <span className="hidden sm:inline">
@@ -235,8 +235,8 @@ const Homepage = () => {
 
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Available Medicines Section */}
-        <Card className="border-[#FF4B28] shadow-xl overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-[#FF4B28] to-[#FF6B48] text-white">
+        <Card className="border-2 border-[#FF4B28] shadow-xl overflow-hidden">
+          <CardHeader className="bg-[#FF4B28] text-white">
             <CardTitle className="flex items-center gap-3 text-lg">
               <div className="bg-white/20 p-2 rounded-lg">
                 <Pill size={20} />
@@ -260,7 +260,7 @@ const Homepage = () => {
                   <div
                     key={medicine.id}
                     onClick={() => handleMedicineClick(medicine)}
-                    className={`bg-white border rounded-xl p-4 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer group ${
+                    className={`bg-white border-2 rounded-xl p-4 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer group ${
                       medicine.total_stock === 0
                         ? "border-red-200 opacity-75 hover:border-red-300"
                         : "border-gray-200 hover:border-[#FF4B28]/50"
@@ -319,7 +319,7 @@ const Homepage = () => {
             )}
 
             {/* Medicine Safety Guidelines */}
-            <div className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6">
+            <div className="mt-8 bg-blue-50 border-2 border-blue-200 rounded-xl p-6">
               <div className="flex items-start gap-4">
                 <Info size={24} className="text-blue-500 mt-1 flex-shrink-0" />
                 <div>
@@ -357,7 +357,7 @@ const Homepage = () => {
             </div>
 
             {/* Important Notice */}
-            <div className="mt-6 bg-gradient-to-r from-red-50 to-pink-50 border border-red-200 rounded-xl p-4">
+            <div className="mt-6 bg-red-50 border-2 border-red-200 rounded-xl p-4">
               <div className="flex items-start gap-3">
                 <AlertTriangle
                   size={24}
@@ -377,8 +377,8 @@ const Homepage = () => {
         </Card>
 
         {/* Recent History */}
-        <Card className="border-[#FF4B28] shadow-xl overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-[#FF4B28] to-[#FF6B48] text-white">
+        <Card className="border-2 border-[#FF4B28] shadow-xl overflow-hidden">
+          <CardHeader className="bg-[#FF4B28] text-white">
             <CardTitle className="flex items-center gap-3 text-lg">
               <div className="bg-white/20 p-2 rounded-lg">
                 <Clock size={20} />
@@ -497,7 +497,7 @@ const Homepage = () => {
                               onClick={() => handleViewDetail(log)}
                               size="sm"
                               variant="outline"
-                              className="border-[#FF4B28] text-[#FF4B28] hover:bg-[#FF4B28] hover:text-white transition-all duration-200 shadow-sm"
+                              className="border-2 border-[#FF4B28] text-[#FF4B28] hover:bg-[#FF4B28] hover:text-white transition-all duration-200 shadow-sm"
                             >
                               <Eye size={16} className="mr-1" />
                               {t("homepage.view")}
@@ -514,7 +514,7 @@ const Homepage = () => {
                   {userLogs.map((log) => (
                     <div
                       key={log.code}
-                      className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow duration-200"
+                      className="bg-white border-2 border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow duration-200"
                     >
                       <div className="flex justify-between items-start mb-3">
                         <span className="font-mono font-semibold text-[#FF4B28] bg-[#FF4B28]/10 px-3 py-1 rounded-lg text-sm">
@@ -580,7 +580,7 @@ const Homepage = () => {
                         </div>
                       </div>
 
-                      <div className="flex justify-between items-center mt-4 pt-3 border-t border-gray-100">
+                      <div className="flex justify-between items-center mt-4 pt-3 border-t-2 border-gray-100">
                         <span className="text-xs text-gray-500">
                           {formatDate(log.created_at)}
                         </span>
@@ -588,7 +588,7 @@ const Homepage = () => {
                           onClick={() => handleViewDetail(log)}
                           size="sm"
                           variant="outline"
-                          className="border-[#FF4B28] text-[#FF4B28] hover:bg-[#FF4B28] hover:text-white"
+                          className="border-2 border-[#FF4B28] text-[#FF4B28] hover:bg-[#FF4B28] hover:text-white"
                         >
                           <Eye size={14} className="mr-1" />
                           {t("homepage.view")}
