@@ -192,7 +192,8 @@
         "menstrualPain": "Menstrual Pain",
         "backShoulderMuscleJointPain": "Back/Shoulder/Muscle/Joint Pain",
         "musclePain": "Muscle Pain",
-        "tremors": "Tremors (Parkinson's Disease)"
+        "tremors": "Tremors (Parkinson's Disease)",
+        "smallWound": "Small Wound"
     },
     "detail": {
         "1": "For adults and children over 12 years old.",

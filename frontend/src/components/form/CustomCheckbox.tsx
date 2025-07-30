@@ -1,6 +1,8 @@
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { useSymptomTranslation } from '@/hooks/useSymptomTranslation';
+import { useTranslation } from "react-i18next";
+import { HeartPulse } from 'lucide-react';
 
 interface CheckboxProps {
   label: string;
@@ -21,10 +23,14 @@ interface CheckboxComponentProps {
 
 const CustomCheckbox: React.FC<CheckboxComponentProps> = ({ symptomsList, symptoms, handleSymptomToggle }) => {
   const { translateSymptom } = useSymptomTranslation();
+  const { t } = useTranslation();
 
   return (
     <Card className="p-6 bg-white rounded-xl shadow-lg border-2 border-primary">
-      <h3 className="text-xl font-bold mb-4 text-[#FF4B28]">อาการที่พบ (Symptoms)</h3>
+      <div className="flex items-center gap-2 mb-4">
+        <HeartPulse className="text-primary" size={24} />
+        <h3 className="text-lg font-semibold text-primary">{t("form.symptoms")}</h3>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         {symptomsList.map((symptom) => (
           <div

@@ -151,6 +151,7 @@ In `frontend/locales/th/translactions.json`:
 | Back/Shoulder/Muscle/Joint Pain | Back/Shoulder/Muscle/Joint Pain | ปวดหลัง/ไหล่/กล้ามเนื้อ/ข้อต่อ |
 | Muscle Pain | Muscle Pain | ปวดกล้ามเนื้อ |
 | Tremors (Parkinson's Disease) | Tremors (Parkinson's Disease) | สั่น (โรคพาร์กินสัน) |
+| Smalll Wound | Smalll Wound | แผลเล็ก
 
 ## Benefits
 

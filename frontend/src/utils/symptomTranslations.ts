@@ -11,6 +11,7 @@ export const symptomTranslationMap: Record<string, string> = {
   'Back/Shoulder/Muscle/Joint Pain': 'symptoms.backShoulderMuscleJointPain',
   'Muscle Pain': 'symptoms.musclePain',
   'Tremors (Parkinson\'s Disease)': 'symptoms.tremors',
+  'Small Wound': 'symptoms.smallWound',
 };
 
 // Helper function to get translated symptom name
