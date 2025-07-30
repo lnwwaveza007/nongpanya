@@ -206,7 +206,7 @@ const ResultsPage = () => {
       {/* Back to Home Button */}
       <div className="max-w-4xl mx-auto mt-8 mb-8 flex justify-center">
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/home')}
           className="flex items-center gap-2 px-6 py-3 bg-[#FF4B28] text-white rounded-lg hover:bg-[#E63E1E] transition-colors duration-200 shadow-md"
         >
           <Home size={20} />

@@ -34,7 +34,7 @@ const LoginPage = () => {
           if (currentCode && currentCode.trim() !== '') {
             window.location.href = `/form?code=${currentCode}`;
           } else {
-            window.location.href = "/homepage";
+            window.location.href = "/home";
           }
         }
       } catch (error) {
