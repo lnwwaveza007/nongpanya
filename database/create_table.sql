@@ -21,14 +21,6 @@ CREATE TABLE medicines (
     strength INT
 );
 
-CREATE TABLE medicine_descriptions (
-    id INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    medicine_id INT NOT NULL,
-    description TEXT NOT NULL,
-    FOREIGN KEY (medicine_id) REFERENCES medicines(id) ON DELETE CASCADE ON UPDATE CASCADE
-);
-ALTER TABLE medicine_descriptions AUTO_INCREMENT = 1;
-
 CREATE TABLE medicine_instructions (
     id INT PRIMARY KEY AUTO_INCREMENT,
     medicine_id INT NOT NULL,

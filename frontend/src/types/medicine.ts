@@ -16,6 +16,7 @@ export interface Symptom {
 }
 
 export interface Medical {
+  id: number;
   imageUrl: string;
   name: string;
   type: string;
