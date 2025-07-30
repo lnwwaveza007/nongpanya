@@ -2,8 +2,19 @@ import { generateCode, getCode } from "../utils/codeStore.js";
 
 export const getCurrentCode = (req, res, next) => {
   try {
-    const currentCode = generateCode();
+    const currentCode = getCode();
+    res.status(200).json({
+      success: true,
+      code: currentCode,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 
+export const generateCurrentCode = (req, res, next) => {
+  try {
+    const currentCode = generateCode();
     res.status(200).json({
       success: true,
       code: currentCode,
