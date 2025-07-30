@@ -15,8 +15,7 @@ export const useValidateCode = (code: string | null) => {
         if (!response.data.success) {
           throw new Error();
         }
-      } catch (error) {
-        console.log(error);
+      } catch {
         navigate("/");
       }
     };

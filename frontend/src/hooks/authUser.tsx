@@ -12,8 +12,7 @@ const authUser = (Component: JSX.Element) => {
         try {
           const response = await auth(); 
           setAuthenticated(response.data.success);
-        } catch (error) {
-          console.log(error);
+        } catch {
           setAuthenticated(false);
         } finally {
           setLoading(false);

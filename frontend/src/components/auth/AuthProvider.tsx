@@ -23,8 +23,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children, requireAut
         if (isAuth && response.data.data) {
           setUser(response.data.data);
         }
-      } catch (error) {
-        console.log(error);
+      } catch {
         setAuthenticated(false);
         setUser(null);
       } finally {

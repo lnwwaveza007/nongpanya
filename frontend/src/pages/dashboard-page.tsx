@@ -63,7 +63,6 @@ export default function DashboardPage() {
   const getIdenticalMed = (med: MedRequest) => {
     const medNames = med.medicine.map((med) => med.medicine_name);
     const uniqueMedNames = [...new Set(medNames)];
-    console.log(uniqueMedNames);
     return uniqueMedNames;
   }
 
