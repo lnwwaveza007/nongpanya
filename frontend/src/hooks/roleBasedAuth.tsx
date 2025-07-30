@@ -66,8 +66,7 @@ const roleBasedAuth = (
             setAuthenticated(false);
             setHasAccess(false);
           }
-        } catch (error) {
-          console.log(error);
+        } catch {
           setAuthenticated(false);
           setHasAccess(false);
         } finally {

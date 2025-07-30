@@ -42,7 +42,6 @@ const QRCodeScreen = () => {
         }
         
         setCode(newCode);
-        console.log('Current code:', newCode);
       } catch (error) {
         console.error(error);
       }

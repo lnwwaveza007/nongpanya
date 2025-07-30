@@ -89,7 +89,6 @@ export class WebSocketService {
         this.ws = new WebSocket(wsUrl);
 
         this.ws.onopen = () => {
-          console.log('WebSocket connected');
           this.reconnectAttempts = 0;
           resolve();
         };
@@ -104,7 +103,6 @@ export class WebSocketService {
               if (data.user) {
                 this.isAuthenticated = true;
                 this.user = data.user;
-                console.log('WebSocket authenticated as:', data.user.email);
               }
             }
 
@@ -118,7 +116,6 @@ export class WebSocketService {
         };
 
         this.ws.onclose = (event) => {
-          console.log('WebSocket disconnected', event.code, event.reason);
           this.isAuthenticated = false;
           this.user = null;
           
@@ -139,7 +136,7 @@ export class WebSocketService {
           console.error('WebSocket error:', error);
           // Don't reject immediately for cookie-based auth
           if (token === 'cookie-auth') {
-            console.log('WebSocket error with cookie auth - will retry');
+            // Will retry for cookie-based auth
           } else {
             reject(error);
           }
@@ -153,7 +150,6 @@ export class WebSocketService {
   private attemptReconnect() {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++;
-      console.log(`Attempting to reconnect... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
       
       setTimeout(() => {
         this.connect().catch(console.error);
