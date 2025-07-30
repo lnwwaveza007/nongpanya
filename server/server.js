@@ -9,6 +9,7 @@ import medRoute from "./routes/medRoutes.js";
 import codeRoute from "./routes/codeRoutes.js";
 import { getConfig, getCorsOrigins } from "./config/envConfig.js";
 import websocketService from "./services/websocketService.js";
+import { generateCode } from "./utils/codeStore.js";
 
 const app = express();
 
@@ -46,6 +47,7 @@ app.use((err, req, res, next) => {
 async function startServer() {
   // Initialize WebSocket service
   console.log('Initializing WebSocket service...');
+  generateCode();
   try {
     await websocketService.initialize(websocketPort);
   } catch (error) {
