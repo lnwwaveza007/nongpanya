@@ -50,56 +50,54 @@ const UserLogDetailModal: React.FC<UserLogDetailModalProps> = ({ isOpen, onClose
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="w-[80%] max-w-2xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold text-[#FF4B28] flex items-center gap-4">
-            <div className="bg-orange-100 p-3 rounded-full">
-              <User className="text-orange-600" size={24} />
+          <DialogTitle className="text-lg sm:text-xl font-bold text-[#FF4B28] flex items-center gap-3">
+            <div className="bg-orange-100 p-2 sm:p-3 rounded-full">
+              <User className="text-orange-600" size={20} />
             </div>
             <div>
               <span>Request Details</span>
-              <p className="text-sm text-gray-500 font-normal">Code: {log.code}</p>
+              <p className="text-xs sm:text-sm text-gray-500 font-normal">Code: {log.code}</p>
             </div>
           </DialogTitle>
         </DialogHeader>
 
         {/* Content */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* User Information */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <User className="text-gray-400" size={20} />
+          <div className="grid grid-cols-1 gap-3 sm:gap-4">
+            <div className="space-y-3 sm:space-y-4">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <User className="text-gray-400" size={16} />
                 <div>
-                  <div className="text-sm text-gray-500">Full Name</div>
-                  <div className="font-medium">{log.fullname}</div>
+                  <div className="text-xs sm:text-sm text-gray-500">Full Name</div>
+                  <div className="text-sm sm:text-base font-medium">{log.fullname}</div>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <Mail className="text-gray-400" size={20} />
+              <div className="flex items-center gap-2 sm:gap-3">
+                <Mail className="text-gray-400" size={16} />
                 <div>
-                  <div className="text-sm text-gray-500">Email</div>
-                  <div className="font-medium">{log.email}</div>
+                  <div className="text-xs sm:text-sm text-gray-500">Email</div>
+                  <div className="text-sm sm:text-base font-medium">{log.email}</div>
                 </div>
               </div>
-            </div>
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <Clock className="text-gray-400" size={20} />
+              <div className="flex items-center gap-2 sm:gap-3">
+                <Clock className="text-gray-400" size={16} />
                 <div>
-                  <div className="text-sm text-gray-500">Requested At</div>
-                  <div className="font-medium">{formatDate(log.created_at)}</div>
+                  <div className="text-xs sm:text-sm text-gray-500">Requested At</div>
+                  <div className="text-sm sm:text-base font-medium">{formatDate(log.created_at)}</div>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
                 {log.status === "completed" ? (
-                  <CheckCircle2 className="text-green-400" size={20} />
+                  <CheckCircle2 className="text-green-400" size={16} />
                 ) : (
-                  <AlertCircle className="text-yellow-400" size={20} />
+                  <AlertCircle className="text-yellow-400" size={16} />
                 )}
                 <div>
-                  <div className="text-sm text-gray-500">Status</div>
-                  <div className={`font-medium ${
+                  <div className="text-xs sm:text-sm text-gray-500">Status</div>
+                  <div className={`text-sm sm:text-base font-medium ${
                     log.status === "completed" ? "text-green-600" : "text-yellow-600"
                   }`}>
                     {log.status.charAt(0).toUpperCase() + log.status.slice(1)}
@@ -111,12 +109,36 @@ const UserLogDetailModal: React.FC<UserLogDetailModalProps> = ({ isOpen, onClose
 
           {/* Symptoms */}
           <div>
-            <h3 className="text-lg font-medium text-gray-800 mb-3">Symptoms</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <h3 className="text-base sm:text-lg font-medium text-gray-800 mb-2 sm:mb-3">Symptoms</h3>
+            <div className="grid grid-cols-1 gap-2 sm:gap-3">
               {log.symptoms.map((symptom) => (
-                <div key={symptom.id} className="bg-orange-50 p-4 rounded-lg">
-                  <div className="font-medium text-orange-700">{symptom.name}</div>
-                  <div className="text-sm text-orange-600 mt-1">{symptom.description}</div>
+                <div key={symptom.id} className="bg-orange-50 p-3 sm:p-4 rounded-lg border-2 border-orange-200">
+                  <div className="font-medium text-[#FF4B28] text-sm sm:text-base">{symptom.name}</div>
+                  <div className="text-xs sm:text-sm text-orange-600 mt-1">{symptom.description}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Medicines */}
+          <div>
+            <h3 className="text-base sm:text-lg font-medium text-gray-800 mb-2 sm:mb-3">Prescribed Medicines</h3>
+            <div className="grid grid-cols-1 gap-2 sm:gap-3">
+              {log.medicines.map((medicine) => (
+                <div key={medicine.id} className="bg-orange-50 p-3 sm:p-4 rounded-lg border-2 border-orange-200">
+                  <div className="flex items-start gap-2 sm:gap-3">
+                    <div className="flex-shrink-0">
+                      <MedicineImage
+                        medicine={medicine}
+                        size="sm"
+                        className="border-2 bg-white"
+                      />
+                    </div>
+                    <div>
+                      <div className="font-medium text-[#FF4B28] text-sm sm:text-base">{medicine.name}</div>
+                      <div className="text-xs sm:text-sm text-orange-600 mt-1">{medicine.description || "No description available"}</div>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -147,19 +169,19 @@ const UserLogDetailModal: React.FC<UserLogDetailModalProps> = ({ isOpen, onClose
           </div>
 
           {/* Notes and Allergies */}
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {log.additional_notes && (
               <div>
-                <h3 className="text-lg font-medium text-gray-800 mb-2">Additional Notes</h3>
-                <div className="bg-gray-50 p-4 rounded-lg text-gray-700">
+                <h3 className="text-base sm:text-lg font-medium text-gray-800 mb-2">Additional Notes</h3>
+                <div className="bg-gray-50 p-3 sm:p-4 rounded-lg text-gray-700 text-sm sm:text-base">
                   {log.additional_notes}
                 </div>
               </div>
             )}
             {log.allergies && (
               <div>
-                <h3 className="text-lg font-medium text-gray-800 mb-2">Allergies</h3>
-                <div className="bg-red-50 p-4 rounded-lg text-red-700">
+                <h3 className="text-base sm:text-lg font-medium text-gray-800 mb-2">Allergies</h3>
+                <div className="bg-red-50 p-3 sm:p-4 rounded-lg text-red-700 text-sm sm:text-base border-2 border-red-200">
                   {log.allergies}
                 </div>
               </div>
