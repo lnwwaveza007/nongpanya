@@ -28,3 +28,20 @@ export const getAllMedicines = async () => {
 export const getMedInfo = async (detailId: number) => {
     return await axiosInstance.get(`/med/${detailId}/info`);
 }
+
+export const addStock = async (medicineId: number, amount: number, expireAt: string) => {
+    return await axiosInstance.post("/med/stock/add", {
+        medicineId,
+        amount,
+        expireAt
+    });
+}
+
+export const updateStock = async (medicineId: number, stockEntries: Array<{
+    stock_amount: number;
+    expire_at: string;
+}>) => {
+    return await axiosInstance.put(`/med/stock/${medicineId}/update`, {
+        stockEntries
+    });
+}

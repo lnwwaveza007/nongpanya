@@ -3,10 +3,11 @@ import { Card } from '../ui/card';
 import { X, Plus, Trash2 } from 'lucide-react';
 import { MedicineStock } from '@/types/medicine';
 import MedicineImage from "@/components/ui/medicine-image";
+import { updateStock } from '@/api/med';
 
 interface StockEntry {
   id: number;
-  stock_amount: number;
+  stock_amount: string;
   expire_at: string;
 }
 
@@ -17,12 +18,18 @@ interface EditStockModalProps {
 }
 
 const EditStockModal: React.FC<EditStockModalProps> = ({ isOpen, onClose, medicine }) => {
-  const [stockEntries, setStockEntries] = useState<StockEntry[]>(medicine.medicine_stocks);
+  const [stockEntries, setStockEntries] = useState<StockEntry[]>(
+    medicine.medicine_stocks.map(stock => ({
+      ...stock,
+      stock_amount: stock.stock_amount.toString()
+    }))
+  );
+  const [isLoading, setIsLoading] = useState(false);
 
   const addNewStock = () => {
     const newEntry: StockEntry = {
       id: Date.now(), // Temporary ID for new entries
-      stock_amount: 0,
+      stock_amount: '',
       expire_at: new Date().toISOString().split('T')[0]
     };
     setStockEntries([...stockEntries, newEntry]);
@@ -32,10 +39,32 @@ const EditStockModal: React.FC<EditStockModalProps> = ({ isOpen, onClose, medici
     setStockEntries(stockEntries.filter(entry => entry.id !== id));
   };
 
-  const updateStockEntry = (id: number, field: keyof StockEntry, value: string | number) => {
+  const updateStockEntry = (id: number, field: keyof StockEntry, value: string) => {
     setStockEntries(stockEntries.map(entry => 
       entry.id === id ? { ...entry, [field]: value } : entry
     ));
+  };
+
+  const handleSaveChanges = async () => {
+    // Filter out empty entries and convert to numbers
+    const validEntries = stockEntries
+      .filter(entry => entry.stock_amount.trim() !== '')
+      .map(entry => ({
+        stock_amount: parseInt(entry.stock_amount) || 0,
+        expire_at: entry.expire_at
+      }));
+
+    setIsLoading(true);
+    try {
+      await updateStock(medicine.id, validEntries);
+      alert('Stock updated successfully!');
+      onClose();
+    } catch (error) {
+      console.error('Error updating stock:', error);
+      alert('Failed to update stock. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -95,7 +124,7 @@ const EditStockModal: React.FC<EditStockModalProps> = ({ isOpen, onClose, medici
                       <input
                         type="number"
                         value={entry.stock_amount}
-                        onChange={(e) => updateStockEntry(entry.id, 'stock_amount', parseInt(e.target.value) || 0)}
+                        onChange={(e) => updateStockEntry(entry.id, 'stock_amount', e.target.value)}
                         className="w-24 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                         min="0"
                       />
@@ -128,13 +157,16 @@ const EditStockModal: React.FC<EditStockModalProps> = ({ isOpen, onClose, medici
           <button
             onClick={onClose}
             className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+            disabled={isLoading}
           >
             Cancel
           </button>
           <button
-            className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+            onClick={handleSaveChanges}
+            disabled={isLoading}
+            className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Save Changes
+            {isLoading ? 'Saving...' : 'Save Changes'}
           </button>
         </div>
       </Card>

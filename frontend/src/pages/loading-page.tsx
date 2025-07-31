@@ -10,10 +10,10 @@ const LoadingScreen = () => {
   const { subscribe, isConnected, isAuthenticated, error } = useAuthenticatedWebSocket({
     autoConnect: true,
     // onConnectionChange: (connected, authenticated) => {
-    //   console.log('WebSocket status:', { connected, authenticated });
+  
     // },
     onAuthError: (error) => {
-      console.warn('WebSocket authentication issue (user is already logged in):', error);
+              // WebSocket authentication issue (user is already logged in)
       // Since user is already authenticated via HTTP, this might be a WebSocket-specific issue
       // Let's not show an alert unless it's persistent
     }
@@ -22,7 +22,7 @@ const LoadingScreen = () => {
   // Handle WebSocket connection errors
   useEffect(() => {
     if (error && !isConnected) {
-      console.error('WebSocket connection error:', error);
+              // WebSocket connection error
       // Give some time for reconnection attempts
       const timer = setTimeout(() => {
         if (!isConnected) {
@@ -40,7 +40,7 @@ const LoadingScreen = () => {
       try {
         // Handle explicit error responses
         if (data === "error" || data === null || data === undefined) {
-          console.error('Received error response:', data);
+          // Received error response
           alert(t('loading.errors.sendingData'));
           navigate('/');
           return;
@@ -48,7 +48,7 @@ const LoadingScreen = () => {
 
         // Handle error objects
         if (typeof data === 'object' && data && 'error' in data) {
-          console.error('Received error object:', data);
+          // Received error object
           const errorData = data as { error?: string };
           const errorMsg = errorData.error || t('loading.errors.unknown');
           alert(`${t('loading.errors.serverError')}: ${errorMsg}`);
@@ -58,7 +58,7 @@ const LoadingScreen = () => {
 
         // Handle empty responses
         if (typeof data === 'string' && data.trim() === '') {
-          console.error('Received empty response');
+          // Received empty response
           alert(t('loading.errors.emptyResponse'));
           navigate('/');
           return;
@@ -70,7 +70,7 @@ const LoadingScreen = () => {
           try {
             messageJson = JSON.parse(data);
           } catch (parseError) {
-            console.error('JSON parsing error:', parseError, 'Raw data:', data);
+            // JSON parsing error
             alert(t('loading.errors.invalidResponse'));
             navigate('/');
             return;
@@ -81,7 +81,7 @@ const LoadingScreen = () => {
 
         // Validate that we have valid data structure
         if (!messageJson || typeof messageJson !== 'object') {
-          console.error('Invalid data structure:', messageJson);
+          // Invalid data structure
           alert(t('loading.errors.invalidData'));
           navigate('/');
           return;
@@ -89,7 +89,7 @@ const LoadingScreen = () => {
 
         // Check for medicine data or expected response structure
         if (Array.isArray(messageJson) && messageJson.length === 0) {
-          console.warn('Received empty medicine list');
+          // Received empty medicine list
           alert(t('loading.errors.noMedicines'));
           navigate('/');
           return;
@@ -99,7 +99,7 @@ const LoadingScreen = () => {
         navigate('/result', { state: { data: messageJson } });
         
       } catch (error) {
-        console.error('Unexpected error in handleComplete:', error);
+        // Unexpected error in handleComplete
         alert(t('loading.errors.unexpected'));
         navigate('/');
       }

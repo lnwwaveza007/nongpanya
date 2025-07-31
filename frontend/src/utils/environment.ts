@@ -6,14 +6,7 @@ import { config, currentEnvironment, isDevelopment, isProduction } from '../conf
  * Log current environment configuration (only in development)
  */
 export function logEnvironmentInfo() {
-  if (isDevelopment) {
-    console.group('🌍 Environment Configuration');
-    console.log('Current Environment:', currentEnvironment);
-    console.log('Configuration:', config);
-    console.log('Is Development:', isDevelopment);
-    console.log('Is Production:', isProduction);
-    console.groupEnd();
-  }
+  // Environment logging disabled
 }
 
 /**

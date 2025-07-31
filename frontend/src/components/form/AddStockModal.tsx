@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Card } from '../ui/card';
 import { X } from 'lucide-react';
 import MedicineImage from "@/components/ui/medicine-image";
+import { addStock } from '@/api/med';
 
 interface AddStockModalProps {
   isOpen: boolean;
@@ -16,8 +17,29 @@ interface AddStockModalProps {
 }
 
 const AddStockModal: React.FC<AddStockModalProps> = ({ isOpen, onClose, medicine }) => {
-  const [stockAmount, setStockAmount] = useState<number>(0);
+  const [stockAmount, setStockAmount] = useState<string>('');
   const [expiryDate, setExpiryDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleAddStock = async () => {
+    const amount = parseInt(stockAmount) || 0;
+    if (amount <= 0) {
+      alert('Please enter a valid stock amount');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      await addStock(medicine.id, amount, expiryDate);
+      alert('Stock added successfully!');
+      onClose();
+    } catch (error) {
+      console.error('Error adding stock:', error);
+      alert('Failed to add stock. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -54,7 +76,7 @@ const AddStockModal: React.FC<AddStockModalProps> = ({ isOpen, onClose, medicine
             <input
               type="number"
               value={stockAmount}
-              onChange={(e) => setStockAmount(parseInt(e.target.value) || 0)}
+              onChange={(e) => setStockAmount(e.target.value)}
               className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
               min="0"
               placeholder="Enter amount"
@@ -79,13 +101,16 @@ const AddStockModal: React.FC<AddStockModalProps> = ({ isOpen, onClose, medicine
           <button
             onClick={onClose}
             className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+            disabled={isLoading}
           >
             Cancel
           </button>
           <button
-            className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+            onClick={handleAddStock}
+            disabled={isLoading}
+            className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Add Stock
+            {isLoading ? 'Adding...' : 'Add Stock'}
           </button>
         </div>
       </Card>
