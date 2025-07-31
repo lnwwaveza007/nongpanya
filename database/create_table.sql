@@ -74,7 +74,7 @@ CREATE TABLE requests (
     user_id CHAR(11) NOT NULL,
     additional_notes TEXT,
     allergies TEXT,
-    status ENUM('pending', 'completed') DEFAULT 'pending',
+    status ENUM('pending', 'completed', 'failed') DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW() ON UPDATE NOW(),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE

@@ -130,6 +130,10 @@ export const submitRequestForm = async (req, res, next) => {
             formData.symptoms,
             formData.medicines
           );
+          if (!medRes || !medRes.success) {
+            await setReqStatus(formData.code, "failed");
+            // throw new Error("Failed to dispense medicine.");
+          }
           await createRequestMedicines(formData.code, medRes);
           // Log successful completion
           console.log("Medicine dispensing completed for code:", formData.code);
@@ -142,7 +146,7 @@ export const submitRequestForm = async (req, res, next) => {
             data: medRes
           });
         } catch (asyncError) {
-          await deleteRequest(formData.code);
+          await setReqStatus(formData.code, "failed");
           console.log("Error in async operation:", asyncError);
           // Log error completion
           console.log("Medicine dispensing failed for code:", formData.code);

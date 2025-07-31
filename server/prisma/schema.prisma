@@ -82,6 +82,7 @@ model request_symptoms {
 model requests {
   code              String              @id @db.Char(10)
   user_id           String              @db.Char(11)
+  weight            Decimal?            @db.Decimal(5, 2)
   additional_notes  String?             @db.Text
   allergies         String?             @db.Text
   status            requests_status?    @default(pending)
@@ -103,7 +104,7 @@ model symptoms {
 }
 
 model users {
-  id            String               @id @db.Char(11)
+  id            String               @id @db.Char(30)
   email         String               @unique(map: "email") @db.VarChar(255)
   fullname      String?              @db.VarChar(255)
   role          users_role?          @default(user)
@@ -128,11 +129,6 @@ enum medicines_type {
   Pack
 }
 
-enum requests_status {
-  pending
-  completed
-}
-
 enum users_role {
   user
   admin
@@ -145,12 +141,8 @@ enum users_auth_provider {
   microsoft
 }
 
-model medicine_request_hourly_summary {
-  time          DateTime
-  medicine_id   Int
-  medicine_name String
-  total         Int
-
-  @@id([time, medicine_id])
-  @@map("medicine_request_hourly_summary")
+enum requests_status {
+  pending
+  completed
+  failed
 }
