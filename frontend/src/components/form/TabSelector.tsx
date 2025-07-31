@@ -18,20 +18,20 @@ const TabSelector: React.FC<TabSelectorProps> = ({
   const { t } = useTranslation();
   
   return (
-    <div className="bg-white rounded-lg shadow-md mb-6">
+    <div className="bg-white rounded-lg shadow-md mb-4">
       <div className="flex">
         <button
           onClick={() => onTabChange("symptoms")}
-          className={`flex-1 flex items-center justify-center gap-2 py-4 px-6 transition-all duration-200 ${
+          className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 transition-all duration-200 ${
             activeTab === "symptoms"
               ? "bg-primary text-white border-b-2 border-primary"
               : "bg-gray-50 text-gray-600 hover:bg-gray-100"
           }`}
         >
-          <HeartPulse size={20} />
-          <span className="font-medium">{t("form.symptoms")}</span>
+          <HeartPulse size={16} />
+          <span className="font-medium text-sm">{t("form.symptoms")}</span>
           {symptomsCount > 0 && (
-            <span className="bg-white text-primary rounded-full px-2 py-1 text-xs font-bold min-w-[20px] text-center">
+            <span className="bg-white text-primary rounded-full px-1.5 py-0.5 text-xs font-bold min-w-[18px] text-center">
               {symptomsCount}
             </span>
           )}
@@ -39,16 +39,16 @@ const TabSelector: React.FC<TabSelectorProps> = ({
         
         <button
           onClick={() => onTabChange("medicines")}
-          className={`flex-1 flex items-center justify-center gap-2 py-4 px-6 transition-all duration-200 ${
+          className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 transition-all duration-200 ${
             activeTab === "medicines"
               ? "bg-primary text-white border-b-2 border-primary"
               : "bg-gray-50 text-gray-600 hover:bg-gray-100"
           }`}
         >
-          <Pill size={20} />
-          <span className="font-medium">{t("form.medicines")}</span>
+          <Pill size={16} />
+          <span className="font-medium text-sm">{t("form.medicines")}</span>
           {medicinesCount > 0 && (
-            <span className="bg-white text-primary rounded-full px-2 py-1 text-xs font-bold min-w-[20px] text-center">
+            <span className="bg-white text-primary rounded-full px-1.5 py-0.5 text-xs font-bold min-w-[18px] text-center">
               {medicinesCount}
             </span>
           )}

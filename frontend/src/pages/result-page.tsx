@@ -95,25 +95,25 @@ const ResultsPage = () => {
 
       <div className="max-w-4xl mx-auto space-y-4">
         {(!prescribedMedications || prescribedMedications.length === 0) ? (
-          <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-yellow-400 text-center">
-            <div className="flex flex-col items-center space-y-3">
-              <AlertCircle className="w-12 h-12 text-yellow-500" />
-              <h3 className="text-lg font-semibold text-gray-800">
+          <div className="bg-white rounded-lg shadow-md p-4 border-l-4 border-yellow-400 text-center">
+            <div className="flex flex-col items-center space-y-2">
+              <AlertCircle className="w-10 h-10 text-yellow-500" />
+              <h3 className="text-base font-semibold text-gray-800">
                 {t("result.noMedicines.title")}
               </h3>
-              <p className="text-gray-600 max-w-md text-sm">
+              <p className="text-gray-600 max-w-md text-xs">
                 {t("result.noMedicines.message")}
               </p>
-              <ul className="text-xs text-gray-500 space-y-1 max-w-lg">
+              <ul className="text-xs text-gray-500 space-y-0.5 max-w-lg">
                 <li>• {t("result.noMedicines.reasons.allergies")}</li>
                 <li>• {t("result.noMedicines.reasons.outOfStock")}</li>
                 <li>• {t("result.noMedicines.reasons.noMatch")}</li>
               </ul>
               <button
                 onClick={() => navigate('/')}
-                className="mt-3 bg-[#FF4B28] text-white px-4 py-2 rounded-lg hover:bg-[#E63E1E] transition-colors flex items-center gap-2 text-sm"
+                className="mt-2 bg-[#FF4B28] text-white px-3 py-1.5 rounded-lg hover:bg-[#E63E1E] transition-colors flex items-center gap-1 text-xs"
               >
-                <Home className="w-4 h-4" />
+                <Home className="w-3 h-3" />
                 {t("result.noMedicines.backHome")}
               </button>
             </div>
@@ -122,23 +122,23 @@ const ResultsPage = () => {
           prescribedMedications?.map((med : Medical, index: number) => (
           <div
             key={index}
-            className="bg-white rounded-lg shadow-md p-4 border-l-4 border-[#FF4B28]"
+            className="bg-white rounded-lg shadow-md p-3 border-l-4 border-[#FF4B28]"
           >
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid md:grid-cols-3 gap-3">
               {/* Image Section */}
               <div className="md:col-span-1">
-                <div className="bg-[#F5F7F9] rounded-lg p-4 flex flex-col items-center">
+                <div className="bg-[#F5F7F9] rounded-lg p-3 flex flex-col items-center">
                   <img
                     src={med.imageUrl}
                     alt={med.name}
-                    className="rounded-lg shadow-md"
+                    className="rounded-lg shadow-sm"
                     // width={med.imageSize.width}
                     // height={med.imageSize.height}
                   />
-                  <div className="mt-3 text-center">
-                    <p className="text-sm text-gray-600">{med.type}</p>
-                    <div className="flex items-center justify-center mt-2 text-xs text-gray-500">
-                      <Info className="w-3 h-3 mr-1" />
+                  <div className="mt-2 text-center">
+                    <p className="text-xs text-gray-600">{med.type}</p>
+                    <div className="flex items-center justify-center mt-1 text-xs text-gray-500">
+                      <Info className="w-2 h-2 mr-1" />
                       <span>{t("result.representativeImage")}</span>
                     </div>
                   </div>
@@ -149,10 +149,10 @@ const ResultsPage = () => {
               <div className="md:col-span-2">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="text-lg text-left font-bold text-[#FF4B28]">
+                    <h3 className="text-base text-left font-bold text-[#FF4B28]">
                       {med.name}
                     </h3>
-                    <p className="text-gray-600 text-left">
+                    <p className="text-gray-600 text-left text-sm">
                       {t("result.quantity")}: {med.quantity}
                     </p>
                   </div>
@@ -162,34 +162,34 @@ const ResultsPage = () => {
                   </div> */}
                 </div>
 
-                <div className="mt-4 space-y-4">
+                <div className="mt-3 space-y-3">
                   <div className="flex justify-between items-start">
                     <div>
-                      <p>{t(`medicineDescription.${med.id}`)}</p>
+                      <p className="text-sm">{t(`medicineDescription.${med.id}`)}</p>
                     </div>
                   </div>
 
                   <div>
-                    <h4 className="font-semibold mb-2">{t("result.instructions")}</h4>
-                    <ul className="space-y-2 text-left">
+                    <h4 className="font-semibold mb-1 text-sm">{t("result.instructions")}</h4>
+                    <ul className="space-y-1 text-left">
                       {med.instructions?.map((instruction, i) => (
-                        <li key={i} className="flex items-center text-gray-600">
-                          <span className="w-2 h-2 bg-[#FFC926] rounded-full mr-2"></span>
+                        <li key={i} className="flex items-center text-gray-600 text-xs">
+                          <span className="w-1.5 h-1.5 bg-[#FFC926] rounded-full mr-2"></span>
                           {t(`detail.${instruction}`)}
                         </li>
                       ))}
                     </ul>
                   </div>
 
-                  <div className="bg-red-50 p-4 rounded-lg">
-                    <div className="flex items-start mb-2">
-                      <AlertCircle className="text-red-500 mr-2" size={16} />
-                      <h4 className="font-semibold text-red-500">{t("result.warnings")}</h4>
+                  <div className="bg-red-50 p-3 rounded-lg">
+                    <div className="flex items-start mb-1">
+                      <AlertCircle className="text-red-500 mr-2" size={14} />
+                      <h4 className="font-semibold text-red-500 text-sm">{t("result.warnings")}</h4>
                     </div>
-                    <ul className="space-y-2 text-left">
+                    <ul className="space-y-1 text-left">
                       {med.warnings?.map((warning, i) => (
-                        <li key={i} className="flex items-start text-red-600">
-                          <span className="w-1 h-1 bg-red-400 rounded-full mr-2"></span>
+                        <li key={i} className="flex items-start text-red-600 text-xs">
+                          <span className="w-1 h-1 bg-red-400 rounded-full mr-2 mt-1"></span>
                           {t(`detail.${warning}`)}
                         </li>
                       ))}

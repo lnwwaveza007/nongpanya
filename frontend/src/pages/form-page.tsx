@@ -241,9 +241,9 @@ const NongpanyaVending = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-5">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
         <CustomInput
-          icon={<User size={20} />}
+          icon={<User size={16} />}
           type="text"
           name="name"
           placeholder={t("form.name")}
@@ -253,7 +253,7 @@ const NongpanyaVending = () => {
           readOnly={true}
         />
         <CustomInput
-          icon={<Mail size={20} />}
+          icon={<Mail size={16} />}
           type="email"
           name="email"
           placeholder={t("form.email")}
@@ -263,7 +263,7 @@ const NongpanyaVending = () => {
           readOnly={true}
         />
         <CustomInput
-          icon={<Phone size={20} />}
+          icon={<Phone size={16} />}
           type="tel"
           name="phone"
           placeholder={t("form.phone")}
@@ -271,7 +271,7 @@ const NongpanyaVending = () => {
           onChange={handleInputChange}
         />
         <CustomInput
-          icon={<Pill size={20} />}
+          icon={<Pill size={16} />}
           type="text"
           name="allergies"
           placeholder={t("form.allergies")}
@@ -307,7 +307,7 @@ const NongpanyaVending = () => {
       )}
 
       {/* Note Textarea */}
-      <div className="md:col-span-2 mt-5">
+      <div className="md:col-span-2 mt-4">
         <CustomTextArea
           name="note"
           placeholder={t("form.additionalNotesPlaceholder")}
@@ -319,9 +319,9 @@ const NongpanyaVending = () => {
       <TermsCheckbox checked={showTerms} onChange={handleInputChange} />
 
       {/* Submit Button */}
-      <div className="text-center mt-8">
+      <div className="text-center mt-6">
         <button
-          className="bg-primary text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-600 transition-all duration-300"
+          className="bg-primary text-white px-5 py-2.5 rounded-lg shadow-md hover:bg-blue-600 transition-all duration-300 text-sm"
           onClick={() => postAPI()}
         >
           {t("form.submit")}
