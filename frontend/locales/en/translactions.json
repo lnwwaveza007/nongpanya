@@ -4,7 +4,8 @@
     },
     "login": {
         "subtitle": "Nongpanya want to help you!",
-        "loginButton": "Login"
+        "loginButton": "Login",
+        "emailRequirement": "Please use your @ad.sit.kmutt.ac.th email address to access this system."
     },
     "dashboard": {
         "title": "Medicine",

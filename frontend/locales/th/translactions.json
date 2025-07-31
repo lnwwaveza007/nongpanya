@@ -4,7 +4,8 @@
     },
     "login": {
         "subtitle": "น้องปันยาอยากช่วยคุณ!",
-        "loginButton": "เข้าสู่ระบบ"
+        "loginButton": "เข้าสู่ระบบ",
+        "emailRequirement": "กรุณาใช้อีเมล @ad.sit.kmutt.ac.th ของคุณเพื่อเข้าถึงระบบนี้"
     },
     "dashboard": {
         "title": "ยา",
