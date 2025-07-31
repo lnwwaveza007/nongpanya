@@ -114,12 +114,12 @@ export const submitRequestForm = async (req, res, next) => {
 
     // Send order processing notification via WebSocket
     websocketService.broadcastToClients({
-      type: 'order',
+      type: "order",
       data: {
         success: true,
         code: formData.code,
-        message: 'Medicine order is being processed'
-      }
+        message: "Medicine order is being processed",
+      },
     });
 
     setImmediate(() => {
@@ -131,31 +131,42 @@ export const submitRequestForm = async (req, res, next) => {
             formData.symptoms,
             formData.medicines
           );
-          if (!medRes || !medRes.success) {
+          console.log("Medicine dispensing result:", medRes, !medRes);
+
+          if (!medRes || medRes.length === 0) {
             await setReqStatus(formData.code, "failed");
-            // throw new Error("Failed to dispense medicine.");
+
+            // Send error notification via WebSocket
+            websocketService.broadcastToClients({
+              type: "complete",
+              data: [],
+            });
+          } else {
+            await createRequestMedicines(formData.code, medRes);
+            // Log successful completion
+            console.log(
+              "Medicine dispensing completed for code:",
+              formData.code
+            );
+            await setReqStatus(formData.code);
+            console.log("Order completed successfully");
+
+            // Send completion notification via WebSocket
+            websocketService.broadcastToClients({
+              type: "complete",
+              data: medRes,
+            });
           }
-          await createRequestMedicines(formData.code, medRes);
-          // Log successful completion
-          console.log("Medicine dispensing completed for code:", formData.code);
-          await setReqStatus(formData.code);
-          console.log("Order completed successfully");
-          
-          // Send completion notification via WebSocket
-          websocketService.broadcastToClients({
-            type: 'complete',
-            data: medRes
-          });
         } catch (asyncError) {
           await setReqStatus(formData.code, "failed");
           console.log("Error in async operation:", asyncError);
           // Log error completion
           console.log("Medicine dispensing failed for code:", formData.code);
-          
+
           // Send error notification via WebSocket
           websocketService.broadcastToClients({
-            type: 'complete',
-            data: "error"
+            type: "complete",
+            data: "error",
           });
         }
       }, 1000);
@@ -187,7 +198,7 @@ export const addStockController = async (req, res, next) => {
     }
 
     // Convert date string to ISO DateTime format
-    const expireDateTime = new Date(expireAt + 'T00:00:00.000Z').toISOString();
+    const expireDateTime = new Date(expireAt + "T00:00:00.000Z").toISOString();
 
     const result = await addStock(medicineId, amount, expireDateTime);
 
@@ -222,8 +233,10 @@ export const updateStockController = async (req, res, next) => {
     const results = [];
     for (const entry of stockEntries) {
       // Convert date string to ISO DateTime format
-      const expireDateTime = new Date(entry.expire_at + 'T00:00:00.000Z').toISOString();
-      
+      const expireDateTime = new Date(
+        entry.expire_at + "T00:00:00.000Z"
+      ).toISOString();
+
       const result = await addStock(
         parseInt(medicineId),
         entry.stock_amount,
