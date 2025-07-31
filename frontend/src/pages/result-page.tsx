@@ -68,50 +68,50 @@ const ResultsPage = () => {
       </div>
 
       {/* Quota Card */}
-      <div className="max-w-md mx-auto mb-8 bg-white rounded-xl shadow-lg p-6 border-2 border-[#FF4B28]">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-[#FF4B28]">{t("result.monthlyQuota")}</h2>
-          <HeartPulse className="text-[#FF4B28]" />
+      <div className="max-w-md mx-auto mb-6 bg-white rounded-lg shadow-md p-4 border border-[#FF4B28]">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-bold text-[#FF4B28]">{t("result.monthlyQuota")}</h2>
+          <HeartPulse className="text-[#FF4B28]" size={18} />
         </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="text-center p-3 bg-[#F5F7F9] rounded-lg">
-            <p className="text-sm text-gray-600">{t("result.used")}</p>
-            <p className="text-2xl font-bold text-[#FF4B28]">
+        <div className="grid grid-cols-2 gap-3">
+          <div className="text-center p-2 bg-[#F5F7F9] rounded-lg">
+            <p className="text-xs text-gray-600">{t("result.used")}</p>
+            <p className="text-xl font-bold text-[#FF4B28]">
               {studentQuota.used}/{studentQuota.maxPerMonth}
             </p>
           </div>
-          <div className="text-center p-3 bg-[#F5F7F9] rounded-lg">
-            <p className="text-sm text-gray-600">{t("result.remaining")}</p>
-            <p className="text-2xl font-bold text-[#FFC926]">
+          <div className="text-center p-2 bg-[#F5F7F9] rounded-lg">
+            <p className="text-xs text-gray-600">{t("result.remaining")}</p>
+            <p className="text-xl font-bold text-[#FFC926]">
               {studentQuota.maxPerMonth - studentQuota.used}
             </p>
           </div>
         </div>
-        <div className="mt-4 flex items-center text-sm text-gray-600">
-          <Calendar className="w-4 h-4 mr-2" />
+        <div className="mt-3 flex items-center text-xs text-gray-600">
+          <Calendar className="w-3 h-3 mr-1" />
           <span>{t("result.resetsOn")} {studentQuota.resetDate}</span>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="max-w-4xl mx-auto space-y-4">
         {(!prescribedMedications || prescribedMedications.length === 0) ? (
-          <div className="bg-white rounded-xl shadow-lg p-8 border-l-4 border-yellow-400 text-center">
-            <div className="flex flex-col items-center space-y-4">
-              <AlertCircle className="w-16 h-16 text-yellow-500" />
-              <h3 className="text-xl font-semibold text-gray-800">
+          <div className="bg-white rounded-lg shadow-md p-6 border-l-4 border-yellow-400 text-center">
+            <div className="flex flex-col items-center space-y-3">
+              <AlertCircle className="w-12 h-12 text-yellow-500" />
+              <h3 className="text-lg font-semibold text-gray-800">
                 {t("result.noMedicines.title")}
               </h3>
-              <p className="text-gray-600 max-w-md">
+              <p className="text-gray-600 max-w-md text-sm">
                 {t("result.noMedicines.message")}
               </p>
-              <ul className="text-sm text-gray-500 space-y-1 max-w-lg">
+              <ul className="text-xs text-gray-500 space-y-1 max-w-lg">
                 <li>• {t("result.noMedicines.reasons.allergies")}</li>
                 <li>• {t("result.noMedicines.reasons.outOfStock")}</li>
                 <li>• {t("result.noMedicines.reasons.noMatch")}</li>
               </ul>
               <button
                 onClick={() => navigate('/')}
-                className="mt-4 bg-[#FF4B28] text-white px-6 py-2 rounded-lg hover:bg-[#E63E1E] transition-colors flex items-center gap-2"
+                className="mt-3 bg-[#FF4B28] text-white px-4 py-2 rounded-lg hover:bg-[#E63E1E] transition-colors flex items-center gap-2 text-sm"
               >
                 <Home className="w-4 h-4" />
                 {t("result.noMedicines.backHome")}
@@ -122,9 +122,9 @@ const ResultsPage = () => {
           prescribedMedications?.map((med : Medical, index: number) => (
           <div
             key={index}
-            className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-[#FF4B28]"
+            className="bg-white rounded-lg shadow-md p-4 border-l-4 border-[#FF4B28]"
           >
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-3 gap-4">
               {/* Image Section */}
               <div className="md:col-span-1">
                 <div className="bg-[#F5F7F9] rounded-lg p-4 flex flex-col items-center">
@@ -149,7 +149,7 @@ const ResultsPage = () => {
               <div className="md:col-span-2">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="text-xl text-left font-bold text-[#FF4B28]">
+                    <h3 className="text-lg text-left font-bold text-[#FF4B28]">
                       {med.name}
                     </h3>
                     <p className="text-gray-600 text-left">

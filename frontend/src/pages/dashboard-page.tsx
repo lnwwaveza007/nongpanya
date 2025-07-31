@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "../components/ui/card";
+import { Button } from "../components/ui/button";
 import EditStockModal from "../components/form/EditStockModal";
 import AddStockModal from "../components/form/AddStockModal";
-import { Plus } from "lucide-react";
+import { Plus, Pill, BarChart3, TrendingUp, AlertTriangle, Edit } from "lucide-react";
 import Header from "../components/layout/Header";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line, Cell
@@ -93,7 +94,7 @@ export default function DashboardPage() {
     getMedicineStock();
     getTopDispensedMedicines();
     getMedRequestTimeseries();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleEditClick = (medicine: Medicine) => {
     setSelectedMedicine(medicine);
@@ -117,147 +118,225 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-white max-w-none">
-      <Header activePage="medicine" />
+    <div className="min-h-screen bg-gray-50">
+      <Header activePage="dashboard" />
       <LanguageToggle variant="floating" />
 
-      {/* Title */}
-      <div className="px-8 py-4 flex items-center gap-2">
-        <span className="text-2xl font-semibold text-gray-800"><i className="fa-solid fa-pills mr-2" style={{ color: 'rgb(249 115 22)' }} />{t("dashboard.title")}</span>
-      </div>
-      {/* Main Content */}
-      <div className="px-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Left: Medicine Stock */}
-        <Card className="col-span-1 border-orange-200 shadow-sm">
-          <CardHeader className="bg-orange-50 border-b border-orange-200">
-            <CardTitle className="text-gray-800">{t("dashboard.currentStock")}</CardTitle>
-          </CardHeader>
-          <CardContent className="overflow-x-auto p-0">
-            <table className="min-w-full text-sm">
-              <thead>
-                <tr className="border-b border-orange-200 bg-orange-50">
-                  <th className="px-4 py-2 text-left text-gray-700">{t("dashboard.medicineId")}</th>
-                  <th className="px-4 py-2 text-left text-gray-700">{t("dashboard.image")}</th>
-                  <th className="px-4 py-2 text-left text-gray-700">{t("dashboard.name")}</th>
-                  <th className="px-4 py-2 text-left text-gray-700">{t("dashboard.inStock")}</th>
-                  <th className="px-4 py-2 text-left text-gray-700">{t("dashboard.actions")}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {medicineStock.map((med, idx) => (
-                  <tr key={idx} className="border-b border-orange-100 last:border-0 hover:bg-orange-50">
-                    <td className="px-4 py-2">{med.id}</td>
-                    <td className="px-4 py-2">
-                      <MedicineImage
-                        medicine={med}
-                        size="sm"
-                        className="object-contain"
-                      />
-                    </td>
-                    <td className="px-4 py-2">{med.name}</td>
-                    <td className={`px-4 py-2 font-semibold ${med.valid_stock === 0 ? "text-red-500" : "text-green-600"}`}>{med.valid_stock}/30</td>
-                    <td className="flex items-center gap-2 px-4 py-2">
-                      <button 
-                        onClick={() => handleAddClick(med)}
-                        className="text-orange-600 hover:text-orange-700 hover:underline inline-flex items-center gap-1 bg-white border border-orange-200 rounded-md px-2 py-1"
-                        style={{ color: 'rgb(249 115 22)' }}
-                      >
-                        <Plus size={16} />
-                        {t("dashboard.add")}
-                      </button>
-                      <button 
-                        onClick={() => handleEditClick(med)}
-                        className="text-blue-600 hover:text-blue-700 hover:underline bg-white border border-blue-200 rounded-md px-2 py-1"
-                      >
-                        {t("dashboard.edit")}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </CardContent>
-        </Card>
-        {/* Right: Top 5 Dispensed Medicines */}
-        <Card className="col-span-1 border-orange-200 shadow-sm">
-          <CardHeader className="bg-orange-50 border-b border-orange-200">
-            <CardTitle className="text-gray-800">{t("dashboard.topDispensed")}</CardTitle>
-          </CardHeader>
-          <CardContent className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart 
-                data={topDispensed}
-                margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" stroke="#fef3c7" />
-                <XAxis 
-                  dataKey="medicine_name" 
-                  angle={-45}
-                  textAnchor="end"
-                  height={80}
-                  interval={0}
-                  tick={{ fontSize: 10 }}
-                  stroke="#6b7280"
-                />
-                <YAxis stroke="#6b7280" />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: 'white', 
-                    border: '1px solid rgb(249 115 22)',
-                    borderRadius: '8px'
-                  }}
-                />
-                <Bar dataKey="total" isAnimationActive fill="rgb(249 115 22)">
-                  {topDispensed.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill={`hsl(${index * 60}, 70%, 50%)`} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
-      {/* Bottom: Daily Medicine Requests */}
-      <div className="px-8 mt-6">
-        <Card className="border-orange-200 shadow-sm mb-6">
-          <CardHeader className="flex flex-row items-center justify-between bg-orange-50 border-b border-orange-200">
-            <CardTitle className="text-gray-800">Daily Medicine Requests</CardTitle>
-            <div className="flex items-center gap-4">
+      {/* Title Section */}
+      <div className="max-w-7xl mx-auto px-4 py-4">
+        <div className="bg-white rounded-lg shadow-md p-4 border-2 border-[#FF4B28] mb-6">
+          <div className="flex items-center gap-3">
+            <div className="bg-[#FF4B28]/10 p-2 rounded-lg">
+              <Pill size={24} className="text-[#FF4B28]" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-[#FF4B28]">
+                {t("dashboard.title")}
+              </h1>
+              <p className="text-gray-600 text-sm">Monitor medicine inventory and dispensing analytics</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Dashboard Grid */}
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 mb-6">
+          {/* Medicine Stock Card */}
+          <Card className="border-2 border-[#FF4B28] shadow-lg overflow-hidden">
+            <CardHeader className="bg-[#FF4B28] text-white py-3">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <div className="bg-white/20 p-1.5 rounded-lg">
+                  <Pill size={16} />
+                </div>
+                {t("dashboard.currentStock")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <table className="min-w-full text-xs">
+                  <thead>
+                    <tr className="border-b border-[#FF4B28]/20 bg-gray-50">
+                      <th className="px-3 py-2 text-left text-gray-700 font-semibold">{t("dashboard.medicineId")}</th>
+                      <th className="px-3 py-2 text-left text-gray-700 font-semibold">{t("dashboard.image")}</th>
+                      <th className="px-3 py-2 text-left text-gray-700 font-semibold">{t("dashboard.name")}</th>
+                      <th className="px-3 py-2 text-left text-gray-700 font-semibold">{t("dashboard.inStock")}</th>
+                      <th className="px-3 py-2 text-left text-gray-700 font-semibold">{t("dashboard.actions")}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {medicineStock.map((med, idx) => (
+                      <tr key={idx} className="border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors">
+                        <td className="px-3 py-2 font-medium">{med.id}</td>
+                        <td className="px-3 py-2">
+                          <MedicineImage
+                            medicine={med}
+                            size="sm"
+                            className="object-contain rounded-lg"
+                          />
+                        </td>
+                        <td className="px-3 py-2 font-medium">{med.name}</td>
+                        <td className={`px-3 py-2 font-bold ${med.valid_stock === 0 ? "text-red-500" : med.valid_stock < 5 ? "text-yellow-600" : "text-green-600"}`}>
+                          {med.valid_stock}/30
+                          {med.valid_stock < 5 && (
+                            <AlertTriangle size={14} className="ml-2 text-yellow-600" />
+                          )}
+                        </td>
+                        <td className="px-3 py-2">
+                          <div className="flex items-center gap-1">
+                            <Button 
+                              onClick={() => handleAddClick(med)}
+                              size="sm"
+                              variant="outline"
+                              className="border-2 border-[#FF4B28] text-[#FF4B28] hover:bg-[#FF4B28] hover:text-white transition-all duration-200 shadow-sm h-7 px-2 text-xs"
+                            >
+                              <Plus size={12} className="mr-1" />
+                              {t("dashboard.add")}
+                            </Button>
+                            <Button 
+                              onClick={() => handleEditClick(med)}
+                              size="sm"
+                              variant="outline"
+                              className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-200 shadow-sm h-7 px-2 text-xs"
+                            >
+                              <Edit size={12} className="mr-1" />
+                              {t("dashboard.edit")}
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Top Dispensed Medicines Card */}
+          <Card className="border-2 border-[#FF4B28] shadow-lg overflow-hidden">
+            <CardHeader className="bg-[#FF4B28] text-white py-3">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <div className="bg-white/20 p-1.5 rounded-lg">
+                  <BarChart3 size={16} />
+                </div>
+                {t("dashboard.topDispensed")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4 h-[90%] flex flex-col justify-end">
+              <div className="h-48">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart 
+                    data={topDispensed}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                    <XAxis 
+                      dataKey="medicine_name" 
+                      angle={-45}
+                      textAnchor="end"
+                      height={80}
+                      interval={0}
+                      tick={{ fontSize: 10 }}
+                      stroke="#64748b"
+                    />
+                    <YAxis stroke="#64748b" />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'white', 
+                        border: '2px solid #FF4B28',
+                        borderRadius: '12px',
+                        boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)'
+                      }}
+                    />
+                    <Bar dataKey="total" radius={6}>
+                      {topDispensed.map((_, index) => (
+                        <Cell key={`cell-${index}`} fill={`hsl(${12 + index * 45}, 85%, 60%)`} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Daily Medicine Requests Chart */}
+        <Card className="border-2 border-[#FF4B28] shadow-lg overflow-hidden">
+          <CardHeader className="bg-[#FF4B28] text-white py-3">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <CardTitle className="flex items-center gap-2 text-base">
+                <div className="bg-white/20 p-1.5 rounded-lg">
+                  <TrendingUp size={16} />
+                </div>
+                Daily Medicine Requests
+              </CardTitle>
               <input
                 type="date"
                 value={selectedDate}
                 onChange={(e) => changeDate(e.target.value)}
-                className="border border-orange-300 rounded px-2 py-1 text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-orange-500 text-white"
+                className="border-2 border-white/30 rounded-lg px-2 py-1 text-xs bg-white/20 text-white placeholder-white/70 focus:ring-2 focus:ring-white/50 focus:border-white/50"
               />
             </div>
           </CardHeader>
-          <CardContent className="h-80 pt-10">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={transformDataForChart(medRequest)} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#fef3c7" />
-                <XAxis dataKey="time" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: 'white', 
-                    border: '1px solid rgb(249 115 22)',
-                    borderRadius: '8px'
-                  }}
-                />
-                <Legend />
-                {transformDataForChart(medRequest).length > 0 && getIdenticalMed(medRequest[0]).map((medName, idx) => (
-                  <Line 
-                    key={idx} 
-                    type="monotone" 
-                    dataKey={medName} 
-                    stroke={idx === 0 ? "rgb(249 115 22)" : `hsl(${idx * 120}, 70%, 50%)`}
-                    activeDot={{ r: 6 }} 
+          <CardContent className="p-4">
+            <div className="h-64">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={transformDataForChart(medRequest)} margin={{ top: 10, right: 30, left: 20, bottom: 20 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                  <XAxis dataKey="time" stroke="#64748b" />
+                  <YAxis stroke="#64748b" />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'white', 
+                      border: '2px solid #FF4B28',
+                      borderRadius: '12px',
+                      boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)'
+                    }}
                   />
-                ))}
-              </LineChart>
-            </ResponsiveContainer>
+                  <Legend />
+                  {transformDataForChart(medRequest).length > 0 && getIdenticalMed(medRequest[0]).map((medName, idx) => (
+                    <Line 
+                      key={idx} 
+                      type="monotone" 
+                      dataKey={medName} 
+                      stroke={idx === 0 ? "#FF4B28" : `hsl(${12 + idx * 120}, 70%, 50%)`}
+                      strokeWidth={3}
+                      dot={{ fill: idx === 0 ? "#FF4B28" : `hsl(${12 + idx * 120}, 70%, 50%)`, strokeWidth: 2, r: 4 }}
+                      activeDot={{ r: 6, stroke: idx === 0 ? "#FF4B28" : `hsl(${12 + idx * 120}, 70%, 50%)`, strokeWidth: 2 }} 
+                    />
+                  ))}
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           </CardContent>
         </Card>
+
+        {/* Stock Alert Section */}
+        {medicineStock.filter(med => med.valid_stock < 5).length > 0 && (
+          <Card className="border-2 border-red-200 shadow-lg overflow-hidden mt-6">
+            <CardHeader className="bg-red-50 border-b-2 border-red-200 py-3">
+              <CardTitle className="flex items-center gap-2 text-base text-red-700">
+                <div className="bg-red-100 p-1.5 rounded-lg">
+                  <AlertTriangle size={16} className="text-red-600" />
+                </div>
+                Low Stock Alert
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {medicineStock.filter(med => med.valid_stock < 5).map((med) => (
+                  <div key={med.id} className="bg-red-50 border border-red-200 rounded-lg p-3">
+                    <div className="flex items-center gap-2">
+                      <MedicineImage medicine={med} size="sm" className="rounded-lg" />
+                      <div>
+                        <h4 className="font-semibold text-red-900 text-sm">{med.name}</h4>
+                        <p className="text-red-700 text-xs">Only {med.valid_stock} left</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
 
       {/* Modals */}

@@ -202,41 +202,41 @@ const NongpanyaVending = () => {
         >
           {t("form.title")}
         </h1>
-        <p className="text-xl mt-2" style={{ color: "#919191" }}>
+        <p className="text-lg mt-2" style={{ color: "#919191" }}>
           {t("form.subtitle")}
         </p>
       </div>
 
      {/* Quota Card */}
-     <div className="max-w-md mx-auto mb-8 bg-white rounded-xl shadow-lg p-6 border-2 border-primary">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-[#FF4B28]">{t("result.monthlyQuota")}</h2>
-          <HeartPulse className="text-[#FF4B28]" />
+     <div className="max-w-md mx-auto mb-6 bg-white rounded-lg shadow-md p-4 border border-primary">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-bold text-[#FF4B28]">{t("result.monthlyQuota")}</h2>
+          <HeartPulse className="text-[#FF4B28]" size={18} />
         </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="text-center p-3 bg-[#F5F7F9] rounded-lg">
-            <p className="text-sm text-gray-600">{t("result.used")}</p>
-            <p className="text-2xl font-bold text-[#FF4B28]">
+        <div className="grid grid-cols-2 gap-3">
+          <div className="text-center p-2 bg-[#F5F7F9] rounded-lg">
+            <p className="text-xs text-gray-600">{t("result.used")}</p>
+            <p className="text-xl font-bold text-[#FF4B28]">
               {studentQuota.used}/{studentQuota.maxPerMonth}
             </p>
           </div>
-          <div className="text-center p-3 bg-[#F5F7F9] rounded-lg">
-            <p className="text-sm text-gray-600">{t("result.remaining")}</p>
-            <p className="text-2xl font-bold text-[#FFC926]">
+          <div className="text-center p-2 bg-[#F5F7F9] rounded-lg">
+            <p className="text-xs text-gray-600">{t("result.remaining")}</p>
+            <p className="text-xl font-bold text-[#FFC926]">
               {studentQuota.maxPerMonth - studentQuota.used}
             </p>
           </div>
         </div>
-        <div className="mt-4 flex items-center text-sm text-gray-600">
-          <Calendar className="w-4 h-4 mr-2" />
+        <div className="mt-3 flex items-center text-xs text-gray-600">
+          <Calendar className="w-3 h-3 mr-1" />
           <span>{t("result.resetsOn")} {studentQuota.resetDate}</span>
         </div>
       </div> 
 
       {/* Warning Message */}
-      <div className="max-w-4xl mx-auto mb-6 p-4 bg-yellow-100 rounded-lg flex items-center gap-2">
-        <AlertCircle className="text-yellow-600" />
-        <p className="text-yellow-700">
+      <div className="max-w-4xl mx-auto mb-4 p-3 bg-yellow-100 rounded-lg flex items-center gap-2">
+        <AlertCircle className="text-yellow-600" size={16} />
+        <p className="text-yellow-700 text-sm">
           {t("form.warning")}
         </p>
       </div>

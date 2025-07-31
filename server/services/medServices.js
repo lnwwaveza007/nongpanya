@@ -38,16 +38,6 @@ export const getMedicalInfo = async (medId) => {
   return medInfo;
 };
 
-export const getMedicineDescriptions = async (medId) => {
-  // Ensure medId is an integer
-  const medIdInt = parseInt(medId, 10);
-  
-  const descriptions = await prisma.medicine_descriptions.findMany({
-    where: { medicine_id: medIdInt },
-  });
-  return descriptions;
-};
-
 export const setReqStatus = async (code) => {
   return await prisma.requests.updateMany({
     where: { code },
@@ -209,7 +199,7 @@ export const giveMedicine = async (allergies, symptomIds = [], medicineIds = [])
     return []; // Return empty array instead of throwing
   }
 
-  await dropPills(pills.map(pill => pill.medicine_id));
+  // await dropPills(pills.map(pill => pill.medicine_id));
   for (const pill of pills) {
     await removeStock(pill.medicine_id, pill.amount);
     const data = await getPillData(pill);
@@ -230,10 +220,6 @@ export const getPillData = async (pill) => {
     where: { medicine_id: medicineId },
   });
 
-  const descriptions = await prisma.medicine_descriptions.findMany({
-    where: { medicine_id: medicineId },
-  });
-
   const pillsData = {
     id: medicineId,
     name: medicine.name,
@@ -248,7 +234,6 @@ export const getPillData = async (pill) => {
     warnings: instructions
       .filter((e) => e.type === "Warning")
       .map((e) => e.id),
-    descriptions: descriptions.map((e) => e.id),
   };
   return pillsData;
 };

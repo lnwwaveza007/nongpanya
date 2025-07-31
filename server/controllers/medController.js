@@ -7,7 +7,6 @@ import {
   getMedicines,
   createRequestMedicines,
   getMedicalInfo,
-  getMedicineDescriptions,
 } from "../services/medServices.js";
 import * as code from "../utils/codeStore.js";
 import { getQuotaByUserId } from "../services/userServices.js";
@@ -42,7 +41,7 @@ export const getAllMedicines = async (req, res, next) => {
   }
 };
 
-export const getMedicineStock = async (req, res) => {
+export const getMedicineStock = async (req, res, next) => {
   const { expired } = req.query;
 
   try {
@@ -168,15 +167,5 @@ export const getMedInfo = async (req, res, next) => {
     success: true,
     data: medInfo,
     message: "Medicine info retrieved successfully",
-  });
-};
-
-export const getMedDescriptions = async (req, res, next) => {
-  const { medId } = req.params;
-  const descriptions = await getMedicineDescriptions(parseInt(medId));
-  return res.status(200).json({
-    success: true,
-    data: descriptions,
-    message: "Medicine descriptions retrieved successfully",
   });
 };

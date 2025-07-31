@@ -145,38 +145,39 @@ const Homepage = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4">
+    <div className="min-h-screen bg-gray-50 p-3">
       {/* Language Toggle */}
       <LanguageToggle variant="floating" />
 
-      <div className="max-w-6xl mx-auto mb-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="max-w-6xl mx-auto mb-6 grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Welcome Card */}
         <div className="lg:col-span-2">
-          <div className="flex flex-col sm:flex-row justify-between items-center bg-white rounded-xl shadow-lg p-6 border-2 border-[#FF4B28] gap-4 h-full">
-            <div className="flex items-center gap-4">
+          <div className="flex flex-col sm:flex-row justify-between items-center bg-white rounded-lg shadow-md p-4 border-2 border-[#FF4B28] gap-3 h-full">
+            <div className="flex items-center gap-3">
               <div
-                className="text-4xl transition-all duration-300 hover:scale-110 cursor-pointer"
+                className="text-3xl transition-all duration-300 hover:scale-110 cursor-pointer"
                 style={{ color: "#FF4B28" }}
               >
                 (✧ω✧)
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-[#FF4B28]">
+                <h1 className="text-xl font-bold text-[#FF4B28]">
                   {t("welcome.title")}
                 </h1>
-                <p className="text-gray-600">{user?.fullname || user?.email}</p>
+                <p className="text-gray-600 text-sm">{user?.fullname || user?.email}</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               {/* Dashboard Button for Admin */}
               {hasMinimumRole("admin") && (
                 <Button
                   onClick={() => navigate("/dashboard")}
                   variant="outline"
-                  className="flex items-center gap-2 border-2 border-[#FF4B28] text-[#FF4B28] hover:bg-[#FF4B28] hover:text-white w-full sm:w-auto"
+                  size="sm"
+                  className="flex items-center gap-1 border-2 border-[#FF4B28] text-[#FF4B28] hover:bg-[#FF4B28] hover:text-white w-full sm:w-auto text-xs"
                 >
-                  <LayoutDashboard size={20} />
+                  <LayoutDashboard size={16} />
                   <span className="hidden sm:inline">
                     {t("homepage.dashboard")}
                   </span>
@@ -188,9 +189,10 @@ const Homepage = () => {
               <Button
                 onClick={handleSignOut}
                 variant="outline"
-                className="flex items-center gap-2 border-2 border-[#FF4B28] text-[#FF4B28] hover:bg-[#FF4B28] hover:text-white w-full sm:w-auto"
+                size="sm"
+                className="flex items-center gap-1 border-2 border-[#FF4B28] text-[#FF4B28] hover:bg-[#FF4B28] hover:text-white w-full sm:w-auto text-xs"
               >
-                <LogOut size={20} />
+                <LogOut size={16} />
                 <span className="hidden sm:inline">
                   {t("homepage.signOut")}
                 </span>
@@ -202,29 +204,29 @@ const Homepage = () => {
 
         {/* Quota Card */}
         <div className="lg:col-span-1">
-          <div className="bg-white rounded-xl shadow-lg p-6 border-2 border-[#FF4B28] h-full">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold text-[#FF4B28]">
+          <div className="bg-white rounded-lg shadow-md p-4 border-2 border-[#FF4B28] h-full">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-lg font-bold text-[#FF4B28]">
                 {t("result.monthlyQuota")}
               </h2>
-              <HeartPulse className="text-[#FF4B28]" />
+              <HeartPulse className="text-[#FF4B28]" size={20} />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="text-center p-3 bg-[#F5F7F9] rounded-lg">
-                <p className="text-sm text-gray-600">{t("result.used")}</p>
-                <p className="text-2xl font-bold text-[#FF4B28]">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="text-center p-2 bg-[#F5F7F9] rounded-lg">
+                <p className="text-xs text-gray-600">{t("result.used")}</p>
+                <p className="text-xl font-bold text-[#FF4B28]">
                   {quota.used}/{quota.maxPerMonth}
                 </p>
               </div>
-              <div className="text-center p-3 bg-[#F5F7F9] rounded-lg">
-                <p className="text-sm text-gray-600">{t("result.remaining")}</p>
-                <p className="text-2xl font-bold text-[#FFC926]">
+              <div className="text-center p-2 bg-[#F5F7F9] rounded-lg">
+                <p className="text-xs text-gray-600">{t("result.remaining")}</p>
+                <p className="text-xl font-bold text-[#FFC926]">
                   {quota.maxPerMonth - quota.used}
                 </p>
               </div>
             </div>
-            <div className="mt-4 flex items-center text-sm text-gray-600">
-              <Calendar className="w-4 h-4 mr-2" />
+            <div className="mt-3 flex items-center text-xs text-gray-600">
+              <Calendar className="w-3 h-3 mr-1" />
               <span>
                 {t("result.resetsOn")} {resetDate}
               </span>
@@ -233,40 +235,40 @@ const Homepage = () => {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto space-y-8">
+      <div className="max-w-6xl mx-auto space-y-6">
         {/* Available Medicines Section */}
-        <Card className="border-2 border-[#FF4B28] shadow-xl overflow-hidden">
-          <CardHeader className="bg-[#FF4B28] text-white">
-            <CardTitle className="flex items-center gap-3 text-lg">
-              <div className="bg-white/20 p-2 rounded-lg">
-                <Pill size={20} />
+        <Card className="border-2 border-[#FF4B28] shadow-lg overflow-hidden">
+          <CardHeader className="bg-[#FF4B28] text-white py-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <div className="bg-white/20 p-1.5 rounded-lg">
+                <Pill size={16} />
               </div>
               {t("homepage.availableMedicines.title")}
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-6">
+          <CardContent className="p-4">
             {medicines.length === 0 ? (
-              <div className="text-center py-8">
-                <div className="bg-gray-100 rounded-full p-6 w-20 h-20 mx-auto mb-4 flex items-center justify-center">
-                  <Pill size={28} className="text-gray-400" />
+              <div className="text-center py-6">
+                <div className="bg-gray-100 rounded-full p-4 w-16 h-16 mx-auto mb-3 flex items-center justify-center">
+                  <Pill size={24} className="text-gray-400" />
                 </div>
-                <p className="text-gray-500">
+                <p className="text-gray-500 text-sm">
                   {t("homepage.availableMedicines.noMedicines")}
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                 {medicines.map((medicine) => (
                   <div
                     key={medicine.id}
                     onClick={() => handleMedicineClick(medicine)}
-                    className={`bg-white border-2 rounded-xl p-4 shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer group ${
+                    className={`bg-white border-2 rounded-lg p-3 shadow-sm hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer group ${
                       medicine.total_stock === 0
                         ? "border-red-200 opacity-75 hover:border-red-300"
                         : "border-gray-200 hover:border-[#FF4B28]/50"
                     }`}
                   >
-                    <div className="text-center mb-3">
+                    <div className="text-center mb-2">
                       <div className="flex justify-center">
                         <MedicineImage
                           medicine={medicine}
@@ -277,18 +279,18 @@ const Homepage = () => {
                     </div>
 
                     <div className="text-center">
-                      <h3 className="font-semibold text-gray-800 text-sm mb-2 line-clamp-2">
+                      <h3 className="font-semibold text-gray-800 text-xs mb-1 line-clamp-2">
                         {medicine.name}
                       </h3>
 
                       {medicine.description && (
-                        <p className="text-xs text-gray-600 line-clamp-3 mb-3">
+                        <p className="text-xs text-gray-600 line-clamp-2 mb-2">
                           {t(`medicineDescription.${medicine.id}`)}
                         </p>
                       )}
 
                       <div
-                        className={`rounded-lg p-2 ${
+                        className={`rounded-lg p-1.5 ${
                           medicine.total_stock === 0
                             ? "bg-red-100"
                             : "bg-green-100"
@@ -307,7 +309,7 @@ const Homepage = () => {
                         </span>
                       </div>
 
-                      <div className="mt-2 text-center">
+                      <div className="mt-1 text-center">
                         <span className="text-xs text-gray-400 group-hover:text-[#FF4B28] transition-colors">
                           {t("homepage.availableMedicines.clickForDetails")}
                         </span>
@@ -319,34 +321,34 @@ const Homepage = () => {
             )}
 
             {/* Medicine Safety Guidelines */}
-            <div className="mt-8 bg-blue-50 border-2 border-blue-200 rounded-xl p-6">
-              <div className="flex items-start gap-4">
-                <Info size={24} className="text-blue-500 mt-1 flex-shrink-0" />
+            <div className="mt-6 bg-blue-50 border-2 border-blue-200 rounded-lg p-4">
+              <div className="flex items-start gap-3">
+                <Info size={20} className="text-blue-500 mt-1 flex-shrink-0" />
                 <div>
-                  <h4 className="font-semibold text-blue-800 mb-3">
+                  <h4 className="font-semibold text-blue-800 mb-2 text-sm">
                     {t("homepage.availableMedicines.guidelines.title")}
                   </h4>
-                  <ul className="space-y-2 text-sm text-blue-700">
+                  <ul className="space-y-1 text-xs text-blue-700">
                     <li className="flex items-start gap-2">
-                      <span className="text-blue-500 mt-1 flex-shrink-0">
+                      <span className="text-blue-500 mt-0.5 flex-shrink-0">
                         •
                       </span>
                       {t("homepage.availableMedicines.guidelines.point1")}
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-blue-500 mt-1 flex-shrink-0">
+                      <span className="text-blue-500 mt-0.5 flex-shrink-0">
                         •
                       </span>
                       {t("homepage.availableMedicines.guidelines.point2")}
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-blue-500 mt-1 flex-shrink-0">
+                      <span className="text-blue-500 mt-0.5 flex-shrink-0">
                         •
                       </span>
                       {t("homepage.availableMedicines.guidelines.point3")}
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-blue-500 mt-1 flex-shrink-0">
+                      <span className="text-blue-500 mt-0.5 flex-shrink-0">
                         •
                       </span>
                       {t("homepage.availableMedicines.guidelines.point4")}
@@ -357,17 +359,17 @@ const Homepage = () => {
             </div>
 
             {/* Important Notice */}
-            <div className="mt-6 bg-red-50 border-2 border-red-200 rounded-xl p-4">
-              <div className="flex items-start gap-3">
+            <div className="mt-4 bg-red-50 border-2 border-red-200 rounded-lg p-3">
+              <div className="flex items-start gap-2">
                 <AlertTriangle
-                  size={24}
-                  className="text-red-500 mt-1 flex-shrink-0"
+                  size={20}
+                  className="text-red-500 mt-0.5 flex-shrink-0"
                 />
                 <div>
-                  <h4 className="font-semibold text-red-800 mb-2">
+                  <h4 className="font-semibold text-red-800 mb-1 text-sm">
                     {t("homepage.availableMedicines.notice.title")}
                   </h4>
-                  <p className="text-sm text-red-700">
+                  <p className="text-xs text-red-700">
                     {t("homepage.availableMedicines.notice.description")}
                   </p>
                 </div>
@@ -377,25 +379,25 @@ const Homepage = () => {
         </Card>
 
         {/* Recent History */}
-        <Card className="border-2 border-[#FF4B28] shadow-xl overflow-hidden">
-          <CardHeader className="bg-[#FF4B28] text-white">
-            <CardTitle className="flex items-center gap-3 text-lg">
-              <div className="bg-white/20 p-2 rounded-lg">
-                <Clock size={20} />
+        <Card className="border-2 border-[#FF4B28] shadow-lg overflow-hidden">
+          <CardHeader className="bg-[#FF4B28] text-white py-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <div className="bg-white/20 p-1.5 rounded-lg">
+                <Clock size={16} />
               </div>
               {t("homepage.recentHistory")}
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             {userLogs.length === 0 ? (
-              <div className="p-12 text-center">
-                <div className="bg-gray-100 rounded-full p-8 w-24 h-24 mx-auto mb-4 flex items-center justify-center">
-                  <Clock size={32} className="text-gray-400" />
+              <div className="p-8 text-center">
+                <div className="bg-gray-100 rounded-full p-6 w-20 h-20 mx-auto mb-3 flex items-center justify-center">
+                  <Clock size={28} className="text-gray-400" />
                 </div>
-                <p className="text-gray-500 text-lg font-medium mb-2">
+                <p className="text-gray-500 text-base font-medium mb-1">
                   {t("homepage.noHistory")}
                 </p>
-                <p className="text-gray-400 text-sm">
+                <p className="text-gray-400 text-xs">
                   Your request history will appear here
                 </p>
               </div>
@@ -403,25 +405,25 @@ const Homepage = () => {
               <>
                 {/* Desktop Table View */}
                 <div className="hidden lg:block overflow-x-auto">
-                  <table className="w-full">
+                  <table className="w-full text-xs">
                     <thead>
                       <tr className="bg-orange-50 border-b-2 border-[#FF4B28]/20">
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700">
                           {t("homepage.code")}
                         </th>
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700">
                           {t("homepage.symptoms")}
                         </th>
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700">
                           {t("homepage.medicines")}
                         </th>
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700">
                           {t("homepage.status")}
                         </th>
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700">
                           {t("homepage.date")}
                         </th>
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
+                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700">
                           {t("homepage.actions")}
                         </th>
                       </tr>
@@ -434,72 +436,72 @@ const Homepage = () => {
                             index % 2 === 0 ? "bg-white" : "bg-gray-50/50"
                           }`}
                         >
-                          <td className="px-6 py-4">
-                            <span className="font-mono font-semibold text-[#FF4B28] bg-[#FF4B28]/10 px-3 py-1 rounded-lg text-sm">
+                          <td className="px-4 py-3">
+                            <span className="font-mono font-semibold text-[#FF4B28] bg-[#FF4B28]/10 px-2 py-1 rounded-lg text-xs">
                               {log.code}
                             </span>
                           </td>
-                          <td className="px-6 py-4">
-                            <div className="flex flex-wrap gap-2">
+                          <td className="px-4 py-3">
+                            <div className="flex flex-wrap gap-1">
                               {log.symptoms.slice(0, 2).map((symptom) => (
                                 <span
                                   key={symptom.id}
-                                  className="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-xs font-medium shadow-sm"
+                                  className="px-2 py-0.5 bg-orange-100 text-orange-800 rounded-full text-xs font-medium"
                                 >
                                   {symptom.name}
                                 </span>
                               ))}
                               {log.symptoms.length > 2 && (
-                                <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">
-                                  +{log.symptoms.length - 2} more
+                                <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full text-xs">
+                                  +{log.symptoms.length - 2}
                                 </span>
                               )}
                             </div>
                           </td>
-                          <td className="px-6 py-4">
-                            <div className="flex flex-wrap gap-2">
+                          <td className="px-4 py-3">
+                            <div className="flex flex-wrap gap-1">
                               {log.medicines.slice(0, 2).map((medicine) => (
                                 <span
                                   key={medicine.id}
-                                  className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium shadow-sm"
+                                  className="px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full text-xs font-medium"
                                 >
                                   {medicine.name}
                                 </span>
                               ))}
                               {log.medicines.length > 2 && (
-                                <span className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-medium">
-                                  +{log.medicines.length - 2} more
+                                <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full text-xs">
+                                  +{log.medicines.length - 2}
                                 </span>
                               )}
                             </div>
                           </td>
-                          <td className="px-6 py-4">
+                          <td className="px-4 py-3">
                             <span
-                              className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-2 w-fit shadow-sm ${
+                              className={`px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 w-fit ${
                                 log.status === "completed"
                                   ? "bg-green-100 text-green-800"
                                   : "bg-yellow-100 text-yellow-800"
                               }`}
                             >
                               {log.status === "completed" ? (
-                                <CheckCircle2 size={14} />
+                                <CheckCircle2 size={12} />
                               ) : (
-                                <AlertCircle size={14} />
+                                <AlertCircle size={12} />
                               )}
                               {log.status}
                             </span>
                           </td>
-                          <td className="px-6 py-4 text-gray-600 text-sm">
+                          <td className="px-4 py-3 text-gray-600 text-xs">
                             {formatDate(log.created_at)}
                           </td>
-                          <td className="px-6 py-4">
+                          <td className="px-4 py-3">
                             <Button
                               onClick={() => handleViewDetail(log)}
                               size="sm"
                               variant="outline"
-                              className="border-2 border-[#FF4B28] text-[#FF4B28] hover:bg-[#FF4B28] hover:text-white transition-all duration-200 shadow-sm"
+                              className="border-2 border-[#FF4B28] text-[#FF4B28] hover:bg-[#FF4B28] hover:text-white transition-all duration-200 shadow-sm h-7 px-2 text-xs"
                             >
-                              <Eye size={16} className="mr-1" />
+                              <Eye size={12} className="mr-1" />
                               {t("homepage.view")}
                             </Button>
                           </td>
@@ -510,33 +512,33 @@ const Homepage = () => {
                 </div>
 
                 {/* Mobile Card View */}
-                <div className="lg:hidden space-y-4 p-4">
+                <div className="lg:hidden space-y-3 p-2">
                   {userLogs.map((log) => (
                     <div
                       key={log.code}
-                      className="bg-white border-2 border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow duration-200"
+                      className="bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow duration-200"
                     >
-                      <div className="flex justify-between items-start mb-3">
-                        <span className="font-mono font-semibold text-[#FF4B28] bg-[#FF4B28]/10 px-3 py-1 rounded-lg text-sm">
+                      <div className="flex justify-between items-start mb-2">
+                        <span className="font-mono font-semibold text-[#FF4B28] bg-[#FF4B28]/10 px-2 py-1 rounded-lg text-xs">
                           {log.code}
                         </span>
                         <span
-                          className={`px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 shadow-sm ${
+                          className={`px-2 py-0.5 rounded-full text-xs font-semibold flex items-center gap-1 ${
                             log.status === "completed"
                               ? "bg-green-100 text-green-800"
                               : "bg-yellow-100 text-yellow-800"
                           }`}
                         >
                           {log.status === "completed" ? (
-                            <CheckCircle2 size={12} />
+                            <CheckCircle2 size={10} />
                           ) : (
-                            <AlertCircle size={12} />
+                            <AlertCircle size={10} />
                           )}
                           {log.status}
                         </span>
                       </div>
 
-                      <div className="space-y-3">
+                      <div className="space-y-2">
                         <div>
                           <p className="text-xs font-medium text-gray-500 mb-1">
                             Symptoms
@@ -545,13 +547,13 @@ const Homepage = () => {
                             {log.symptoms.slice(0, 3).map((symptom) => (
                               <span
                                 key={symptom.id}
-                                className="px-2 py-1 bg-orange-100 text-orange-800 rounded-full text-xs"
+                                className="px-2 py-0.5 bg-orange-100 text-orange-800 rounded-full text-xs"
                               >
                                 {symptom.name}
                               </span>
                             ))}
                             {log.symptoms.length > 3 && (
-                              <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">
+                              <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full text-xs">
                                 +{log.symptoms.length - 3}
                               </span>
                             )}
@@ -566,13 +568,13 @@ const Homepage = () => {
                             {log.medicines.slice(0, 3).map((medicine) => (
                               <span
                                 key={medicine.id}
-                                className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs"
+                                className="px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full text-xs"
                               >
                                 {medicine.name}
                               </span>
                             ))}
                             {log.medicines.length > 3 && (
-                              <span className="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">
+                              <span className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full text-xs">
                                 +{log.medicines.length - 3}
                               </span>
                             )}
@@ -580,7 +582,7 @@ const Homepage = () => {
                         </div>
                       </div>
 
-                      <div className="flex justify-between items-center mt-4 pt-3 border-t-2 border-gray-100">
+                      <div className="flex justify-between items-center mt-3 pt-2 border-t border-gray-100">
                         <span className="text-xs text-gray-500">
                           {formatDate(log.created_at)}
                         </span>
@@ -588,9 +590,9 @@ const Homepage = () => {
                           onClick={() => handleViewDetail(log)}
                           size="sm"
                           variant="outline"
-                          className="border-2 border-[#FF4B28] text-[#FF4B28] hover:bg-[#FF4B28] hover:text-white"
+                          className="border border-[#FF4B28] text-[#FF4B28] hover:bg-[#FF4B28] hover:text-white h-7 px-2 text-xs"
                         >
-                          <Eye size={14} className="mr-1" />
+                          <Eye size={12} className="mr-1" />
                           {t("homepage.view")}
                         </Button>
                       </div>
