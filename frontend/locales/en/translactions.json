@@ -40,6 +40,13 @@
         "submitError": "An error occurred while submitting your data. Please try again.",
         "connectionError": "Unable to connect. Please check your internet connection and try again."
     },
+    "terms": {
+        "title": "I accept the following terms and conditions:",
+        "warning1": "This system is a preliminary assistant and may contain errors. 🛑",
+        "warning2": "Using medication without consulting a doctor may affect your health or life. 💊",
+        "warning3": "I accept all risks that may arise from using this system.",
+        "warning4": "I waive the right to claim or sue the manufacturer or service provider for any damages in any case."
+    },
     "result": {
         "title": "Your Medications",
         "subtitle": "Please read all instructions carefully",
