@@ -199,7 +199,7 @@ export const giveMedicine = async (allergies, symptomIds = [], medicineIds = [])
     return []; // Return empty array instead of throwing
   }
 
-  // await dropPills(pills.map(pill => pill.medicine_id));
+  await dropPills(pills.map(pill => pill.medicine_id));
   for (const pill of pills) {
     await removeStock(pill.medicine_id, pill.amount);
     const data = await getPillData(pill);
