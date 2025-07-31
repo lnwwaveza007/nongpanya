@@ -7,8 +7,10 @@ import Header from "../components/layout/Header";
 import { UserLog } from "@/types";
 import { getUserLogs } from "@/api";
 import LanguageToggle from "@/components/ui/language-toggle";
+import { useTranslation } from "react-i18next";
 
 const UserLogPage = () => {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [startDate, setStartDate] = useState("");
@@ -100,8 +102,8 @@ const UserLogPage = () => {
               <Users size={24} className="text-[#FF4B28]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-[#FF4B28]">User Logs</h1>
-              <p className="text-gray-600 text-sm">Monitor user activity and medicine dispensing history</p>
+              <h1 className="text-2xl font-bold text-[#FF4B28]">{t('userLog.title')}</h1>
+              <p className="text-gray-600 text-sm">{t('userLog.subtitle')}</p>
             </div>
           </div>
         </div>
@@ -112,7 +114,7 @@ const UserLogPage = () => {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-medium text-blue-600">Total Logs</p>
+                  <p className="text-xs font-medium text-blue-600">{t('userLog.totalLogs')}</p>
                   <p className="text-xl font-bold text-blue-700">{filteredLogs.length}</p>
                 </div>
                 <div className="bg-blue-100 p-2 rounded-lg">
@@ -126,7 +128,7 @@ const UserLogPage = () => {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-medium text-green-600">Completed</p>
+                  <p className="text-xs font-medium text-green-600">{t('userLog.completed')}</p>
                   <p className="text-xl font-bold text-green-700">
                     {filteredLogs.filter(log => log.status === "completed").length}
                   </p>
@@ -142,7 +144,7 @@ const UserLogPage = () => {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-medium text-yellow-600">Pending</p>
+                  <p className="text-xs font-medium text-yellow-600">{t('userLog.pending')}</p>
                   <p className="text-xl font-bold text-yellow-700">
                     {filteredLogs.filter(log => log.status === "pending").length}
                   </p>
@@ -158,7 +160,7 @@ const UserLogPage = () => {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-medium text-purple-600">This Week</p>
+                  <p className="text-xs font-medium text-purple-600">{t('userLog.thisWeek')}</p>
                   <p className="text-xl font-bold text-purple-700">
                     {filteredLogs.filter(log => {
                       const logDate = new Date(log.created_at);
@@ -183,7 +185,7 @@ const UserLogPage = () => {
               <div className="bg-white/20 p-1.5 rounded-lg">
                 <Filter size={16} />
               </div>
-              Filters & Search
+              {t('userLog.filtersAndSearch')}
             </CardTitle>
           </CardHeader>
           <CardContent className="p-4">
@@ -195,7 +197,7 @@ const UserLogPage = () => {
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
                     <input
                       type="text"
-                      placeholder="Search by name, email, or code..."
+                      placeholder={t('userLog.searchPlaceholder')}
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       className="w-full pl-9 pr-3 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-[#FF4B28] focus:border-[#FF4B28] bg-white text-sm"
@@ -214,7 +216,7 @@ const UserLogPage = () => {
                     }`}
                   >
                     <Filter size={16} />
-                    All
+                    {t('userLog.all')}
                   </Button>
                   <Button
                     variant={statusFilter === "completed" ? "default" : "outline"}
@@ -227,7 +229,7 @@ const UserLogPage = () => {
                     }`}
                   >
                     <CheckCircle2 size={12} />
-                    Completed
+                    {t('userLog.completed')}
                   </Button>
                   <Button
                     variant={statusFilter === "pending" ? "default" : "outline"}
@@ -240,7 +242,7 @@ const UserLogPage = () => {
                     }`}
                   >
                     <AlertCircle size={12} />
-                    Pending
+                    {t('userLog.pending')}
                   </Button>
                 </div>
               </div>
@@ -249,7 +251,7 @@ const UserLogPage = () => {
               <div className="flex flex-col md:flex-row gap-3 items-center">
                 <div className="flex items-center gap-2">
                   <Calendar size={14} className="text-gray-500" />
-                  <span className="text-xs font-medium text-gray-700">Date Range:</span>
+                  <span className="text-xs font-medium text-gray-700">{t('userLog.dateRange')}:</span>
                 </div>
                 <div className="flex gap-2 items-center">
                   <input
@@ -259,7 +261,7 @@ const UserLogPage = () => {
                     className="border-2 border-[#FF4B28] rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-[#FF4B28]/50 focus:border-[#FF4B28] bg-[#FF4B28] text-white"
                     placeholder="Start Date"
                   />
-                  <span className="text-gray-500 font-medium text-xs">to</span>
+                  <span className="text-gray-500 font-medium text-xs">{t('userLog.to')}</span>
                   <input
                     type="date"
                     value={endDate}
@@ -278,7 +280,7 @@ const UserLogPage = () => {
                     }}
                     className="border-2 border-red-300 text-red-600 hover:text-red-700 hover:bg-red-50 text-xs"
                   >
-                    Clear Dates
+                    {t('userLog.clearDates')}
                   </Button>
                 )}
               </div>
@@ -293,7 +295,7 @@ const UserLogPage = () => {
               <div className="bg-white/20 p-1.5 rounded-lg">
                 <Clock size={16} />
               </div>
-              User Activity Logs ({filteredLogs.length} results)
+              {t('userLog.userActivityLogs')} ({filteredLogs.length} {t('userLog.results')})
             </CardTitle>
           </CardHeader>
           <CardContent className="p-0">
@@ -302,8 +304,8 @@ const UserLogPage = () => {
                 <div className="bg-gray-100 rounded-full p-8 w-24 h-24 mx-auto mb-4 flex items-center justify-center">
                   <User size={32} className="text-gray-400" />
                 </div>
-                <p className="text-gray-500 text-lg font-medium mb-2">No logs found</p>
-                <p className="text-gray-400 text-sm">Try adjusting your search criteria or date range</p>
+                <p className="text-gray-500 text-lg font-medium mb-2">{t('userLog.noLogsFound')}</p>
+                <p className="text-gray-400 text-sm">{t('userLog.noLogsMessage')}</p>
               </div>
             ) : (
               <>
@@ -312,14 +314,14 @@ const UserLogPage = () => {
                   <table className="w-full text-xs">
                     <thead>
                       <tr className="bg-orange-50 border-b-2 border-[#FF4B28]/20">
-                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700">Code</th>
-                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700">User</th>
-                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700">Symptoms</th>
-                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700">Medicines</th>
-                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700">Notes</th>
-                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700">Status</th>
-                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700">Date</th>
-                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700">Actions</th>
+                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700">{t('userLog.code')}</th>
+                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700">{t('userLog.user')}</th>
+                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700">{t('userLog.symptoms')}</th>
+                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700">{t('userLog.medicines')}</th>
+                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700">{t('userLog.notes')}</th>
+                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700">{t('userLog.status')}</th>
+                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700">{t('userLog.date')}</th>
+                        <th className="px-4 py-2 text-left text-xs font-semibold text-gray-700">{t('userLog.actions')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -353,7 +355,7 @@ const UserLogPage = () => {
                                   key={idx}
                                   className="px-2 py-0.5 bg-orange-100 text-orange-800 rounded-full text-xs font-medium"
                                 >
-                                  {typeof symptom === 'string' ? symptom : symptom.name || 'Unknown'}
+                                  {typeof symptom === 'string' ? symptom : symptom.name || t('userLog.unknown')}
                                 </span>
                               ))}
                               {log.symptoms.length > 2 && (
@@ -370,7 +372,7 @@ const UserLogPage = () => {
                                   key={idx}
                                   className="px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full text-xs font-medium"
                                 >
-                                  {typeof med === 'string' ? med : med.name || 'Unknown'}
+                                  {typeof med === 'string' ? med : med.name || t('userLog.unknown')}
                                 </span>
                               ))}
                               {log.medicines.length > 2 && (
@@ -382,11 +384,11 @@ const UserLogPage = () => {
                           </td>
                           <td className="px-4 py-3 max-w-xs">
                             <div className="text-gray-600 truncate text-xs">
-                              {(log as UserLog & { note?: string }).note || "No notes"}
+                              {(log as UserLog & { note?: string }).note || t('userLog.noNotes')}
                             </div>
                             {log.allergies && (
                               <div className="text-xs text-red-600 mt-0.5">
-                                Allergies: {log.allergies}
+                                {t('userLog.allergies')}: {log.allergies}
                               </div>
                             )}
                           </td>
@@ -403,7 +405,7 @@ const UserLogPage = () => {
                               ) : (
                                 <AlertCircle size={12} />
                               )}
-                              {log.status === "completed" ? "Completed" : "Pending"}
+                              {log.status === "completed" ? t('userLog.completed') : t('userLog.pending')}
                             </span>
                           </td>
                           <td className="px-4 py-3 text-gray-600 text-xs">
@@ -417,7 +419,7 @@ const UserLogPage = () => {
                               className="border-2 border-[#FF4B28] text-[#FF4B28] hover:bg-[#FF4B28] hover:text-white transition-all duration-200 shadow-sm h-7 px-2 text-xs"
                             >
                               <Eye size={12} className="mr-1" />
-                              View
+                              {t('userLog.view')}
                             </Button>
                           </td>
                         </tr>
@@ -449,7 +451,7 @@ const UserLogPage = () => {
                           ) : (
                             <AlertCircle size={10} />
                           )}
-                          {log.status === "completed" ? "Completed" : "Pending"}
+                          {log.status === "completed" ? t('userLog.completed') : t('userLog.pending')}
                         </span>
                       </div>
 
@@ -467,14 +469,14 @@ const UserLogPage = () => {
 
                       <div className="space-y-2">
                         <div>
-                          <p className="text-xs font-medium text-gray-500 mb-1">Symptoms</p>
+                          <p className="text-xs font-medium text-gray-500 mb-1">{t('userLog.symptoms')}</p>
                           <div className="flex flex-wrap gap-1">
                             {log.symptoms.slice(0, 3).map((symptom, idx) => (
                               <span
                                 key={idx}
                                 className="px-1.5 py-0.5 bg-orange-100 text-orange-800 rounded-full text-xs"
                               >
-                                {typeof symptom === 'string' ? symptom : symptom.name || 'Unknown'}
+                                {typeof symptom === 'string' ? symptom : symptom.name || t('userLog.unknown')}
                               </span>
                             ))}
                             {log.symptoms.length > 3 && (
@@ -486,14 +488,14 @@ const UserLogPage = () => {
                         </div>
 
                         <div>
-                          <p className="text-xs font-medium text-gray-500 mb-1">Medicines</p>
+                          <p className="text-xs font-medium text-gray-500 mb-1">{t('userLog.medicines')}</p>
                           <div className="flex flex-wrap gap-1">
                             {log.medicines.slice(0, 3).map((medicine, idx) => (
                               <span
                                 key={idx}
                                 className="px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded-full text-xs"
                               >
-                                {typeof medicine === 'string' ? medicine : medicine.name || 'Unknown'}
+                                {typeof medicine === 'string' ? medicine : medicine.name || t('userLog.unknown')}
                               </span>
                             ))}
                             {log.medicines.length > 3 && (
@@ -505,15 +507,15 @@ const UserLogPage = () => {
                         </div>
 
                         {((log as UserLog & { note?: string }).note || log.allergies) && (
-                          <div>
-                            <p className="text-xs font-medium text-gray-500 mb-1">Notes</p>
+                                                  <div>
+                          <p className="text-xs font-medium text-gray-500 mb-1">{t('userLog.notes')}</p>
                             <div className="text-xs text-gray-600">
-                              {(log as UserLog & { note?: string }).note || "No notes"}
-                              {log.allergies && (
-                                <div className="text-xs text-red-600 mt-0.5">
-                                  Allergies: {log.allergies}
-                                </div>
-                              )}
+                                                              {(log as UserLog & { note?: string }).note || t('userLog.noNotes')}
+                                {log.allergies && (
+                                  <div className="text-xs text-red-600 mt-0.5">
+                                    {t('userLog.allergies')}: {log.allergies}
+                                  </div>
+                                )}
                             </div>
                           </div>
                         )}
@@ -530,7 +532,7 @@ const UserLogPage = () => {
                           className="border-2 border-[#FF4B28] text-[#FF4B28] hover:bg-[#FF4B28] hover:text-white h-7 px-2 text-xs"
                         >
                           <Eye size={12} className="mr-1" />
-                          View
+                          {t('userLog.view')}
                         </Button>
                       </div>
                     </div>

@@ -4,7 +4,8 @@
     },
     "login": {
         "subtitle": "Nongpanya want to help you!",
-        "loginButton": "Login"
+        "loginButton": "Login",
+        "emailRequirement": "Please use your @ad.sit.kmutt.ac.th email address to access this system."
     },
     "dashboard": {
         "title": "Medicine",
@@ -38,6 +39,13 @@
         "limitReached": "You have reached the limit of submission.",
         "submitError": "An error occurred while submitting your data. Please try again.",
         "connectionError": "Unable to connect. Please check your internet connection and try again."
+    },
+    "terms": {
+        "title": "I accept the following terms and conditions:",
+        "warning1": "This system is a preliminary assistant and may contain errors. 🛑",
+        "warning2": "Using medication without consulting a doctor may affect your health or life. 💊",
+        "warning3": "I accept all risks that may arise from using this system.",
+        "warning4": "I waive the right to claim or sue the manufacturer or service provider for any damages in any case."
     },
     "result": {
         "title": "Your Medications",
@@ -180,8 +188,47 @@
         }
     },
     "userLog": {
-        "title": "User Log",
-        "subtitle": "View user activity and submissions"
+        "title": "User Logs",
+        "subtitle": "Monitor user activity and medicine dispensing history",
+        "totalLogs": "Total Logs",
+        "completed": "Completed",
+        "pending": "Pending",
+        "thisWeek": "This Week",
+        "filtersAndSearch": "Filters & Search",
+        "searchPlaceholder": "Search by name, email, or code...",
+        "all": "All",
+        "dateRange": "Date Range",
+        "to": "to",
+        "clearDates": "Clear Dates",
+        "userActivityLogs": "User Activity Logs",
+        "results": "results",
+        "noLogsFound": "No logs found",
+        "noLogsMessage": "Try adjusting your search criteria or date range",
+        "code": "Code",
+        "user": "User",
+        "symptoms": "Symptoms",
+        "medicines": "Medicines",
+        "notes": "Notes",
+        "status": "Status",
+        "date": "Date",
+        "actions": "Actions",
+        "view": "View",
+        "noNotes": "No notes",
+        "allergies": "Allergies",
+        "unknown": "Unknown"
+    },
+    "userLogDetail": {
+        "requestDetails": "Request Details",
+        "code": "Code",
+        "fullName": "Full Name",
+        "email": "Email",
+        "requestedAt": "Requested At",
+        "status": "Status",
+        "symptoms": "Symptoms",
+        "prescribedMedicines": "Prescribed Medicines",
+        "noDescriptionAvailable": "No description available",
+        "additionalNotes": "Additional Notes",
+        "allergies": "Allergies"
     },
     "symptoms": {
         "diarrhea": "Diarrhea",

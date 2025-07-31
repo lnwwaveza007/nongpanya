@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -7,6 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { User, Mail, AlertCircle, Clock, CheckCircle2 } from 'lucide-react';
 import MedicineImage from "@/components/ui/medicine-image";
+import { getTranslatedSymptomName } from '@/utils/symptomTranslations';
 
 interface UserLogDetailModalProps {
   isOpen: boolean;
@@ -36,6 +38,8 @@ interface UserLogDetailModalProps {
 }
 
 const UserLogDetailModal: React.FC<UserLogDetailModalProps> = ({ isOpen, onClose, log }) => {
+  const { t } = useTranslation();
+  
   if (!isOpen) return null;
 
   const formatDate = (dateString: string) => {
@@ -57,8 +61,8 @@ const UserLogDetailModal: React.FC<UserLogDetailModalProps> = ({ isOpen, onClose
               <User className="text-orange-600" size={20} />
             </div>
             <div>
-              <span>Request Details</span>
-              <p className="text-xs sm:text-sm text-gray-500 font-normal">Code: {log.code}</p>
+              <span>{t('userLogDetail.requestDetails')}</span>
+              <p className="text-xs sm:text-sm text-gray-500 font-normal">{t('userLogDetail.code')}: {log.code}</p>
             </div>
           </DialogTitle>
         </DialogHeader>
@@ -71,21 +75,21 @@ const UserLogDetailModal: React.FC<UserLogDetailModalProps> = ({ isOpen, onClose
               <div className="flex items-center gap-2 sm:gap-3">
                 <User className="text-gray-400" size={16} />
                 <div>
-                  <div className="text-xs sm:text-sm text-gray-500">Full Name</div>
+                  <div className="text-xs sm:text-sm text-gray-500">{t('userLogDetail.fullName')}</div>
                   <div className="text-sm sm:text-base font-medium">{log.fullname}</div>
                 </div>
               </div>
               <div className="flex items-center gap-2 sm:gap-3">
                 <Mail className="text-gray-400" size={16} />
                 <div>
-                  <div className="text-xs sm:text-sm text-gray-500">Email</div>
+                  <div className="text-xs sm:text-sm text-gray-500">{t('userLogDetail.email')}</div>
                   <div className="text-sm sm:text-base font-medium">{log.email}</div>
                 </div>
               </div>
               <div className="flex items-center gap-2 sm:gap-3">
                 <Clock className="text-gray-400" size={16} />
                 <div>
-                  <div className="text-xs sm:text-sm text-gray-500">Requested At</div>
+                  <div className="text-xs sm:text-sm text-gray-500">{t('userLogDetail.requestedAt')}</div>
                   <div className="text-sm sm:text-base font-medium">{formatDate(log.created_at)}</div>
                 </div>
               </div>
@@ -96,7 +100,7 @@ const UserLogDetailModal: React.FC<UserLogDetailModalProps> = ({ isOpen, onClose
                   <AlertCircle className="text-yellow-400" size={16} />
                 )}
                 <div>
-                  <div className="text-xs sm:text-sm text-gray-500">Status</div>
+                  <div className="text-xs sm:text-sm text-gray-500">{t('userLogDetail.status')}</div>
                   <div className={`text-sm sm:text-base font-medium ${
                     log.status === "completed" ? "text-green-600" : "text-yellow-600"
                   }`}>
@@ -109,11 +113,11 @@ const UserLogDetailModal: React.FC<UserLogDetailModalProps> = ({ isOpen, onClose
 
           {/* Symptoms */}
           <div>
-            <h3 className="text-base sm:text-lg font-medium text-gray-800 mb-2 sm:mb-3">Symptoms</h3>
+            <h3 className="text-base sm:text-lg font-medium text-gray-800 mb-2 sm:mb-3">{t('userLogDetail.symptoms')}</h3>
             <div className="grid grid-cols-1 gap-2 sm:gap-3">
               {log.symptoms.map((symptom) => (
                 <div key={symptom.id} className="bg-orange-50 p-3 sm:p-4 rounded-lg border-2 border-orange-200">
-                  <div className="font-medium text-[#FF4B28] text-sm sm:text-base">{symptom.name}</div>
+                  <div className="font-medium text-[#FF4B28] text-sm sm:text-base">{getTranslatedSymptomName(symptom.name, t)}</div>
                   <div className="text-xs sm:text-sm text-orange-600 mt-1">{symptom.description}</div>
                 </div>
               ))}
@@ -122,7 +126,7 @@ const UserLogDetailModal: React.FC<UserLogDetailModalProps> = ({ isOpen, onClose
 
           {/* Medicines */}
           <div>
-            <h3 className="text-base sm:text-lg font-medium text-gray-800 mb-2 sm:mb-3">Prescribed Medicines</h3>
+            <h3 className="text-base sm:text-lg font-medium text-gray-800 mb-2 sm:mb-3">{t('userLogDetail.prescribedMedicines')}</h3>
             <div className="grid grid-cols-1 gap-2 sm:gap-3">
               {log.medicines.map((medicine) => (
                 <div key={medicine.id} className="bg-orange-50 p-3 sm:p-4 rounded-lg border-2 border-orange-200">
@@ -136,7 +140,7 @@ const UserLogDetailModal: React.FC<UserLogDetailModalProps> = ({ isOpen, onClose
                     </div>
                     <div>
                       <div className="font-medium text-[#FF4B28] text-sm sm:text-base">{medicine.name}</div>
-                      <div className="text-xs sm:text-sm text-orange-600 mt-1">{medicine.description || "No description available"}</div>
+                      <div className="text-xs sm:text-sm text-orange-600 mt-1">{medicine.description ? t('medicineDescription.'+medicine.id) : t('userLogDetail.noDescriptionAvailable')}</div>
                     </div>
                   </div>
                 </div>
@@ -146,7 +150,7 @@ const UserLogDetailModal: React.FC<UserLogDetailModalProps> = ({ isOpen, onClose
 
           {/* Medicines */}
           <div>
-            <h3 className="text-lg font-medium text-gray-800 mb-3">Prescribed Medicines</h3>
+            <h3 className="text-lg font-medium text-gray-800 mb-3">{t('userLogDetail.prescribedMedicines')}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {log.medicines.map((medicine) => (
                 <div key={medicine.id} className="bg-blue-50 p-4 rounded-lg">
@@ -160,7 +164,7 @@ const UserLogDetailModal: React.FC<UserLogDetailModalProps> = ({ isOpen, onClose
                     </div>
                     <div>
                       <div className="font-medium text-blue-700">{medicine.name}</div>
-                      <div className="text-sm text-blue-600 mt-1">{medicine.description || "No description available"}</div>
+                      <div className="text-sm text-blue-600 mt-1">{medicine.description ? t('medicineDescription.'+medicine.id) : t('userLogDetail.noDescriptionAvailable')}</div>
                     </div>
                   </div>
                 </div>
@@ -172,7 +176,7 @@ const UserLogDetailModal: React.FC<UserLogDetailModalProps> = ({ isOpen, onClose
           <div className="space-y-3 sm:space-y-4">
             {log.additional_notes && (
               <div>
-                <h3 className="text-base sm:text-lg font-medium text-gray-800 mb-2">Additional Notes</h3>
+                <h3 className="text-base sm:text-lg font-medium text-gray-800 mb-2">{t('userLogDetail.additionalNotes')}</h3>
                 <div className="bg-gray-50 p-3 sm:p-4 rounded-lg text-gray-700 text-sm sm:text-base">
                   {log.additional_notes}
                 </div>
@@ -180,7 +184,7 @@ const UserLogDetailModal: React.FC<UserLogDetailModalProps> = ({ isOpen, onClose
             )}
             {log.allergies && (
               <div>
-                <h3 className="text-base sm:text-lg font-medium text-gray-800 mb-2">Allergies</h3>
+                <h3 className="text-base sm:text-lg font-medium text-gray-800 mb-2">{t('userLogDetail.allergies')}</h3>
                 <div className="bg-red-50 p-3 sm:p-4 rounded-lg text-red-700 text-sm sm:text-base border-2 border-red-200">
                   {log.allergies}
                 </div>
