@@ -50,6 +50,13 @@ const LoginPage = () => {
   const secondaryColor = "hsl(48, 100%, 57%)";
 
   const handleLogin = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get("code");
+
+    if (code) {
+      localStorage.setItem('originalCode', code);
+    }
+
     window.location.href = `${
       config.api.url
     }/auth/microsoft`;

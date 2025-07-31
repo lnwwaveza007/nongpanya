@@ -25,9 +25,15 @@ const Redirect = () => {
               console.error('Failed to fetch user data:', userError);
               // Continue without user data - will default to 'user' role
             }
-            
-            const resCode = response.data?.data?.code;
-            navigate(`/form?code=${resCode}`);
+
+            const resCode = localStorage.getItem('originalCode');
+
+            if (resCode) {
+              localStorage.removeItem('originalCode');
+              navigate(`/form?code=${resCode}`);
+            }else {
+              navigate(`/`);
+            }
           } else {
             navigate(`/`);
           }

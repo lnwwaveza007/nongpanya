@@ -72,7 +72,6 @@ export const signin = async (req, res, next) => {
       success: true,
       data: {
         id: user.id,
-        code: getCode(),
         permanentToken: shouldGetPermanentToken(user.role),
       },
       message: shouldGetPermanentToken(user.role) 
