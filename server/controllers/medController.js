@@ -10,8 +10,9 @@ import {
 } from "../services/medServices.js";
 import * as code from "../utils/codeStore.js";
 import { getQuotaByUserId } from "../services/userServices.js";
-import { getAllMedicineStock } from "../services/medStockServices.js";
+import { getAllMedicineStock, addStock } from "../services/medStockServices.js";
 import websocketService from "../services/websocketService.js";
+import prisma from "../config/prismaClient.js";
 
 export const getAllSymptoms = async (req, res, next) => {
   try {
@@ -172,4 +173,71 @@ export const getMedInfo = async (req, res, next) => {
     data: medInfo,
     message: "Medicine info retrieved successfully",
   });
+};
+
+export const addStockController = async (req, res, next) => {
+  const { medicineId, amount, expireAt } = req.body;
+
+  try {
+    if (!medicineId || !amount || !expireAt) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields: medicineId, amount, expireAt",
+      });
+    }
+
+    // Convert date string to ISO DateTime format
+    const expireDateTime = new Date(expireAt + 'T00:00:00.000Z').toISOString();
+
+    const result = await addStock(medicineId, amount, expireDateTime);
+
+    return res.status(201).json({
+      success: true,
+      data: result,
+      message: "Stock added successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateStockController = async (req, res, next) => {
+  const { stockEntries } = req.body;
+  const { medicineId } = req.params;
+
+  try {
+    if (!stockEntries || !Array.isArray(stockEntries)) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing or invalid stockEntries array",
+      });
+    }
+
+    // First, remove all existing stock for this medicine
+    await prisma.medicine_stocks.deleteMany({
+      where: { medicine_id: parseInt(medicineId) },
+    });
+
+    // Then add the new stock entries
+    const results = [];
+    for (const entry of stockEntries) {
+      // Convert date string to ISO DateTime format
+      const expireDateTime = new Date(entry.expire_at + 'T00:00:00.000Z').toISOString();
+      
+      const result = await addStock(
+        parseInt(medicineId),
+        entry.stock_amount,
+        expireDateTime
+      );
+      results.push(result);
+    }
+
+    return res.status(200).json({
+      success: true,
+      data: results,
+      message: "Stock updated successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
 };

@@ -22,7 +22,7 @@ const Redirect = () => {
                 localStorage.setItem('user', JSON.stringify(userResponse.data.data));
               }
             } catch (userError) {
-              console.error('Failed to fetch user data:', userError);
+              // Failed to fetch user data
               // Continue without user data - will default to 'user' role
             }
 
@@ -38,7 +38,7 @@ const Redirect = () => {
             navigate(`/`);
           }
         } catch (error) {
-          console.error(error);
+          // Auth redirect error
           navigate(`/`);
         }
     };

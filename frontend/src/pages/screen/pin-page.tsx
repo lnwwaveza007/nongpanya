@@ -112,7 +112,7 @@ const ScreenPinPage = () => {
         }
       }
     } catch (error) {
-      console.error('Authentication error:', error);
+      // Authentication error
       setIsError(true);
       setErrorMessage(t("screen.pin.error", "Authentication failed. Please try again."));
       setPin('');

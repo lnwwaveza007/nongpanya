@@ -24,7 +24,7 @@ const LoginPage = () => {
               localStorage.setItem('user', JSON.stringify(userResponse.data.data));
             }
           } catch (userError) {
-            console.error('Failed to fetch user data:', userError);
+            // Failed to fetch user data
           }
           
           // Get the current URL parameters fresh inside the effect
@@ -38,7 +38,7 @@ const LoginPage = () => {
           }
         }
       } catch (error) {
-        console.error('Auth verification failed:', error);
+        // Auth verification failed
       }
     };
     

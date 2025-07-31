@@ -20,7 +20,7 @@ export const screenAuth = {
         return { success: false, message: 'Invalid credentials or insufficient permissions' };
       }
     } catch (error: unknown) {
-      console.error('Screen authentication error:', error);
+      // Screen authentication error
       let errorMessage = 'Authentication failed';
       
       if (error && typeof error === 'object' && 'response' in error) {
@@ -45,7 +45,7 @@ export const screenAuth = {
     try {
       await signOut();
     } catch (error) {
-      console.error('Logout error:', error);
+      // Logout error
     } finally {
       sessionStorage.removeItem('screenAuthenticated');
       sessionStorage.removeItem('screenUser');

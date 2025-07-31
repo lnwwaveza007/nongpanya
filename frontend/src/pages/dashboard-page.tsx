@@ -115,6 +115,8 @@ export default function DashboardPage() {
     setIsEditModalOpen(false);
     setIsAddModalOpen(false);
     setSelectedMedicine(null);
+    // Refresh stock data after modal operations
+    getMedicineStock();
   };
 
   return (

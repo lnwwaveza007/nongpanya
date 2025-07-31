@@ -74,7 +74,7 @@ export const useAuthenticatedWebSocket = ({
     if (isConnected && isAuthenticated) {
       wsService.send(message);
     } else {
-      console.warn('Cannot send message: WebSocket not connected or not authenticated');
+              // Cannot send message: WebSocket not connected or not authenticated
     }
   }, [isConnected, isAuthenticated, wsService]);
 
@@ -82,7 +82,7 @@ export const useAuthenticatedWebSocket = ({
     if (isConnected && isAuthenticated) {
       wsService.subscribeToChannel(channel);
     } else {
-      console.warn('Cannot subscribe to channel: WebSocket not connected or not authenticated');
+              // Cannot subscribe to channel: WebSocket not connected or not authenticated
     }
   }, [isConnected, isAuthenticated, wsService]);
 

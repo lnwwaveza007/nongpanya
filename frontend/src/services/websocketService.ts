@@ -111,7 +111,7 @@ export class WebSocketService {
               handler(message.data);
             }
           } catch (error) {
-            console.error('Error parsing WebSocket message:', error);
+            // Error parsing WebSocket message
           }
         };
 
@@ -121,7 +121,7 @@ export class WebSocketService {
           
           // Don't auto-reconnect if it's an authentication error
           if (event.code === 401) {
-            console.error('WebSocket authentication failed - this might be normal during initial connection');
+            // WebSocket authentication failed - this might be normal during initial connection
             // Don't reject immediately for cookie-based auth, let it retry
             if (token !== 'cookie-auth') {
               reject(new Error('Authentication failed'));
@@ -133,7 +133,7 @@ export class WebSocketService {
         };
 
         this.ws.onerror = (error) => {
-          console.error('WebSocket error:', error);
+          // WebSocket error
           // Don't reject immediately for cookie-based auth
           if (token === 'cookie-auth') {
             // Will retry for cookie-based auth
@@ -152,7 +152,7 @@ export class WebSocketService {
       this.reconnectAttempts++;
       
       setTimeout(() => {
-        this.connect().catch(console.error);
+        this.connect().catch(() => {});
       }, this.reconnectInterval);
     }
   }
@@ -169,7 +169,7 @@ export class WebSocketService {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(message));
     } else {
-      console.error('WebSocket is not connected');
+              // WebSocket is not connected
     }
   }
 

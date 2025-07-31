@@ -72,7 +72,7 @@ const Homepage = () => {
           setUserLogs(sortedLogs);
         }
       } catch (error) {
-        console.warn("Failed to fetch user history:", error);
+        // Failed to fetch user history
         // Keep userLogs as empty array (default state)
       }
 
@@ -82,7 +82,7 @@ const Homepage = () => {
         setMedicines(medicinesResponse.data.data);
       }
     } catch (error) {
-      console.error("Failed to fetch user data:", error);
+      // Failed to fetch user data
     }
   };
 
@@ -91,7 +91,7 @@ const Homepage = () => {
       // Call the signout API endpoint
       await signOut();
     } catch (error) {
-      console.error("Failed to sign out:", error);
+      // Failed to sign out
     } finally {
       // Always clear local storage and redirect, even if API call fails
       localStorage.removeItem("user");
