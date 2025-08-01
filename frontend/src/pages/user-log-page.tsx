@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { Button } from "../components/ui/button";
-import { Search, Filter, Clock, CheckCircle2, AlertCircle, Eye, Calendar, Users, User } from "lucide-react";
+import { Search, Filter, Clock, CheckCircle2, AlertCircle, Eye, Calendar, Users, User, XCircle } from "lucide-react";
 import UserLogDetailModal from "../components/form/UserLogDetailModal";
 import Header from "../components/layout/Header";
 import { UserLog } from "@/types";
@@ -18,6 +18,45 @@ const UserLogPage = () => {
   const [selectedLog, setSelectedLog] = useState<UserLog | null>(null);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [userLogs, setUserLogs] = useState<UserLog[]>([]);
+
+  const getStatusStyle = (status: string) => {
+    switch (status) {
+      case "completed":
+        return "bg-green-100 text-green-800";
+      case "pending":
+        return "bg-yellow-100 text-yellow-800";
+      case "failed":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getStatusIcon = (status: string, size: number = 12) => {
+    switch (status) {
+      case "completed":
+        return <CheckCircle2 size={size} />;
+      case "pending":
+        return <AlertCircle size={size} />;
+      case "failed":
+        return <XCircle size={size} />;
+      default:
+        return <AlertCircle size={size} />;
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case "completed":
+        return t('userLog.completed');
+      case "pending":
+        return t('userLog.pending');
+      case "failed":
+        return t('userLog.failed');
+      default:
+        return status;
+    }
+  };
 
   // Function to get current week's start and end dates
   const getCurrentWeekRange = () => {
@@ -156,6 +195,22 @@ const UserLogPage = () => {
             </CardContent>
           </Card>
 
+          <Card className="border-2 border-red-200 shadow-md">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-red-600">{t('userLog.failed')}</p>
+                  <p className="text-xl font-bold text-red-700">
+                    {filteredLogs.filter(log => log.status === "failed").length}
+                  </p>
+                </div>
+                <div className="bg-red-100 p-2 rounded-lg">
+                  <XCircle size={20} className="text-red-600" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           <Card className="border-2 border-purple-200 shadow-md">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
@@ -243,6 +298,19 @@ const UserLogPage = () => {
                   >
                     <AlertCircle size={12} />
                     {t('userLog.pending')}
+                  </Button>
+                  <Button
+                    variant={statusFilter === "failed" ? "default" : "outline"}
+                    onClick={() => setStatusFilter("failed")}
+                    size="sm"
+                    className={`flex items-center gap-1 text-xs ${
+                      statusFilter === "failed" 
+                        ? "bg-red-600 hover:bg-red-700 text-white border-red-600" 
+                        : "border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white"
+                    }`}
+                  >
+                    <XCircle size={12} />
+                    {t('userLog.failed')}
                   </Button>
                 </div>
               </div>
@@ -394,18 +462,10 @@ const UserLogPage = () => {
                           </td>
                           <td className="px-4 py-3">
                             <span
-                              className={`px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 w-fit ${
-                                log.status === "completed"
-                                  ? "bg-green-100 text-green-800"
-                                  : "bg-yellow-100 text-yellow-800"
-                              }`}
+                              className={`px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 w-fit ${getStatusStyle(log.status)}`}
                             >
-                              {log.status === "completed" ? (
-                                <CheckCircle2 size={12} />
-                              ) : (
-                                <AlertCircle size={12} />
-                              )}
-                              {log.status === "completed" ? t('userLog.completed') : t('userLog.pending')}
+                              {getStatusIcon(log.status)}
+                              {getStatusText(log.status)}
                             </span>
                           </td>
                           <td className="px-4 py-3 text-gray-600 text-xs">
@@ -440,18 +500,10 @@ const UserLogPage = () => {
                           {log.code}
                         </span>
                         <span
-                          className={`px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 ${
-                            log.status === "completed"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-yellow-100 text-yellow-800"
-                          }`}
+                          className={`px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 ${getStatusStyle(log.status)}`}
                         >
-                          {log.status === "completed" ? (
-                            <CheckCircle2 size={10} />
-                          ) : (
-                            <AlertCircle size={10} />
-                          )}
-                          {log.status === "completed" ? t('userLog.completed') : t('userLog.pending')}
+                          {getStatusIcon(log.status, 10)}
+                          {getStatusText(log.status)}
                         </span>
                       </div>
 

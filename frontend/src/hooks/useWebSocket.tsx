@@ -10,7 +10,7 @@ export const useWebSocket = () => {
     const connectWebSocket = async () => {
       try {
         await wsService.current?.connect();
-      } catch (error) {
+      } catch {
         // Failed to connect to WebSocket
       }
     };

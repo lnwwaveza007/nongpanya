@@ -20,7 +20,7 @@ export interface DialogProps {
 }
 
 // Generic types
-export type Status = 'pending' | 'completed' | 'cancelled';
+export type Status = 'pending' | 'completed' | 'cancelled' | 'failed';
 export type UserRole = 'student' | 'admin' | 'staff';
 
 // Utility types

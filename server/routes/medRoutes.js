@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAllSymptoms, giveMedicineController, submitRequestForm, getAllMedicines, getMedicineStock, getMedInfo, addStockController, updateStockController } from "../controllers/medController.js";
+import { getAllSymptoms, giveMedicineController, submitRequestForm, getAllMedicines, getMedicineStock, getMedInfo, addStockController, updateStockController, checkMedicineAvailabilityController } from "../controllers/medController.js";
 import { getMedicineRequestTimeSeries, getMedicineRequestHistory, getMedicineRank } from "../controllers/medRequestController.js";
 import { authorizeRoles } from "../middlewares/authorizeRole.js";
 
@@ -10,6 +10,7 @@ medRoute.get("/:medId/info", getMedInfo);
 medRoute.get("/symptoms", getAllSymptoms);
 medRoute.post("/form", submitRequestForm);
 medRoute.post("/form/test", giveMedicineController);
+medRoute.post("/form/check-availability", checkMedicineAvailabilityController);
 
 // Dashboard routes
 medRoute.get("/stock", authorizeRoles("admin","superadmin") , getMedicineStock);

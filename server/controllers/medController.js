@@ -7,6 +7,7 @@ import {
   getMedicines,
   createRequestMedicines,
   getMedicalInfo,
+  checkMedicineAvailability,
 } from "../services/medServices.js";
 import * as code from "../utils/codeStore.js";
 import { getQuotaByUserId } from "../services/userServices.js";
@@ -101,6 +102,22 @@ export const submitRequestForm = async (req, res, next) => {
       return;
     }
 
+    // Check medicine availability before creating request
+    const availabilityCheck = await checkMedicineAvailability(
+      formData.allergies,
+      formData.symptoms,
+      formData.medicines
+    );
+
+    if (!availabilityCheck.available) {
+      return res.status(409).json({
+        success: false,
+        message: "Some medicines are not available",
+        unavailableMedicines: availabilityCheck.unavailableMedicines,
+        code: "MEDICINE_UNAVAILABLE"
+      });
+    }
+
     const response = await createRequest(formData, userId);
     if (!response || !response.success) {
       throw new Error("Failed to create request.");
@@ -131,7 +148,6 @@ export const submitRequestForm = async (req, res, next) => {
             formData.symptoms,
             formData.medicines
           );
-          console.log("Medicine dispensing result:", medRes, !medRes);
 
           if (!medRes || medRes.length === 0) {
             await setReqStatus(formData.code, "failed");
@@ -170,6 +186,31 @@ export const submitRequestForm = async (req, res, next) => {
           });
         }
       }, 1000);
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const checkMedicineAvailabilityController = async (req, res, next) => {
+  const { allergies, symptoms, medicines } = req.body;
+
+  try {
+    const availabilityCheck = await checkMedicineAvailability(
+      allergies,
+      symptoms,
+      medicines
+    );
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        available: availabilityCheck.available,
+        unavailableMedicines: availabilityCheck.unavailableMedicines
+      },
+      message: availabilityCheck.available 
+        ? "All medicines are available" 
+        : "Some medicines are not available"
     });
   } catch (error) {
     next(error);

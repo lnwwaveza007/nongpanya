@@ -3,6 +3,61 @@ import { cleanMedicineName } from "../utils/formatter.js";
 import { dropPills } from "./boardServices.js";
 import { checkMedicineStock, removeStock } from "./medStockServices.js";
 
+// Check medicine availability before creating request
+export const checkMedicineAvailability = async (allergies, symptomIds = [], medicineIds = []) => {
+  const unavailableMedicines = [];
+  const allergyList = allergies
+    ? allergies.split(",").map((a) => a.trim().toLowerCase())
+    : [];
+
+  let allMedicineMatches = [];
+
+  // Add directly requested medicines
+  if (medicineIds.length > 0) {
+    allMedicineMatches = medicineIds.map((id) => ({ medicine_id: parseInt(id, 10) }));
+  }
+  
+  // Add medicines based on symptoms
+  if (symptomIds.length > 0) {
+    for (const symptomId of symptomIds) {
+      const matches = await matchSymptoms(symptomId);
+      allMedicineMatches.push(...matches);
+    }
+  }
+
+  for (const match of allMedicineMatches) {
+    const medicineId = parseInt(match.medicine_id, 10);
+    const medicine = await prisma.medicines.findUnique({
+      where: { id: medicineId },
+      select: { id: true, name: true },
+    });
+
+    if (!medicine) continue;
+
+    const medicineName = cleanMedicineName(medicine.name?.toLowerCase());
+
+    // Skip medicines user is allergic to
+    if (allergyList.includes(medicineName)) {
+      continue;
+    }
+
+    // Check if medicine has available stock
+    const availableStock = await checkMedicineStock(medicineId);
+    if (availableStock <= 0) {
+      unavailableMedicines.push({
+        id: medicine.id,
+        name: medicine.name,
+        reason: 'out_of_stock'
+      });
+    }
+  }
+
+  return {
+    available: unavailableMedicines.length === 0,
+    unavailableMedicines
+  };
+};
+
 export const getSymptoms = async () => {
   const symptoms = await prisma.symptoms.findMany();
   return symptoms;
@@ -199,7 +254,7 @@ export const giveMedicine = async (allergies, symptomIds = [], medicineIds = [])
     return []; // Return empty array instead of throwing
   }
 
-  // await dropPills(pills.map(pill => pill.medicine_id));
+  await dropPills(pills.map(pill => pill.medicine_id));
   for (const pill of pills) {
     await removeStock(pill.medicine_id, pill.amount);
     const data = await getPillData(pill);

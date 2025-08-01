@@ -21,7 +21,7 @@ const Redirect = () => {
                 // Store user data in localStorage for role-based access control
                 localStorage.setItem('user', JSON.stringify(userResponse.data.data));
               }
-            } catch (userError) {
+            } catch {
               // Failed to fetch user data
               // Continue without user data - will default to 'user' role
             }
@@ -37,7 +37,7 @@ const Redirect = () => {
           } else {
             navigate(`/`);
           }
-        } catch (error) {
+        } catch {
           // Auth redirect error
           navigate(`/`);
         }

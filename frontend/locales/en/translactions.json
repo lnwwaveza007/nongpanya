@@ -38,7 +38,9 @@
         "invalidQR": "Invalid QR Code. Please try again.",
         "limitReached": "You have reached the limit of submission.",
         "submitError": "An error occurred while submitting your data. Please try again.",
-        "connectionError": "Unable to connect. Please check your internet connection and try again."
+        "connectionError": "Unable to connect. Please check your internet connection and try again.",
+        "medicineUnavailable": "Some medicines are not available in stock. Please modify your selection and try again.",
+        "medicineUnavailableDetails": "The following medicines are out of stock:"
     },
     "terms": {
         "title": "I accept the following terms and conditions:",
@@ -150,6 +152,7 @@
         "all": "All",
         "completed": "Completed",
         "pending": "Pending",
+        "failed": "Failed",
         "dateRange": "Date Range",
         "startDate": "Start Date",
         "endDate": "End Date",
@@ -193,6 +196,7 @@
         "totalLogs": "Total Logs",
         "completed": "Completed",
         "pending": "Pending",
+        "failed": "Failed",
         "thisWeek": "This Week",
         "filtersAndSearch": "Filters & Search",
         "searchPlaceholder": "Search by name, email, or code...",

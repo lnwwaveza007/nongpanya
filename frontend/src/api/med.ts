@@ -9,6 +9,14 @@ export const submitSymptoms = async (formData: FormDataset) => {
     return await axiosInstance.post("/med/form", formData);
 }
 
+export const checkMedicineAvailability = async (formData: {
+    allergies?: string;
+    symptoms?: number[];
+    medicines?: number[];
+}) => {
+    return await axiosInstance.post("/med/form/check-availability", formData);
+}
+
 export const getMedStock = async () => {
     return await axiosInstance.get("/med/stock?expired=true");
 }

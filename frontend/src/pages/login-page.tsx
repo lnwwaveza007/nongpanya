@@ -23,7 +23,7 @@ const LoginPage = () => {
             if (userResponse.data && userResponse.data.data) {
               localStorage.setItem('user', JSON.stringify(userResponse.data.data));
             }
-          } catch (userError) {
+          } catch {
             // Failed to fetch user data
           }
           
@@ -37,7 +37,7 @@ const LoginPage = () => {
             window.location.href = "/home";
           }
         }
-      } catch (error) {
+      } catch {
         // Auth verification failed
       }
     };

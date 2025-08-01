@@ -44,7 +44,7 @@ export const screenAuth = {
   logout: async (): Promise<void> => {
     try {
       await signOut();
-    } catch (error) {
+    } catch {
       // Logout error
     } finally {
       sessionStorage.removeItem('screenAuthenticated');

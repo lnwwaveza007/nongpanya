@@ -55,37 +55,63 @@ export const getMedicineRequestTimeSeriesByDate = async (date) => {
 };
 
 export const getAllTimeMedicineRank = async () => {
-  const result = await prisma.request_medicines.groupBy({
-    by: ["medicine_id"],
-    _count: {
-      medicine_id: true,
-    },
-    orderBy: {
-      _count: {
-        medicine_id: "desc",
-      },
-    },
-  });
-
+  // Get all medicines ordered by ID (default order)
   const medicines = await prisma.medicines.findMany({
-    where: {
-      id: {
-        in: result.map((r) => r.medicine_id),
-      },
-    },
     select: {
       id: true,
       name: true,
     },
+    orderBy: {
+      id: "asc",
+    },
   });
 
-  const final = result.map((entry) => {
-    const medicine = medicines.find((m) => m.id === entry.medicine_id);
+  // Get request counts for medicines that have been requested
+  const requestCounts = await prisma.request_medicines.groupBy({
+    by: ["medicine_id"],
+    _count: {
+      medicine_id: true,
+    },
+  });
+
+  // Create a map for quick lookup of request counts
+  const countMap = new Map();
+  requestCounts.forEach((entry) => {
+    countMap.set(entry.medicine_id, entry._count.medicine_id);
+  });
+
+  // Map all medicines with their request counts (0 if never requested)
+  const final = medicines.map((medicine) => {
+    const requestCount = countMap.get(medicine.id) || 0;
     return {
-      medicine_id: entry.medicine_id,
-      medicine_name: medicine?.name || "Unknown",
-      total: entry._count.medicine_id,
+      medicine_id: medicine.id,
+      medicine_name: medicine.name,
+      total: requestCount,
+      rank: 0, // Will be calculated after sorting
     };
+  });
+
+  // Sort by request count (descending) to calculate ranks
+  const sortedByCount = [...final].sort((a, b) => b.total - a.total);
+  
+  // Assign ranks (medicines with same count get same rank)
+  let currentRank = 1;
+  for (let i = 0; i < sortedByCount.length; i++) {
+    if (i > 0 && sortedByCount[i].total !== sortedByCount[i - 1].total) {
+      currentRank = i + 1;
+    }
+    sortedByCount[i].rank = currentRank;
+  }
+
+  // Create rank map for quick lookup
+  const rankMap = new Map();
+  sortedByCount.forEach((item) => {
+    rankMap.set(item.medicine_id, item.rank);
+  });
+
+  // Apply ranks to the original order (by ID)
+  final.forEach((item) => {
+    item.rank = rankMap.get(item.medicine_id);
   });
 
   return final;
