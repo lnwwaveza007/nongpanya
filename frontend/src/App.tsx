@@ -19,22 +19,23 @@ import ScreenAuth from './hooks/screenAuth';
 import DashboardPage from './pages/dashboard-page';
 import UserLogPage from './pages/user-log-page';
 import NotFoundPage from './pages/not-found-page';
+import Layout from './components/layout/Layout';
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<LoginPage />} />
-        <Route path="/home" element={authUser(<Homepage />)} />
-        <Route path="/form" element={authUser(<NongpanyaVending />)} />
-        <Route path="/result" element={authUser(<ResultPage />)} />
-        <Route path='/loading' element={authUser(<LoadingPage />)} />
-        <Route path='/auth' element={<Redirect />} />
-        <Route path='/unauthorized' element={<UnauthorizedPage />} />
+        <Route path="/" element={<Layout showBugButton={false}><LoginPage /></Layout>} />
+        <Route path="/home" element={authUser(<Layout><Homepage /></Layout>)} />
+        <Route path="/form" element={authUser(<Layout><NongpanyaVending /></Layout>)} />
+        <Route path="/result" element={authUser(<Layout><ResultPage /></Layout>)} />
+        <Route path='/loading' element={authUser(<Layout><LoadingPage /></Layout>)} />
+        <Route path='/auth' element={<Layout showBugButton={false}><Redirect /></Layout>} />
+        <Route path='/unauthorized' element={<Layout><UnauthorizedPage /></Layout>} />
         {/* Role-based protected routes */}
         <Route 
           path='/dashboard' 
-          element={roleBasedAuth(<DashboardPage />, { 
+          element={roleBasedAuth(<Layout><DashboardPage /></Layout>, { 
             // requiredRole: 'admin',
             allowedRoles: ['admin', 'superadmin'],
             fallbackPath: '/unauthorized'
@@ -42,21 +43,21 @@ function App() {
         />
         <Route 
           path='/user-log' 
-          element={roleBasedAuth(<UserLogPage />, { 
+          element={roleBasedAuth(<Layout><UserLogPage /></Layout>, { 
             // requiredRole: 'admin',
             allowedRoles: ['admin', 'superadmin'],
             fallbackPath: '/unauthorized'
           })} 
         />
         {/* For Screen Only */}
-        <Route path='/screen' element={<ScreenPinPage />} />
-        <Route path='/screen/pin' element={<ScreenPinPage />} />
-        <Route path='/screen/welcome' element={<ScreenAuth><ScreenWelcomePage /></ScreenAuth>} />
-        <Route path='/screen/qrcode' element={<ScreenAuth><ScreenQRCodePage /></ScreenAuth>} />
-        <Route path='/screen/giving' element={<ScreenAuth><GivingScreen /></ScreenAuth>} />
-        <Route path='/screen/complete' element={<ScreenAuth><CompletionScreen /></ScreenAuth>} />
+        <Route path='/screen' element={<Layout showBugButton={false}><ScreenPinPage /></Layout>} />
+        <Route path='/screen/pin' element={<Layout showBugButton={false}><ScreenPinPage /></Layout>} />
+        <Route path='/screen/welcome' element={<ScreenAuth><Layout showBugButton={false}><ScreenWelcomePage /></Layout></ScreenAuth>} />
+        <Route path='/screen/qrcode' element={<ScreenAuth><Layout showBugButton={false}><ScreenQRCodePage /></Layout></ScreenAuth>} />
+        <Route path='/screen/giving' element={<ScreenAuth><Layout showBugButton={false}><GivingScreen /></Layout></ScreenAuth>} />
+        <Route path='/screen/complete' element={<ScreenAuth><Layout showBugButton={false}><CompletionScreen /></Layout></ScreenAuth>} />
         {/* Fallback for 404 Not Found */}
-        <Route path='*' element={<NotFoundPage />} />
+        <Route path='*' element={<Layout><NotFoundPage /></Layout>} />
       </Routes>
     </Router>
   );
