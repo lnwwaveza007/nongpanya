@@ -1,4 +1,5 @@
 import prisma from "../config/prismaClient.js";
+import logger from "../utils/logger.js";
 
 export const getAllMedicineStock = async (withExpired = false) => {
   const now = new Date();
@@ -90,7 +91,7 @@ export const removeStock = async (medicalId, amount) => {
   });
 
   for (const s of lowStocks) {
-    console.log(`Stock of medicine ${s.medicine_id} is low`);
+    logger.log(`Stock of medicine ${s.medicine_id} is low`);
   }
 };
 

@@ -14,6 +14,7 @@ import { getQuotaByUserId } from "../services/userServices.js";
 import { getAllMedicineStock, addStock } from "../services/medStockServices.js";
 import websocketService from "../services/websocketService.js";
 import prisma from "../config/prismaClient.js";
+import logger from "../utils/logger.js";
 
 export const getAllSymptoms = async (req, res, next) => {
   try {
@@ -160,12 +161,12 @@ export const submitRequestForm = async (req, res, next) => {
           } else {
             await createRequestMedicines(formData.code, medRes);
             // Log successful completion
-            console.log(
+            logger.log(
               "Medicine dispensing completed for code:",
               formData.code
             );
             await setReqStatus(formData.code);
-            console.log("Order completed successfully");
+            logger.log("Order completed successfully");
 
             // Send completion notification via WebSocket
             websocketService.broadcastToClients({
@@ -175,9 +176,9 @@ export const submitRequestForm = async (req, res, next) => {
           }
         } catch (asyncError) {
           await setReqStatus(formData.code, "failed");
-          console.log("Error in async operation:", asyncError);
+          logger.log("Error in async operation:", asyncError);
           // Log error completion
-          console.log("Medicine dispensing failed for code:", formData.code);
+          logger.log("Medicine dispensing failed for code:", formData.code);
 
           // Send error notification via WebSocket
           websocketService.broadcastToClients({

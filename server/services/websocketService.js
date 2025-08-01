@@ -8,6 +8,7 @@ import { getConfig } from "../config/envConfig.js";
 import jwt from "jsonwebtoken";
 import { parse } from "url";
 import { findUserById } from "./userServices.js";
+import logger from "../utils/logger.js";
 
 // Get environment-specific configuration
 const config = getConfig();
@@ -47,7 +48,7 @@ class WebSocketService {
       }
 
       if (!token) {
-        console.log("WebSocket authentication failed: No token provided");
+        logger.log("WebSocket authentication failed: No token provided");
         return null;
       }
 
@@ -57,11 +58,11 @@ class WebSocketService {
       // Optional: Verify user still exists in database
       const user = await findUserById(decoded.id);
       if (!user) {
-        console.log("WebSocket authentication failed: User not found");
+        logger.log("WebSocket authentication failed: User not found");
         return null;
       }
 
-      console.log(`WebSocket authentication successful for user: ${decoded.email}`);
+      logger.log(`WebSocket authentication successful for user: ${decoded.email}`);
       return {
         id: decoded.id,
         email: decoded.email,
@@ -70,14 +71,14 @@ class WebSocketService {
         token: token
       };
     } catch (error) {
-      console.log("WebSocket authentication failed:", error.message);
+      logger.log("WebSocket authentication failed:", error.message);
       return null;
     }
   }
 
   async initialize(port = 3002, maxRetries = 5) {
     if (this.isInitialized) {
-      console.log("WebSocket service already initialized");
+      logger.log("WebSocket service already initialized");
       return;
     }
 
@@ -88,23 +89,23 @@ class WebSocketService {
     while (retries < maxRetries) {
       try {
         this.server = createServer();
-        console.log("WebSocket server using HTTP/WS (development)");
+        logger.log("WebSocket server using HTTP/WS (development)");
 
         this.wss = new WebSocketServer({
           server: this.server,
           verifyClient: async (info, done) => {
             const origin = info.origin || "unknown";
-            console.log(`Incoming WebSocket request from origin: ${origin}`);
+            logger.log(`Incoming WebSocket request from origin: ${origin}`);
 
             const allowedOrigins = config.cors.origins || [];
             // Allow requests without origin (from tools like Postman)
             if (!info.origin) {
-              console.log("WebSocket connection allowed (no origin header)");
+              logger.log("WebSocket connection allowed (no origin header)");
               
               // Still require authentication even without origin
               const user = await this.authenticateWebSocketConnection(info.req);
               if (!user) {
-                console.log("WebSocket connection denied: Authentication failed");
+                logger.log("WebSocket connection denied: Authentication failed");
                 done(false, 401, "Unauthorized: Authentication required");
                 return;
               }
@@ -131,17 +132,17 @@ class WebSocketService {
               // Authenticate the user
               const user = await this.authenticateWebSocketConnection(info.req);
               if (!user) {
-                console.log(`WebSocket connection denied from origin: ${origin} - Authentication failed`);
+                logger.log(`WebSocket connection denied from origin: ${origin} - Authentication failed`);
                 done(false, 401, "Unauthorized: Authentication required");
                 return;
               }
               
               // Store user info in request for later use
               info.req.user = user;
-              console.log(`WebSocket connection allowed from origin: ${origin} for user: ${user.email}`);
+              logger.log(`WebSocket connection allowed from origin: ${origin} for user: ${user.email}`);
               done(true);
             } else {
-              console.log(`WebSocket connection denied from origin: ${origin}`);
+              logger.log(`WebSocket connection denied from origin: ${origin}`);
               done(false, 403, "Forbidden: Origin not allowed");
             }
           },
@@ -150,7 +151,7 @@ class WebSocketService {
         // Set up WebSocket connection handling
         this.wss.on("connection", (ws, req) => {
           const user = req.user; // Get authenticated user from verifyClient
-          console.log(
+          logger.log(
             `New authenticated WebSocket client connected: ${user.email} (${user.role}) from ${req.socket.remoteAddress}`
           );
           
@@ -175,7 +176,7 @@ class WebSocketService {
           });
 
           ws.on("close", () => {
-            console.log(`WebSocket client disconnected: ${user.email}`);
+            logger.log(`WebSocket client disconnected: ${user.email}`);
             this.clients.delete(ws);
           });
 
@@ -215,7 +216,7 @@ class WebSocketService {
           });
 
           this.server.listen(currentPort, () => {
-            console.log(`WebSocket server running on port ${currentPort}`);
+            logger.log(`WebSocket server running on port ${currentPort}`);
             this.isInitialized = true;
             this.currentPort = currentPort;
             resolve();
@@ -225,7 +226,7 @@ class WebSocketService {
         // If we get here, the server started successfully
         break;
       } catch (error) {
-        console.warn(
+        logger.warn(
           `Failed to start WebSocket server on port ${currentPort}: ${error.message}`
         );
 
@@ -250,13 +251,13 @@ class WebSocketService {
           );
         }
 
-        console.log(`Retrying with port ${currentPort}...`);
+        logger.log(`Retrying with port ${currentPort}...`);
       }
     }
   }
 
   handleClientMessage(ws, message, user) {
-    console.log(`Received message from ${user.email} (${user.role}):`, message);
+    logger.log(`Received message from ${user.email} (${user.role}):`, message);
 
     // Update last activity timestamp
     const clientInfo = this.clients.get(ws);
@@ -299,7 +300,7 @@ class WebSocketService {
         });
         break;
       default:
-        console.log("Unknown message type:", message.type);
+        logger.log("Unknown message type:", message.type);
         this.sendToClient(ws, { 
           type: "error", 
           data: { message: "Unknown message type" } 
@@ -337,7 +338,7 @@ class WebSocketService {
     const { roleFilter, userFilter, excludeUser } = options;
     let targetClients = 0;
     
-    console.log(`Broadcasting to clients with filters:`, {
+    logger.log(`Broadcasting to clients with filters:`, {
       totalClients: this.clients.size,
       roleFilter,
       userFilter,
@@ -375,7 +376,7 @@ class WebSocketService {
       }
     });
     
-    console.log(`Message broadcast to ${targetClients} clients`);
+    logger.log(`Message broadcast to ${targetClients} clients`);
   }
 
   /**
@@ -436,7 +437,7 @@ class WebSocketService {
     }
     this.clients.clear();
     this.isInitialized = false;
-    console.log("WebSocket service closed");
+    logger.log("WebSocket service closed");
   }
 
   /**
@@ -451,7 +452,7 @@ class WebSocketService {
     this.clients.forEach((clientInfo, client) => {
       const inactiveTime = now - clientInfo.lastActivity;
       if (inactiveTime > maxInactiveMs) {
-        console.log(`Closing inactive connection for user: ${clientInfo.user.email}`);
+        logger.log(`Closing inactive connection for user: ${clientInfo.user.email}`);
         client.close(1000, "Connection inactive");
         this.clients.delete(client);
         cleanedCount++;
@@ -459,7 +460,7 @@ class WebSocketService {
     });
 
     if (cleanedCount > 0) {
-      console.log(`Cleaned up ${cleanedCount} inactive connections`);
+      logger.log(`Cleaned up ${cleanedCount} inactive connections`);
     }
   }
 }
