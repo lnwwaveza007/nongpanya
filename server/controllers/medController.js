@@ -7,12 +7,14 @@ import {
   getMedicines,
   createRequestMedicines,
   getMedicalInfo,
+  checkMedicineAvailability,
 } from "../services/medServices.js";
 import * as code from "../utils/codeStore.js";
 import { getQuotaByUserId } from "../services/userServices.js";
 import { getAllMedicineStock, addStock } from "../services/medStockServices.js";
 import websocketService from "../services/websocketService.js";
 import prisma from "../config/prismaClient.js";
+import logger from "../utils/logger.js";
 
 export const getAllSymptoms = async (req, res, next) => {
   try {
@@ -101,6 +103,22 @@ export const submitRequestForm = async (req, res, next) => {
       return;
     }
 
+    // Check medicine availability before creating request
+    const availabilityCheck = await checkMedicineAvailability(
+      formData.allergies,
+      formData.symptoms,
+      formData.medicines
+    );
+
+    if (!availabilityCheck.available) {
+      return res.status(409).json({
+        success: false,
+        message: "Some medicines are not available",
+        unavailableMedicines: availabilityCheck.unavailableMedicines,
+        code: "MEDICINE_UNAVAILABLE"
+      });
+    }
+
     const response = await createRequest(formData, userId);
     if (!response || !response.success) {
       throw new Error("Failed to create request.");
@@ -114,12 +132,12 @@ export const submitRequestForm = async (req, res, next) => {
 
     // Send order processing notification via WebSocket
     websocketService.broadcastToClients({
-      type: 'order',
+      type: "order",
       data: {
         success: true,
         code: formData.code,
-        message: 'Medicine order is being processed'
-      }
+        message: "Medicine order is being processed",
+      },
     });
 
     setImmediate(() => {
@@ -131,34 +149,69 @@ export const submitRequestForm = async (req, res, next) => {
             formData.symptoms,
             formData.medicines
           );
-          if (!medRes || !medRes.success) {
+
+          if (!medRes || medRes.length === 0) {
             await setReqStatus(formData.code, "failed");
-            // throw new Error("Failed to dispense medicine.");
+
+            // Send error notification via WebSocket
+            websocketService.broadcastToClients({
+              type: "complete",
+              data: [],
+            });
+          } else {
+            await createRequestMedicines(formData.code, medRes);
+            // Log successful completion
+            logger.log(
+              "Medicine dispensing completed for code:",
+              formData.code
+            );
+            await setReqStatus(formData.code);
+            logger.log("Order completed successfully");
+
+            // Send completion notification via WebSocket
+            websocketService.broadcastToClients({
+              type: "complete",
+              data: medRes,
+            });
           }
-          await createRequestMedicines(formData.code, medRes);
-          // Log successful completion
-          console.log("Medicine dispensing completed for code:", formData.code);
-          await setReqStatus(formData.code);
-          console.log("Order completed successfully");
-          
-          // Send completion notification via WebSocket
-          websocketService.broadcastToClients({
-            type: 'complete',
-            data: medRes
-          });
         } catch (asyncError) {
           await setReqStatus(formData.code, "failed");
-          console.log("Error in async operation:", asyncError);
+          logger.log("Error in async operation:", asyncError);
           // Log error completion
-          console.log("Medicine dispensing failed for code:", formData.code);
-          
+          logger.log("Medicine dispensing failed for code:", formData.code);
+
           // Send error notification via WebSocket
           websocketService.broadcastToClients({
-            type: 'complete',
-            data: "error"
+            type: "complete",
+            data: "error",
           });
         }
       }, 1000);
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const checkMedicineAvailabilityController = async (req, res, next) => {
+  const { allergies, symptoms, medicines } = req.body;
+
+  try {
+    const availabilityCheck = await checkMedicineAvailability(
+      allergies,
+      symptoms,
+      medicines
+    );
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        available: availabilityCheck.available,
+        unavailableMedicines: availabilityCheck.unavailableMedicines
+      },
+      message: availabilityCheck.available 
+        ? "All medicines are available" 
+        : "Some medicines are not available"
     });
   } catch (error) {
     next(error);
@@ -187,7 +240,7 @@ export const addStockController = async (req, res, next) => {
     }
 
     // Convert date string to ISO DateTime format
-    const expireDateTime = new Date(expireAt + 'T00:00:00.000Z').toISOString();
+    const expireDateTime = new Date(expireAt + "T00:00:00.000Z").toISOString();
 
     const result = await addStock(medicineId, amount, expireDateTime);
 
@@ -222,8 +275,10 @@ export const updateStockController = async (req, res, next) => {
     const results = [];
     for (const entry of stockEntries) {
       // Convert date string to ISO DateTime format
-      const expireDateTime = new Date(entry.expire_at + 'T00:00:00.000Z').toISOString();
-      
+      const expireDateTime = new Date(
+        entry.expire_at + "T00:00:00.000Z"
+      ).toISOString();
+
       const result = await addStock(
         parseInt(medicineId),
         entry.stock_amount,

@@ -159,7 +159,11 @@ const NongpanyaVending = () => {
         navigate("/loading");
       }
     } catch (error: unknown) {
-      const axiosError = error as AxiosError<{ message: string }>;
+      const axiosError = error as AxiosError<{ 
+        message: string; 
+        unavailableMedicines?: Array<{id: number; name: string; reason: string}>; 
+        code?: string;
+      }>;
       if (axiosError.response) {
         if (axiosError.response.status === 403) {
           if (axiosError.response.data.message === "QR code timeout") {
@@ -168,6 +172,19 @@ const NongpanyaVending = () => {
             alert(t("form.limitReached"));
           }
           navigate('/');
+        } else if (axiosError.response.status === 409 && axiosError.response.data.code === "MEDICINE_UNAVAILABLE") {
+          // Handle medicine unavailable error
+          const unavailableMedicines = axiosError.response.data.unavailableMedicines || [];
+          let errorMessage = t("form.medicineUnavailable");
+          
+          if (unavailableMedicines.length > 0) {
+            errorMessage += "\n\n" + t("form.medicineUnavailableDetails");
+            unavailableMedicines.forEach(med => {
+              errorMessage += `\n• ${med.name}`;
+            });
+          }
+          
+          alert(errorMessage);
         } else {
           alert(t("form.submitError"));
         }

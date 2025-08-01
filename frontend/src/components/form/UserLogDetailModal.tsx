@@ -6,7 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { User, Mail, AlertCircle, Clock, CheckCircle2 } from 'lucide-react';
+import { User, Mail, AlertCircle, Clock, CheckCircle2, XCircle } from 'lucide-react';
 import MedicineImage from "@/components/ui/medicine-image";
 import { getTranslatedSymptomName } from '@/utils/symptomTranslations';
 
@@ -39,6 +39,32 @@ interface UserLogDetailModalProps {
 
 const UserLogDetailModal: React.FC<UserLogDetailModalProps> = ({ isOpen, onClose, log }) => {
   const { t } = useTranslation();
+
+  const getStatusIcon = (status: string, size: number = 16) => {
+    switch (status) {
+      case "completed":
+        return <CheckCircle2 className="text-green-400" size={size} />;
+      case "pending":
+        return <AlertCircle className="text-yellow-400" size={size} />;
+      case "failed":
+        return <XCircle className="text-red-400" size={size} />;
+      default:
+        return <AlertCircle className="text-gray-400" size={size} />;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "completed":
+        return "text-green-600";
+      case "pending":
+        return "text-yellow-600";
+      case "failed":
+        return "text-red-600";
+      default:
+        return "text-gray-600";
+    }
+  };
   
   if (!isOpen) return null;
 
@@ -94,16 +120,10 @@ const UserLogDetailModal: React.FC<UserLogDetailModalProps> = ({ isOpen, onClose
                 </div>
               </div>
               <div className="flex items-center gap-2 sm:gap-3">
-                {log.status === "completed" ? (
-                  <CheckCircle2 className="text-green-400" size={16} />
-                ) : (
-                  <AlertCircle className="text-yellow-400" size={16} />
-                )}
+                {getStatusIcon(log.status)}
                 <div>
                   <div className="text-xs sm:text-sm text-gray-500">{t('userLogDetail.status')}</div>
-                  <div className={`text-sm sm:text-base font-medium ${
-                    log.status === "completed" ? "text-green-600" : "text-yellow-600"
-                  }`}>
+                  <div className={`text-sm sm:text-base font-medium ${getStatusColor(log.status)}`}>
                     {log.status.charAt(0).toUpperCase() + log.status.slice(1)}
                   </div>
                 </div>

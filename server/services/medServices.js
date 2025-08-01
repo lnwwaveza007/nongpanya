@@ -2,6 +2,62 @@ import prisma from "../config/prismaClient.js";
 import { cleanMedicineName } from "../utils/formatter.js";
 import { dropPills } from "./boardServices.js";
 import { checkMedicineStock, removeStock } from "./medStockServices.js";
+import logger from "../utils/logger.js";
+
+// Check medicine availability before creating request
+export const checkMedicineAvailability = async (allergies, symptomIds = [], medicineIds = []) => {
+  const unavailableMedicines = [];
+  const allergyList = allergies
+    ? allergies.split(",").map((a) => a.trim().toLowerCase())
+    : [];
+
+  let allMedicineMatches = [];
+
+  // Add directly requested medicines
+  if (medicineIds.length > 0) {
+    allMedicineMatches = medicineIds.map((id) => ({ medicine_id: parseInt(id, 10) }));
+  }
+  
+  // Add medicines based on symptoms
+  if (symptomIds.length > 0) {
+    for (const symptomId of symptomIds) {
+      const matches = await matchSymptoms(symptomId);
+      allMedicineMatches.push(...matches);
+    }
+  }
+
+  for (const match of allMedicineMatches) {
+    const medicineId = parseInt(match.medicine_id, 10);
+    const medicine = await prisma.medicines.findUnique({
+      where: { id: medicineId },
+      select: { id: true, name: true },
+    });
+
+    if (!medicine) continue;
+
+    const medicineName = cleanMedicineName(medicine.name?.toLowerCase());
+
+    // Skip medicines user is allergic to
+    if (allergyList.includes(medicineName)) {
+      continue;
+    }
+
+    // Check if medicine has available stock
+    const availableStock = await checkMedicineStock(medicineId);
+    if (availableStock <= 0) {
+      unavailableMedicines.push({
+        id: medicine.id,
+        name: medicine.name,
+        reason: 'out_of_stock'
+      });
+    }
+  }
+
+  return {
+    available: unavailableMedicines.length === 0,
+    unavailableMedicines
+  };
+};
 
 export const getSymptoms = async () => {
   const symptoms = await prisma.symptoms.findMany();
@@ -108,12 +164,12 @@ export const createRequestMedicines = async (code, medicines) => {
   try {
     // Validate that medicines is an array and not empty
     if (!Array.isArray(medicines)) {
-      console.warn(`medicines parameter is not an array: ${typeof medicines}`, medicines);
+      logger.warn(`medicines parameter is not an array: ${typeof medicines}`, medicines);
       return { success: false, message: "Invalid medicines parameter" };
     }
     
     if (medicines.length === 0) {
-      console.log("No medicines to create request for");
+      logger.log("No medicines to create request for");
       return { success: false, message: "No medicines provided" };
     }
 
@@ -174,14 +230,14 @@ export const giveMedicine = async (allergies, symptomIds = [], medicineIds = [])
     const medicineName = cleanMedicineName(medicine?.name?.toLowerCase());
 
     if (allergyList.includes(medicineName)) {
-      console.log(`Skipping ${medicineName} due to allergy.`);
+      logger.log(`Skipping ${medicineName} due to allergy.`);
       continue;
     }
 
     // Check if medicine has available stock
     const availableStock = await checkMedicineStock(medicineId);
     if (availableStock <= 0) {
-      console.log(`Skipping ${medicineName} due to insufficient stock.`);
+      logger.log(`Skipping ${medicineName} due to insufficient stock.`);
       continue;
     }
 
@@ -195,11 +251,11 @@ export const giveMedicine = async (allergies, symptomIds = [], medicineIds = [])
   }
 
   if (pills.length === 0) {
-    console.log("No medicines available for the given symptoms/allergies");
+    logger.log("No medicines available for the given symptoms/allergies");
     return []; // Return empty array instead of throwing
   }
 
-  // await dropPills(pills.map(pill => pill.medicine_id));
+  await dropPills(pills.map(pill => pill.medicine_id));
   for (const pill of pills) {
     await removeStock(pill.medicine_id, pill.amount);
     const data = await getPillData(pill);

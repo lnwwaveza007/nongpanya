@@ -10,6 +10,7 @@ import codeRoute from "./routes/codeRoutes.js";
 import { getConfig, getCorsOrigins } from "./config/envConfig.js";
 import websocketService from "./services/websocketService.js";
 import { generateCode } from "./utils/codeStore.js";
+import logger from "./utils/logger.js";
 
 const app = express();
 
@@ -46,22 +47,22 @@ app.use((err, req, res, next) => {
 // Initialize services and start server
 async function startServer() {
   // Initialize WebSocket service
-  console.log('Initializing WebSocket service...');
+  logger.log('Initializing WebSocket service...');
   generateCode();
   try {
     await websocketService.initialize(websocketPort);
   } catch (error) {
     console.error('Failed to initialize WebSocket service:', error.message);
-    console.log('Server will continue without WebSocket support.');
+    logger.log('Server will continue without WebSocket support.');
   }
 
   app.listen(port, () => {
-    console.log('-'.repeat(60));
-    console.log(`  SERVER RUNNING ON http://localhost:${port}`);
+    logger.log('-'.repeat(60));
+    logger.log(`  SERVER RUNNING ON http://localhost:${port}`);
     if (websocketService.currentPort) {
-      console.log(`  WEBSOCKET RUNNING ON ws://localhost:${websocketService.currentPort}`);
+      logger.log(`  WEBSOCKET RUNNING ON ws://localhost:${websocketService.currentPort}`);
     }
-    console.log('-'.repeat(60));
+    logger.log('-'.repeat(60));
   });
 }
 
@@ -73,13 +74,13 @@ startServer().catch((error) => {
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
-  console.log('\nReceived SIGTERM signal. Shutting down gracefully...');
+  logger.log('\nReceived SIGTERM signal. Shutting down gracefully...');
   websocketService.close();
   process.exit(0);
 });
 
 process.on('SIGINT', () => {
-  console.log('\nReceived SIGINT signal. Shutting down gracefully...');
+  logger.log('\nReceived SIGINT signal. Shutting down gracefully...');
   websocketService.close();
   process.exit(0);
 });

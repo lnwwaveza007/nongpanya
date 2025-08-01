@@ -42,7 +42,7 @@ const QRCodeScreen = () => {
         }
         
         setCode(newCode);
-      } catch (error) {
+      } catch {
         // QR code error
       }
     };

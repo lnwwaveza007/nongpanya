@@ -43,7 +43,10 @@ function getEnvVar(key, defaultValue = null, globalOnly = false) {
     const value = process.env[key] || defaultValue;
     
     if (!value && defaultValue === null) {
-      console.warn(`⚠️  Missing global environment variable: ${key}`);
+      // Only log in non-production environments
+      if (SELECTED_ENV !== 'PROD') {
+        console.warn(`⚠️  Missing global environment variable: ${key}`);
+      }
     }
     
     return value;
@@ -54,7 +57,10 @@ function getEnvVar(key, defaultValue = null, globalOnly = false) {
   const value = process.env[prefixedKey] || process.env[key] || defaultValue;
   
   if (!value && defaultValue === null) {
-    console.warn(`⚠️  Missing environment variable: ${prefixedKey} (or ${key})`);
+    // Only log in non-production environments
+    if (SELECTED_ENV !== 'PROD') {
+      console.warn(`⚠️  Missing environment variable: ${prefixedKey} (or ${key})`);
+    }
   }
   
   return value;
@@ -172,11 +178,15 @@ function validateConfig(config) {
   
   // Warn about missing Microsoft OAuth (might not be needed in all setups)
   if (!config.microsoft.clientId) {
-    console.warn(`Missing Microsoft OAuth configuration: MICROSOFT_CLIENT_ID`);
+    if (SELECTED_ENV !== 'PROD') {
+      console.warn(`Missing Microsoft OAuth configuration: MICROSOFT_CLIENT_ID`);
+    }
   }
   
   if (!config.microsoft.callbackUrl) {
-    console.warn(`Missing Microsoft OAuth callback URL: ${SELECTED_ENV}_MICROSOFT_CALLBACK_URL`);
+    if (SELECTED_ENV !== 'PROD') {
+      console.warn(`Missing Microsoft OAuth callback URL: ${SELECTED_ENV}_MICROSOFT_CALLBACK_URL`);
+    }
   }
   
   if (missingVars.length > 0) {

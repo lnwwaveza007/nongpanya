@@ -13,6 +13,7 @@ import {
   Info,
   AlertTriangle,
   Pill,
+  XCircle,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import LanguageToggle from "@/components/ui/language-toggle";
@@ -71,7 +72,7 @@ const Homepage = () => {
             .slice(0, 5);
           setUserLogs(sortedLogs);
         }
-      } catch (error) {
+      } catch {
         // Failed to fetch user history
         // Keep userLogs as empty array (default state)
       }
@@ -81,7 +82,7 @@ const Homepage = () => {
       if (medicinesResponse.data.success) {
         setMedicines(medicinesResponse.data.data);
       }
-    } catch (error) {
+    } catch {
       // Failed to fetch user data
     }
   };
@@ -90,7 +91,7 @@ const Homepage = () => {
     try {
       // Call the signout API endpoint
       await signOut();
-    } catch (error) {
+    } catch {
       // Failed to sign out
     } finally {
       // Always clear local storage and redirect, even if API call fails
@@ -143,6 +144,32 @@ const Homepage = () => {
     day: "numeric",
     year: "numeric",
   });
+
+  const getStatusStyle = (status: string) => {
+    switch (status) {
+      case "completed":
+        return "bg-green-100 text-green-800";
+      case "pending":
+        return "bg-yellow-100 text-yellow-800";
+      case "failed":
+        return "bg-red-100 text-red-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getStatusIcon = (status: string, size: number = 12) => {
+    switch (status) {
+      case "completed":
+        return <CheckCircle2 size={size} />;
+      case "pending":
+        return <AlertCircle size={size} />;
+      case "failed":
+        return <XCircle size={size} />;
+      default:
+        return <AlertCircle size={size} />;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 p-3">
@@ -477,17 +504,9 @@ const Homepage = () => {
                           </td>
                           <td className="px-4 py-3">
                             <span
-                              className={`px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 w-fit ${
-                                log.status === "completed"
-                                  ? "bg-green-100 text-green-800"
-                                  : "bg-yellow-100 text-yellow-800"
-                              }`}
+                              className={`px-2 py-1 rounded-full text-xs font-semibold flex items-center gap-1 w-fit ${getStatusStyle(log.status)}`}
                             >
-                              {log.status === "completed" ? (
-                                <CheckCircle2 size={12} />
-                              ) : (
-                                <AlertCircle size={12} />
-                              )}
+                              {getStatusIcon(log.status)}
                               {log.status}
                             </span>
                           </td>
@@ -523,17 +542,9 @@ const Homepage = () => {
                           {log.code}
                         </span>
                         <span
-                          className={`px-2 py-0.5 rounded-full text-xs font-semibold flex items-center gap-1 ${
-                            log.status === "completed"
-                              ? "bg-green-100 text-green-800"
-                              : "bg-yellow-100 text-yellow-800"
-                          }`}
+                          className={`px-2 py-0.5 rounded-full text-xs font-semibold flex items-center gap-1 ${getStatusStyle(log.status)}`}
                         >
-                          {log.status === "completed" ? (
-                            <CheckCircle2 size={10} />
-                          ) : (
-                            <AlertCircle size={10} />
-                          )}
+                          {getStatusIcon(log.status, 10)}
                           {log.status}
                         </span>
                       </div>

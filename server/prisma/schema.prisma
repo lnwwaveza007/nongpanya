@@ -146,3 +146,13 @@ enum requests_status {
   completed
   failed
 }
+
+model medicine_request_hourly_summary {
+  time          DateTime
+  medicine_id   Int
+  medicine_name String
+  total         Int
+
+  @@id([time, medicine_id])
+  @@map("medicine_request_hourly_summary")
+}

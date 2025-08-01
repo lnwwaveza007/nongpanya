@@ -110,7 +110,7 @@ export class WebSocketService {
             if (handler) {
               handler(message.data);
             }
-          } catch (error) {
+          } catch {
             // Error parsing WebSocket message
           }
         };

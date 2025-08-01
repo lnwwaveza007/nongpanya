@@ -12,7 +12,7 @@ const LoadingScreen = () => {
     // onConnectionChange: (connected, authenticated) => {
   
     // },
-    onAuthError: (error) => {
+    onAuthError: () => {
               // WebSocket authentication issue (user is already logged in)
       // Since user is already authenticated via HTTP, this might be a WebSocket-specific issue
       // Let's not show an alert unless it's persistent
@@ -69,7 +69,7 @@ const LoadingScreen = () => {
         if (typeof data === 'string') {
           try {
             messageJson = JSON.parse(data);
-          } catch (parseError) {
+          } catch {
             // JSON parsing error
             alert(t('loading.errors.invalidResponse'));
             navigate('/');
@@ -98,7 +98,7 @@ const LoadingScreen = () => {
         // Success case
         navigate('/result', { state: { data: messageJson } });
         
-      } catch (error) {
+      } catch {
         // Unexpected error in handleComplete
         alert(t('loading.errors.unexpected'));
         navigate('/');

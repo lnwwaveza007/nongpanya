@@ -111,7 +111,7 @@ const ScreenPinPage = () => {
           setLockTime(LOCK_DURATION);
         }
       }
-    } catch (error) {
+    } catch {
       // Authentication error
       setIsError(true);
       setErrorMessage(t("screen.pin.error", "Authentication failed. Please try again."));
