@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "./button";
-import { Bug, MessageSquare } from "lucide-react";
+import { MessageSquare } from "lucide-react";
 
 interface BugSuggestionButtonProps {
   className?: string;
