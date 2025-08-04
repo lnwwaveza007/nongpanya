@@ -6,11 +6,13 @@ const authUser = (Component: JSX.Element) => {
   const AuthenticatedComponent = () => {
     const [authenticated, setAuthenticated] = useState(false);
     const [loading, setLoading] = useState(true);
+    const getSearchParams = new URLSearchParams(window.location.search);
+    const code = getSearchParams.get("code");
 
     useEffect(() => {
       const verifyAuth = async () => {
         try {
-          const response = await auth(); 
+          const response = await auth();
           setAuthenticated(response.data.success);
         } catch {
           setAuthenticated(false);
@@ -23,10 +25,16 @@ const authUser = (Component: JSX.Element) => {
     }, []);
 
     if (loading) {
-      return <div className="text-center text-2xl font-bold">.·´¯`(&gt;▂&lt;)´¯`·. </div>;
+      return (
+        <div className="text-center text-2xl font-bold">
+          .·´¯`(&gt;▂&lt;)´¯`·.{" "}
+        </div>
+      );
     }
-
     if (!authenticated) {
+      if (code) {
+        return <Navigate to={`/?code=${code}`} replace />;
+      }
       return <Navigate to="/" replace />;
     }
 
