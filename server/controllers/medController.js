@@ -238,11 +238,62 @@ export const addStockController = async (req, res, next) => {
         message: "Missing required fields: medicineId, amount, expireAt",
       });
     }
+    logger.log("Adding stock for medicineId:", medicineId, "amount:", amount, "expireAt:", expireAt);
+    // Validate medicine ID
+    const medicineIdInt = parseInt(medicineId);
+    if (isNaN(medicineIdInt) || medicineIdInt <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid medicine ID",
+      });
+    }
 
-    // Convert date string to ISO DateTime format
-    const expireDateTime = new Date(expireAt + "T00:00:00.000Z").toISOString();
+    // Validate amount
+    const amountInt = parseInt(amount);
+    if (isNaN(amountInt) || amountInt <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Amount must be a positive number",
+      });
+    }
 
-    const result = await addStock(medicineId, amount, expireDateTime);
+    // Validate and convert date string to ISO DateTime format
+    let expireDateTime;
+    try {
+      const dateStr = expireAt.toString();
+      if (dateStr.includes('T')) {
+        // Already has time component
+        expireDateTime = new Date(dateStr).toISOString();
+      } else {
+        // Add time component for date-only strings
+        expireDateTime = new Date(dateStr + "T00:00:00.000Z").toISOString();
+      }
+      
+      // Validate the resulting date
+      if (isNaN(new Date(expireDateTime).getTime())) {
+        throw new Error(`Invalid date: ${expireAt}`);
+      }
+      
+      // Check if date is in the past (allow today's date)
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Start of today
+      const expireDate = new Date(expireDateTime);
+      expireDate.setHours(0, 0, 0, 0); // Start of expire date
+      
+      if (expireDate < today) {
+        return res.status(400).json({
+          success: false,
+          message: "Expiration date cannot be in the past",
+        });
+      }
+    } catch (dateError) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid expireAt date format: ${expireAt}. Expected format: YYYY-MM-DD`,
+      });
+    }
+
+    const result = await addStock(medicineIdInt, amountInt, expireDateTime);
 
     return res.status(201).json({
       success: true,
@@ -274,10 +325,30 @@ export const updateStockController = async (req, res, next) => {
     // Then add the new stock entries
     const results = [];
     for (const entry of stockEntries) {
-      // Convert date string to ISO DateTime format
-      const expireDateTime = new Date(
-        entry.expire_at + "T00:00:00.000Z"
-      ).toISOString();
+      // Validate and convert date string to ISO DateTime format
+      if (!entry.expire_at) {
+        throw new Error(`Missing expire_at for stock entry`);
+      }
+
+      let expireDateTime;
+      try {
+        // Handle different date formats
+        const dateStr = entry.expire_at.toString();
+        if (dateStr.includes('T')) {
+          // Already has time component
+          expireDateTime = new Date(dateStr).toISOString();
+        } else {
+          // Add time component for date-only strings
+          expireDateTime = new Date(dateStr + "T00:00:00.000Z").toISOString();
+        }
+        
+        // Validate the resulting date
+        if (isNaN(new Date(expireDateTime).getTime())) {
+          throw new Error(`Invalid date format: ${entry.expire_at}`);
+        }
+      } catch (dateError) {
+        throw new Error(`Invalid expire_at date format: ${entry.expire_at}. Expected format: YYYY-MM-DD`);
+      }
 
       const result = await addStock(
         parseInt(medicineId),

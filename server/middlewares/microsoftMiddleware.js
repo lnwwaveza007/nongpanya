@@ -21,9 +21,14 @@ passport.use(
       authorizationURL: config.microsoft.authUrl || "",
       tokenURL: config.microsoft.tokenUrl || "",
       apiEntryPoint: "https://graph.microsoft.com",
+      // Add token refresh configuration
+      passReqToCallback: false,
+      skipUserProfile: false,
     },
     async function (accessToken, refreshToken, profile, done) {
       profile.accessToken = accessToken;
+      profile.refreshToken = refreshToken; // Store refresh token for later use
+      
       try {
         const response = await axios.get(
           `https://graph.microsoft.com/v1.0/me?$select=onPremisesSamAccountName`,
@@ -32,6 +37,7 @@ passport.use(
               Authorization: `Bearer ${accessToken}`,
               "Content-Type": "application/json",
             },
+            timeout: 10000, // Add timeout to prevent hanging requests
           }
         );
 
@@ -39,7 +45,7 @@ passport.use(
           response?.data?.onPremisesSamAccountName;
         if (!onPremisesSamAccountName) {
           console.error("onPremisesSamAccountName is null or undefined");
-          return done(null, false, { message: "Invalid user account." });
+          return done(null, false, { message: "Invalid user account. Please ensure you have a valid organizational account." });
         }
         profile.id = onPremisesSamAccountName;
 
@@ -61,11 +67,30 @@ passport.use(
             console.error("Failed to create user profile in the database.");
             return done(null, false, { message: "Profile creation failed." });
           }
-          return done(null, { id: id, email: mail, fullname: fullname });
+          return done(null, { id: id, email: mail, fullname: fullname, role: 'user' });
         }
-        return done(null, { id: id, email: mail, fullname: fullname });
+        return done(null, { 
+          id: id, 
+          email: mail, 
+          fullname: fullname, 
+          role: existingUser.role || 'user'
+        });
       } catch (err) {
-        console.error(err);
+        console.error('Microsoft OAuth Error:', err.message);
+        
+        // Handle specific OAuth errors
+        if (err.response?.status === 401) {
+          return done(null, false, { message: "Authentication failed. Please try signing in again." });
+        }
+        
+        if (err.code === 'ECONNABORTED') {
+          return done(null, false, { message: "Authentication timeout. Please try again." });
+        }
+        
+        if (err.message.includes('AADSTS70008')) {
+          return done(null, false, { message: "Authorization code expired. Please sign in again." });
+        }
+        
         return done(err);
       }
     }

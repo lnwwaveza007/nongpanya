@@ -16,15 +16,20 @@ export const checkMedicineAvailability = async (allergies, symptomIds = [], medi
   // Add directly requested medicines
   if (medicineIds.length > 0) {
     allMedicineMatches = medicineIds.map((id) => ({ medicine_id: parseInt(id, 10) }));
+    logger.log(`Checking availability for ${medicineIds.length} directly requested medicines`);
   }
   
   // Add medicines based on symptoms
   if (symptomIds.length > 0) {
+    logger.log(`Checking availability for medicines matching ${symptomIds.length} symptoms`);
     for (const symptomId of symptomIds) {
       const matches = await matchSymptoms(symptomId);
       allMedicineMatches.push(...matches);
+      logger.log(`Symptom ${symptomId} matched ${matches.length} medicines`);
     }
   }
+
+  logger.log(`Total medicines to check: ${allMedicineMatches.length}`);
 
   for (const match of allMedicineMatches) {
     const medicineId = parseInt(match.medicine_id, 10);
@@ -33,30 +38,41 @@ export const checkMedicineAvailability = async (allergies, symptomIds = [], medi
       select: { id: true, name: true },
     });
 
-    if (!medicine) continue;
+    if (!medicine) {
+      logger.warn(`Medicine with ID ${medicineId} not found in database`);
+      continue;
+    }
 
     const medicineName = cleanMedicineName(medicine.name?.toLowerCase());
 
     // Skip medicines user is allergic to
     if (allergyList.includes(medicineName)) {
+      logger.log(`Skipping ${medicineName} due to user allergy`);
       continue;
     }
 
     // Check if medicine has available stock
     const availableStock = await checkMedicineStock(medicineId);
+    logger.log(`Medicine ${medicineName} (ID: ${medicineId}) has ${availableStock} units available`);
+    
     if (availableStock <= 0) {
       unavailableMedicines.push({
         id: medicine.id,
         name: medicine.name,
         reason: 'out_of_stock'
       });
+      logger.log(`Medicine ${medicineName} marked as unavailable due to no stock`);
     }
   }
 
-  return {
+  const result = {
     available: unavailableMedicines.length === 0,
     unavailableMedicines
   };
+
+  logger.log(`Availability check result: ${result.available ? 'All medicines available' : `${unavailableMedicines.length} medicines unavailable`}`);
+  
+  return result;
 };
 
 export const getSymptoms = async () => {
@@ -219,13 +235,21 @@ export const giveMedicine = async (allergies, symptomIds = [], medicineIds = [])
     }
   }
 
+  // Log the medicines being processed
+  logger.log(`Processing ${allMedicineMatches.length} medicine matches`);
+
   for (const match of allMedicineMatches) {
     // Convert medicine_id to integer to ensure type compatibility
     const medicineId = parseInt(match.medicine_id, 10);
     const medicine = await prisma.medicines.findUnique({
       where: { id: medicineId },
-      select: { name: true },
+      select: { id: true, name: true },
     });
+
+    if (!medicine) {
+      logger.warn(`Medicine with ID ${medicineId} not found`);
+      continue;
+    }
 
     const medicineName = cleanMedicineName(medicine?.name?.toLowerCase());
 
@@ -236,6 +260,8 @@ export const giveMedicine = async (allergies, symptomIds = [], medicineIds = [])
 
     // Check if medicine has available stock
     const availableStock = await checkMedicineStock(medicineId);
+    logger.log(`Medicine ${medicineName} (ID: ${medicineId}) has ${availableStock} units in stock`);
+    
     if (availableStock <= 0) {
       logger.log(`Skipping ${medicineName} due to insufficient stock.`);
       continue;
@@ -247,6 +273,7 @@ export const giveMedicine = async (allergies, symptomIds = [], medicineIds = [])
 
     if (!alreadyAdded) {
       pills.push({ medicine_id: medicineId, amount: 1 });
+      logger.log(`Added ${medicineName} to dispensing list`);
     }
   }
 
@@ -255,11 +282,22 @@ export const giveMedicine = async (allergies, symptomIds = [], medicineIds = [])
     return []; // Return empty array instead of throwing
   }
 
-  await dropPills(pills.map(pill => pill.medicine_id));
-  for (const pill of pills) {
-    await removeStock(pill.medicine_id, pill.amount);
-    const data = await getPillData(pill);
-    pillsOutcome.push(data);
+  logger.log(`Dispensing ${pills.length} medicines`);
+
+  try {
+    // Drop pills through hardware interface
+    await dropPills(pills.map(pill => pill.medicine_id));
+    
+    // Update stock and prepare outcome data
+    for (const pill of pills) {
+      await removeStock(pill.medicine_id, pill.amount);
+      const data = await getPillData(pill);
+      pillsOutcome.push(data);
+      logger.log(`Successfully dispensed medicine ID: ${pill.medicine_id}`);
+    }
+  } catch (error) {
+    logger.log(`Error during medicine dispensing: ${error.message}`);
+    throw error;
   }
 
   return pillsOutcome;
