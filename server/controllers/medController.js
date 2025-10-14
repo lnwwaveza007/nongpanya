@@ -10,7 +10,7 @@ import {
   checkMedicineAvailability,
 } from "../services/medServices.js";
 import * as code from "../utils/codeStore.js";
-// import { getQuotaByUserId } from "../services/userServices.js";
+import { getQuotaByUserId } from "../services/userServices.js";
 import { getAllMedicineStock, addStock } from "../services/medStockServices.js";
 import websocketService from "../services/websocketService.js";
 import prisma from "../config/prismaClient.js";
@@ -94,14 +94,14 @@ export const submitRequestForm = async (req, res, next) => {
       return;
     }
 
-    // //Check quota
-    // if ((await getQuotaByUserId(userId)) >= 3) {
-    //   res.status(403).json({
-    //     success: false,
-    //     message: "Limit Reach",
-    //   });
-    //   return;
-    // }
+    // Check quota
+    if ((await getQuotaByUserId(userId)) >= 3) {
+      res.status(403).json({
+        success: false,
+        message: "Limit Reach",
+      });
+      return;
+    }
 
     // Check medicine availability before creating request
     const availabilityCheck = await checkMedicineAvailability(
